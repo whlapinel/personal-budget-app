@@ -19,6 +19,7 @@
 - [] All responses in JSON
 - [] Proper status code (200, 400, 500)
 - [] Add gzip or some other compression
+- [] MySQL database
 - [] Auth
 - [] Auth: Token needs to expire in 1 minute
 - [] Auth: After 40 seconds of inactivity show warning that token will expire in 20 seconds, provide button to reset

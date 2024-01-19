@@ -15,7 +15,7 @@
 
 ### Technical Requirements (provided by Professor)
 
-- [] API only / completely detached from frontend (NOTE: request to use React server components and server actions is pending)
+- [] API only / completely detached from frontend *
 - [] All responses in JSON
 - [] Proper status code (200, 400, 500)
 - [] Add gzip or some other compression
@@ -26,7 +26,23 @@
 - [] Testing: at least 1 E2E Test
 - [] Testing: at least 1 Visual Regression test with Applitools
 
+- \* I'm assuming this is in order to provide the potential for developing other frontends as opposed to a backend that is designed exclusively for the NextJS UI
+
 ### Possible extra features (by me, the developer)
 
 - [] Account register with ability to download bank transactions via Plaid
+
+### Architectural plan (by me, the developer)
+
+#### NextJS full stack application will handle: 
+
+- UI 
+- authentication 
+
+#### Separate Node.js server will handle 
+
+- business logic 
+- database queries
+- authorization 
+
 

@@ -1,13 +1,35 @@
 
-type BudgetCategory = {
+
+export type User = {
     id: string,
-    name: string,
-    available: number,
-    assigned: number,
+    firstName: string,
+    lastName: string,
+    email: string,
+    accounts: Account[],
+    budgets: BudgetCategory[],
     transactions: Transaction[]
 }
 
-type Transaction = {
+export type BudgetCategory = {
+    id: string,  // nanoid
+    name: string, // e.g. "Groceries"
+    needed: number, // calculated
+    assigned: number, // calculated
+    spent: number, // calculated
+    available: number, // assigned - spent
+    goals: Goal[], // determines needed amount
+    transactions: Transaction[]
+}
+
+export type Goal = {
+    id: string,
+    name: string,
+    amount: number,
+    targetDate: Date,
+    category: BudgetCategory
+}
+
+export type Transaction = {
     id: string,
     date: Date,
     amount: number,
@@ -15,7 +37,7 @@ type Transaction = {
     category: BudgetCategory | Transaction[] // for split transactions?  Not sure
 }
 
-type Account = {
+export type Account = {
     id: string,
     name: string,
     bankName: string,

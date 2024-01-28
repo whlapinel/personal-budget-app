@@ -31,16 +31,20 @@ export type Goal = {
 
 export type Transaction = {
     id: string,
+    account: Account['id'],
     date: Date,
+    payee: string,
     amount: number,
-    description: string,
-    category: BudgetCategory | Transaction[] // for split transactions?  Not sure
+    memo: string,
+    category: BudgetCategory['id'] | Transaction[] // for split transactions?  Not sure
 }
 
 export type Account = {
     id: string,
     name: string,
+    type: AccountType,
     bankName: string,
-    transactions: Transaction[]
     balance: number,
 }
+
+export type AccountType = 'checking' | 'savings' | 'credit' | 'loan' | 'investment' | 'other'

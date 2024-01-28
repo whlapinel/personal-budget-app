@@ -5,7 +5,6 @@
 ### Feature/Layout Requirements (provided by Professor)
 https://docs.google.com/presentation/d/121C_A62cB5nhCZLu0aTEuNjg54KBki7RySTbAonfC2o/edit?usp=sharing
 
-
 - [] Homepage
 - [] Login
 - [] Logout
@@ -42,10 +41,10 @@ https://docs.google.com/presentation/d/121C_A62cB5nhCZLu0aTEuNjg54KBki7RySTbAonf
 - UI 
 - authentication 
 
-#### Separate Node.js server will handle 
+#### Separate Python/Django server will handle 
 
+- authorization 
 - business logic 
 - database queries
-- authorization 
 
 

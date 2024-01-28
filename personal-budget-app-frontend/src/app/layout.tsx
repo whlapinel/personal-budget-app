@@ -26,11 +26,9 @@ export default function RootLayout({
         <body className={twMerge(inter.className, 'h-full')}>
           <div className="min-h-full">
             <NavBar />
-            <div className="py-5">
-              <main>
-                <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">{children}</div>
-              </main>
-            </div>
+            <main className={'py-2 px-2'}>
+              {children}
+            </main>
           </div>
         </body>
       </html>

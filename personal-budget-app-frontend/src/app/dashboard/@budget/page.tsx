@@ -1,15 +1,6 @@
 
 import Card from "@/app/ui/card"
-
-
-const categories = [
-  { name: 'Food', id: 1, amount: 0 },
-  { name: 'Rent', id: 2, amount: 0 },
-  { name: 'Utilities', id: 3, amount: 0 },
-  { name: 'Entertainment', id: 4, amount: 0 },
-  { name: 'Transportation', id: 5, amount: 0 },
-  { name: 'Other', id: 6, amount: 0 },
-]
+import { categories } from '@/app/lib/data/dummydata';
 
 export default function BudgetPage() {
 

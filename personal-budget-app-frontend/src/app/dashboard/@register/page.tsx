@@ -5,69 +5,8 @@ import type { Transaction } from '@/app/lib/definitions'
 import type { Account } from '@/app/lib/definitions'
 import { useSearchParams } from "next/navigation";
 import {Link} from '@/app/ui/link';
+import {transactions, accounts} from '@/app/lib/data/dummydata';
 
-const transactions: Transaction[] = [
-  {
-    id: '1',
-    account: 'Checking',
-    date: new Date(),
-    payee: 'Walmart',
-    amount: -100,
-    memo: 'Groceries',
-    category: 'Food',
-  },
-  {
-    id: '2',
-    account: 'Checking',
-    date: new Date(),
-    payee: 'Transfer to Savings',
-    amount: -100,
-    memo: '',
-    category: '',
-  },
-  {
-    id: '3',
-    account: 'Savings',
-    date: new Date(),
-    payee: 'Transfer from Checking',
-    amount: 100,
-    memo: '',
-    category: '',
-  },
-  {
-    id: '4',
-    account: 'Credit Card',
-    date: new Date(),
-    payee: 'Hannah Anderson',
-    amount: 100,
-    memo: '',
-    category: '',
-  }
-]
-
-const accounts: Account[] = [
-  {
-    id: '1',
-    name: 'Checking',
-    bankName: 'Chase',
-    balance: 1000,
-    type: 'checking',
-  },
-  {
-    id: '2',
-    name: 'Savings',
-    bankName: 'Chase',
-    balance: 10000,
-    type: 'savings',
-  },
-  {
-    id: '3',
-    name: 'Credit Card',
-    bankName: 'Chase',
-    balance: -1000,
-    type: 'credit',
-  }
-]
 
 const totalBalance = accounts.reduce((acc, account) => acc + account.balance, 0);
 

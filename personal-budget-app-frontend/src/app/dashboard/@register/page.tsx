@@ -1,8 +1,8 @@
 'use client';
 
 import Card from "@/app/ui/card"
-import type { Transaction } from '@/app/lib/definitions'
-import type { Account } from '@/app/lib/definitions'
+import type { Transaction } from '@/app/lib/data/definitions'
+import type { Account } from '@/app/lib/data/definitions'
 import { useSearchParams } from "next/navigation";
 import {Link} from '@/app/ui/link';
 import {transactions, accounts} from '@/app/lib/data/dummydata';

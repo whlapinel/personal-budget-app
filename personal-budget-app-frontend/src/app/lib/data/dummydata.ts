@@ -1,4 +1,4 @@
-import { Account, Transaction } from '../definitions'
+import { Account, Transaction } from './definitions'
 
 export const categories = [
     { name: 'Food', id: 1, amount: 0 },

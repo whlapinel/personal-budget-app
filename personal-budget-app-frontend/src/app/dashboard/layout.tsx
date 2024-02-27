@@ -15,23 +15,16 @@ export default function DashboardLayout({
 }) {
 
     const searchParams = useSearchParams();
-    const view = searchParams.get('view');
 
     return (
         <>
             <div className='grid grid-cols-[1fr_8fr]'>
                 <SideNav>
-                        <Link className=" bg-blue-700 rounded p-2 text-gray-50" href='/dashboard?view=budget'>Budget</Link>
-                        <Link className=" bg-blue-700 rounded p-2 text-gray-50" href={'/dashboard?view=register'}>Register</Link>
-                        <Link className=" bg-blue-700 rounded p-2 text-gray-50" href={'/dashboard?view=reports'}>Reports</Link>
+                        <Link className=" bg-blue-700 rounded p-2 text-gray-50" href='/dashboard/budget'>Budget</Link>
+                        <Link className=" bg-blue-700 rounded p-2 text-gray-50" href={'/dashboard/register'}>Register</Link>
+                        <Link className=" bg-blue-700 rounded p-2 text-gray-50" href={'/dashboard/reports'}>Reports</Link>
                 </SideNav>
                 {children}
-                <div>
-                    {view === 'budget' && budget}
-                    {view === 'register' && register}
-                    {view === 'reports' && reports}
-                    {view === null && <div>Nothing to see here</div>}
-                </div>
             </div>
         </>
     )

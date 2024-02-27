@@ -1,7 +1,6 @@
-import React from 'react'
 
 export default function DashboardPage() {
   return (
-    null
+    <p>Select a view from the left</p>
   )
 }

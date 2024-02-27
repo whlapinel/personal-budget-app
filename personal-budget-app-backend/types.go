@@ -5,15 +5,15 @@ import (
 )
 
 type User struct {
-    ID           string 
+    ID           int 
     FirstName    string
     LastName     string
     Email        string
 }
 
 type BudgetCategory struct {
-    ID           string `json:"id"`
-	UserID	     string `json:"userID"`
+    ID           int `json:"id"`
+	UserID	     int `json:"userID"`
     Name         string `json:"name"`
     Needed       float64 `json:"needed"`
     Assigned     float64 `json:"assigned"`

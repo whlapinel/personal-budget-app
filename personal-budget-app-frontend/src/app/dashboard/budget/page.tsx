@@ -20,7 +20,7 @@ export default async function BudgetPage(searchParams: any) {
     <>
       <Card className='bg-amber-200'>
         <h1 className="text-2xl font-bold text-gray-900">{month} Budget</h1>
-        <Link className=" bg-blue-700 rounded p-2 text-gray-50" href='/dashboard?view=budget&additem=true'>Add Budget Item</Link>
+        <Link className=" bg-blue-700 rounded p-2 text-gray-50" href='/dashboard/budget/add-category'>Add Budget Item</Link>
         <table className="min-w-full divide-y divide-gray-300">
           <thead>
             <tr>

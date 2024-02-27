@@ -37,12 +37,10 @@ https://docs.google.com/presentation/d/121C_A62cB5nhCZLu0aTEuNjg54KBki7RySTbAonf
 ### Architectural plan (by me, the developer)
 
 #### NextJS full stack application will handle: 
-
 - UI 
-- authentication 
 
 #### Separate Golang server will handle 
-
+- authentication (moved from Next BFF)
 - authorization 
 - business logic 
 - database queries

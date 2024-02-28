@@ -5,52 +5,63 @@ import (
 )
 
 type User struct {
-    ID           int 
-    FirstName    string
-    LastName     string
-    Email        string
+    ID           int        `json:"id"`
+    UserName     string     `json:"userName"`
+    Password     string     `json:"password"`
+    FirstName    string     `json:"firstName"`
+    LastName     string     `json:"lastName"`
+    Email        string     `json:"email"`
 }
 
+// user methods
+func (u *User) CreateAccount(a Account)(Account) {
+    newAccount := Account{
+        Name: a.Name,
+        Type: a.Type,
+        BankName: a.BankName,
+        Balance: a.Balance,
+        UserID: u.ID,
+    }    
+    return newAccount
+}
+
+
 type BudgetCategory struct {
-    ID           int `json:"id"`
-	UserID	     int `json:"userID"`
-    Name         string `json:"name"`
-    Needed       float64 `json:"needed"`
-    Assigned     float64 `json:"assigned"`
-    Spent        float64 `json:"spent"`
-    Available    float64 `json:"available"`
+    ID           int        `json:"id"`
+	UserID	     int        `json:"userID"`
+    Name         string     `json:"name"`
 }
 
 type Goal struct {
-    ID         string
-	UserID	   string
-    Name       string
-    Amount     float64
-    TargetDate time.Time
-    Category   BudgetCategory
+    ID         string           `json:"id"`
+	UserID	   string           `json:"userID"`
+    Name       string           `json:"name"`
+    Amount     float64          `json:"amount"`
+    TargetDate time.Time        `json:"targetDate"`
+    Category   BudgetCategory   `json:"category"`
 }
 
 type Transaction struct {
-    ID          string
-	UserID	    string
-    AccountID   string // Changed from Account['id'] to string to simplify, consider interface{} if needing more complexity
-    Date        time.Time
-    Payee       string
-    Amount      float64
-    Memo        string
-    CategoryID  string // Simplified version, consider interface{} or struct{} for complex scenarios
+    ID          int             `json:"id"`
+	UserID	    int             `json:"userID"`
+    AccountID   int             `json:"accountID"`                // Changed from Account['id'] to string to simplify, consider interface{} if needing more complexity
+    Date        time.Time       `json:"date"`
+    Payee       string          `json:"payee"`
+    Amount      float64         `json:"amount"`
+    Memo        string          `json:"memo"`
+    CategoryID  int             `json:"categoryID"`                // Simplified version, consider interface{} or struct{} for complex scenarios
 }
 
 type Account struct {
-    ID       string
-	UserID	 string
-    Name     string
-    Type     AccountType
-    BankName string
-    Balance  float64
+    ID       int                `json:"id"`
+	UserID	 int                `json:"userID"`
+    Name     string             `json:"name"`
+    Type     AccountType        `json:"type"`
+    BankName string             `json:"bankName"`
+    Balance  float64            `json:"balance"`
 }
 
-type AccountType string
+type AccountType string         
 
 const (
     Checking   AccountType = "checking"

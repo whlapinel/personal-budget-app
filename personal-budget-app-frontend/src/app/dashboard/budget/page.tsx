@@ -1,19 +1,29 @@
 
 import Card from "@/app/ui/card"
-import { categories } from '@/app/lib/data/dummydata';
 import { Link } from "@/app/ui/link";
 import { Dialog } from "@/app/ui/dialog";
-import {getUser, getCategories} from "@/app/lib/data/backendDummyData";
+import { getUser, getCategories } from "@/app/lib/data/get-data";
+import { BudgetCategory } from "@/app/lib/data/definitions";
 
-export default async function BudgetPage(searchParams: any) {
+export default async function BudgetPage() {
 
-
+  const userID = 1;
   const today = new Date();
   const month = today.toLocaleString('default', { month: 'long' });
-  const isAdding = searchParams.additem === 'true';
 
-  const user = await getUser('user1');
-  const categories = await getCategories('user1'); 
+  let categories: BudgetCategory[] = [];
+
+  try {
+    const user = await getUser('1');
+  } catch (err) {
+    console.error(err);
+  }
+
+  try {
+    categories = await getCategories(userID);
+  } catch (err) {
+    console.error(err);
+  }
 
 
   return (
@@ -53,7 +63,6 @@ export default async function BudgetPage(searchParams: any) {
           </tbody>
         </table>
       </Card>
-      {/* {isAdding} ? <Dialog></Dialog> : null */}
     </>
   )
 }

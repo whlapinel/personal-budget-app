@@ -5,20 +5,11 @@ export type User = {
     firstName: string,
     lastName: string,
     email: string,
-    accounts: Account[],
-    budgets: BudgetCategory[],
-    transactions: Transaction[]
 }
 
 export type BudgetCategory = {
-    id: string,  // nanoid
+    id?: string,  // nanoid
     name: string, // e.g. "Groceries"
-    needed: number, // calculated
-    assigned: number, // calculated
-    spent: number, // calculated
-    available: number, // assigned - spent
-    goals: Goal[], // determines needed amount
-    transactions: Transaction[]
 }
 
 export type Goal = {

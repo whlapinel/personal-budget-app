@@ -1,14 +1,15 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"os"
-	"database/sql"
+
 	"github.com/go-sql-driver/mysql"
 )
 
-func initializeDB() (*sql.DB) {
+func initializeDB() *sql.DB {
 	var db *sql.DB
 	fmt.Println(os.Getenv("DBUSER"))
 	fmt.Println(os.Getenv("DBPASS"))
@@ -33,6 +34,24 @@ func initializeDB() (*sql.DB) {
 	return db
 }
 
+func addCategoryToDB(db *sql.DB, category BudgetCategory) (BudgetCategory, error) {
+	_, err := db.Exec("INSERT INTO categories (user_id, name) VALUES (?, ?)", category.UserID, category.Name)
+	if err != nil {
+		fmt.Println(err)
+		return BudgetCategory{}, err
+	}
+	return category, nil
+}
+
+func createUser(db *sql.DB, user User) (User, error) {
+	fmt.Println("Hello, World!")
+	_, err := db.Exec("INSERT INTO users (first_name, last_name, email, username, password) VALUES (?, ?, ?, ?, ?)", user.FirstName, user.LastName, user.Email, user.UserName, user.Password)
+	if err != nil {
+		fmt.Println(err)
+		return User{}, err
+	}
+	return user, nil
+}
 
 func getUsers(db *sql.DB) ([]User, error) {
 	fmt.Println("Hello, World!")
@@ -57,7 +76,6 @@ func getUsers(db *sql.DB) ([]User, error) {
 	}
 	return users, nil
 }
-
 
 // func getCategories(db) ([]BudgetCategory, error) {
 // 	rows, err := db.Query("SELECT * FROM budget_categories")

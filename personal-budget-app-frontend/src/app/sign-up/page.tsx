@@ -26,10 +26,8 @@ export default function SignUpPage() {
         <input type="text" name='firstName' required />
         <label htmlFor='lastName'>Last Name</label>
         <input type="text" name='lastName' required />
-        <label htmlFor='username'>Email</label>
+        <label htmlFor='email'>Email</label>
         <input type="email" name='email' required />
-        <label htmlFor='username'>Username</label>
-        <input type="text" name='username' required />
         <label htmlFor='password'>Password</label>
         <input type="password" name='password' required />
         <SubmitButton>Submit</SubmitButton>

@@ -11,12 +11,3 @@ export async function postUser(user: Partial<User>) {
     return data;
 }
 
-export async function postCategory(category: any) {
-    const response = await fetch(backendUrls.categories, {
-        cache: 'no-store',
-        method: 'POST',
-        body: JSON.stringify(category)
-    });
-    const data = await response.json();
-    return data;
-}

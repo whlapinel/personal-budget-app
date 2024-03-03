@@ -2,9 +2,7 @@
 
 import Link from 'next/link'
 import { navigation } from '@/app/navigation'
-import { UserButton } from "@clerk/nextjs";
 import { usePathname } from "next/navigation";
-
 
 export default function NavBar() {
 
@@ -36,9 +34,6 @@ export default function NavBar() {
                             )
                         })}
                     </div>
-                </div>
-                <div className="hidden sm:ml-6 sm:flex sm:items-center">
-                    <UserButton />
                 </div>
             </div>
         </div>

@@ -1,19 +1,18 @@
-'use client';
-
 import Card from "@/app/ui/card"
 import type { Transaction } from '@/app/lib/data/definitions'
 import type { Account } from '@/app/lib/data/definitions'
-import { useSearchParams } from "next/navigation";
 import {Link} from '@/app/ui/link';
-import {transactions, accounts} from '@/app/lib/data/dummydata';
+import { getTransactions } from '@/app/lib/data/get-data';
+import { getAccounts } from '@/app/lib/data/get-data';
+import { getSession } from '@/app/lib/data/auth';
 
-
-const totalBalance = accounts.reduce((acc, account) => acc + account.balance, 0);
-
-export default function RegisterPage() {
-
-  const searchParams = useSearchParams();
-  const filter = searchParams.get('filter');
+export default async function RegisterPage(searchParams: URLSearchParams) {
+  const session = await getSession();
+  const email = session.user.email;
+  const transactions = await getTransactions(email);
+  const accounts = await getAccounts(email);
+  const totalBalance = accounts?.reduce((acc, account) => acc + account.balance, 0);
+  const filter = searchParams?.get('filter');
   console.log(filter);
   console.log(transactions);
   

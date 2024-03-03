@@ -10,9 +10,50 @@ export async function getUser(userID: string): Promise<User> {
     return users
 }
 
-export async function getCategories(userID: number): Promise<BudgetCategory[]> {
-    const data = await fetch(`${backendUrls.categories}/${userID}`, { cache: 'no-store' });
-    const categories = await data.json();
-    console.log(categories);
-    return categories
+
+
+export async function getAccounts(userID: string): Promise<Account[]> {
+    const data = await fetch(`${backendUrls.accounts}/${userID}`, {
+        cache: 'no-store',
+        headers: {
+            'Authorization': ``
+        }
+    });
+    const accounts = await data.json();
+    console.log(accounts);
+    return accounts
+}
+
+export async function getTransactions(userID: string): Promise<Transaction[]> {
+    try {
+        const data = await fetch(`${backendUrls.transactions}/${userID}`, {
+            cache: 'no-store',
+            headers: {
+                'Authorization': ``
+            }
+        });
+        const transactions = await data.json();
+        console.log(transactions);
+        return transactions
+    } catch (err) {
+        console.log(err);
+        return []
+    }
+}
+
+export async function getCategories(): Promise<BudgetCategory[]> {
+    try {
+        const data = await fetch(`${backendUrls.categories}`, {
+            cache: 'no-store',
+            headers: {
+                'Authorization': ``
+            }
+        });
+        const categories = await data.json();
+        console.log(categories);
+        return categories
+    } catch (err) {
+        console.log(err);
+        return []
+    }
 }

@@ -1,10 +1,8 @@
 
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import { ClerkProvider } from '@clerk/nextjs'
 import { twMerge } from 'tailwind-merge'
 import './globals.css'
-import PageHeader from './page-header'
 import NavBar from './ui/navbar'
 
 
@@ -21,7 +19,6 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <ClerkProvider>
       <html lang="en" className='h-full'>
         <body className={twMerge(inter.className, 'h-full')}>
           <div className="min-h-full">
@@ -32,6 +29,5 @@ export default function RootLayout({
           </div>
         </body>
       </html>
-    </ClerkProvider>
   )
 }

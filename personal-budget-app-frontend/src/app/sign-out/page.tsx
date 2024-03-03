@@ -1,6 +1,9 @@
+'use client'
+
+import {signOut} from './sign-out'
 
 export default function SignOutPage() {
     return (
-      <div>SignOutPage</div>
+      <button onClick={async () => signOut()}>Sign Out</button>
     )
   }

@@ -14,15 +14,13 @@ export default async function BudgetPage() {
   let categories: BudgetCategory[] = [];
 
   try {
-    const user = await getUser('1');
+    categories = await getCategories();
+    console.log(categories);
   } catch (err) {
     console.error(err);
-  }
-
-  try {
-    categories = await getCategories(userID);
-  } catch (err) {
-    console.error(err);
+    return (
+      <p>Error getting categories"</p>
+    )
   }
 
 
@@ -52,12 +50,12 @@ export default async function BudgetPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-            {categories.map((category) => (
+            {categories?.map((category) => (
               <tr key={category.id}>
                 <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
                   {category.name}
                 </td>
-                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{category.needed}</td>
+                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{'placeholder'}</td>
               </tr>
             ))}
           </tbody>

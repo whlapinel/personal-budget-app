@@ -12,10 +12,8 @@ func createUserTable(db *sql.DB) (sql.Result, error) {
 			id int AUTO_INCREMENT PRIMARY KEY, 
 			first_name VARCHAR(100) NOT NULL, 
 			last_name VARCHAR(100) NOT NULL,
-			username VARCHAR(100) NOT NULL,
 			password VARCHAR(100) NOT NULL,
 			email VARCHAR(100) NOT NULL,
-			CONSTRAINT unique_username UNIQUE (username),
 			CONSTRAINT unique_email UNIQUE (email)
 			);`
 	result, err := db.Exec(query)

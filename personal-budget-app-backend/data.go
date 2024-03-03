@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"os"
-
 	"github.com/go-sql-driver/mysql"
 )
 
@@ -34,18 +33,18 @@ func initializeDB() *sql.DB {
 	return db
 }
 
-func addCategoryToDB(db *sql.DB, category BudgetCategory) (BudgetCategory, error) {
+func addCategoryToDB(db *sql.DB, category Category) (Category, error) {
 	_, err := db.Exec("INSERT INTO categories (user_id, name) VALUES (?, ?)", category.UserID, category.Name)
 	if err != nil {
 		fmt.Println(err)
-		return BudgetCategory{}, err
+		return Category{}, err
 	}
 	return category, nil
 }
 
 func createUser(db *sql.DB, user User) (User, error) {
 	fmt.Println("Hello, World!")
-	_, err := db.Exec("INSERT INTO users (first_name, last_name, email, username, password) VALUES (?, ?, ?, ?, ?)", user.FirstName, user.LastName, user.Email, user.UserName, user.Password)
+	_, err := db.Exec("INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?, ?)", user.FirstName, user.LastName, user.Email, user.Password)
 	if err != nil {
 		fmt.Println(err)
 		return User{}, err

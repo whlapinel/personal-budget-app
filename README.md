@@ -6,9 +6,9 @@
 https://docs.google.com/presentation/d/121C_A62cB5nhCZLu0aTEuNjg54KBki7RySTbAonfC2o/edit?usp=sharing
 
 - [] Homepage
-- [] Login
+- [x] Login
 - [] Logout
-- [] Signup
+- [x] Signup
 - [] Dashboard
 - [] 3 visualizations (graphs and charts, etc) available from dashboard
 - [] Ability for user to configure budgets
@@ -16,19 +16,17 @@ https://docs.google.com/presentation/d/121C_A62cB5nhCZLu0aTEuNjg54KBki7RySTbAonf
 
 ### Technical Requirements (provided by Professor)
 
-- [] API only / completely detached from frontend *
-- [] All responses in JSON
-- [] Proper status code (200, 400, 500)
+- [x] API only / completely detached from frontend *
+- [x] All responses in JSON
+- [x] Proper status code (200, 400, 500)
 - [] Add gzip or some other compression
-- [] MySQL database
-- [] Auth
+- [x] MySQL database
+- [x] Auth
 - [] Auth: Token needs to expire in 1 minute
 - [] Auth: After 40 seconds of inactivity show warning that token will expire in 20 seconds, provide button to reset
 - [] Testing: at least 1 Unit Test
 - [] Testing: at least 1 E2E Test
 - [] Testing: at least 1 Visual Regression test with Applitools
-
-- \* I'm assuming this is in order to provide the potential for developing other frontends as opposed to a backend that is designed exclusively for the NextJS UI
 
 ### Possible extra features (by me, the developer)
 
@@ -38,11 +36,8 @@ https://docs.google.com/presentation/d/121C_A62cB5nhCZLu0aTEuNjg54KBki7RySTbAonf
 
 #### NextJS full stack application will handle: 
 - UI 
+- authentication
 
 #### Separate Golang server will handle 
-- authentication (moved from Next BFF)
-- authorization 
 - business logic 
 - database queries
-
-

@@ -16,7 +16,7 @@ func (u *User) create() error {
     fmt.Println("Creating user")
 	db := initializeDB()
 	defer db.Close()
-	_, err := db.Exec("INSERT INTO users (password, first_name, last_name, email) VALUES (?, ?, ?, ?, ?)", u.Password, u.FirstName, u.LastName, u.Email)
+	_, err := db.Exec("INSERT INTO users (password, first_name, last_name, email) VALUES (?, ?, ?, ?)", u.Password, u.FirstName, u.LastName, u.Email)
 	if err != nil {
 		fmt.Println(err)
 		return err

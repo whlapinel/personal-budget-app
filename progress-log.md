@@ -1,3 +1,10 @@
+## 3/3/24
+
+- implement basic signup and signin functionality (email and password)
+- implement JWT auth and session management
+- storing encrypted passwords in db
+- removed "username"
+
 ## 2/29/24
 
 - began implementing jwt authentication on Go backend. Persisted on client via local storage.

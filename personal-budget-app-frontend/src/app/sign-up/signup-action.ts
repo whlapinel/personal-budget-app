@@ -7,9 +7,12 @@ import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
 import { NextRequest, NextResponse } from "next/server";
 import { KeyLike } from 'crypto';
-import {key} from '@/app/lib/data/auth'
+import { key } from '@/app/lib/data/auth'
+import bcrypt from "bcrypt";
 
 export default async function signUpAction(prevState: any, formData: FormData) {
+
+
     console.log('formData', formData)
     const user: any = {
         email: formData.get('email'),
@@ -19,12 +22,12 @@ export default async function signUpAction(prevState: any, formData: FormData) {
     }
 
     async function encrypt(payload: any) {
-            return await new SignJWT(payload)
-                .setProtectedHeader({ alg: "HS256" })
-                .setIssuedAt()
-                .setExpirationTime("20 sec from now")
-                .sign(key);
-        }
+        return await new SignJWT(payload)
+            .setProtectedHeader({ alg: "HS256" })
+            .setIssuedAt()
+            .setExpirationTime("20 sec from now")
+            .sign(key);
+    }
 
     // Create the session
     const expires = new Date(Date.now() + 10 * 1000);
@@ -33,20 +36,17 @@ export default async function signUpAction(prevState: any, formData: FormData) {
     // Save the session in a cookie
     cookies().set("session", session, { expires, httpOnly: true });
 
-
-    // console.log('stringified user', JSON.stringify(user));
-
-    // // send user to backend
-    // try {
-    //     const data = await postUser(user);
-    //     console.log('data', data);
-    //     if (data.error) {
-    //         return { message: 'User not created' }
-    //     }
-    // } catch (err) {
-    //     console.error(err);
-    //     return { message: 'User not created' }
-    // }
+    // encrypt password before sending to backend
+    const bcrypt = require('bcrypt');
+    const saltRounds = 10;
+    const hash = await bcrypt.hash(user.password, saltRounds);
+    user.password = hash;
+    try {
+        const data = await postUser(user);
+    } catch (error) {
+        console.error('Error creating user', error);
+        return { message: 'Error creating user' }
+    }
     return (
         { message: 'User created' }
     )

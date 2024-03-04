@@ -6,38 +6,30 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"os"
-	"strconv"
-	"time"
+
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
 
 func main() {
-	// log DBUSER and DBPASS
-	dbUser := os.Getenv("DBUSER")
-	fmt.Println("dbUser: " + dbUser)
-	dbPass := os.Getenv("DBPASS")
-	fmt.Println("dBPass: " + dbPass)
 	db := initializeDB()
 	fmt.Println("db initialized")
 	defer db.Close()
 	// for development only
 	dropTables(db)
 	fmt.Println("tables dropped")
-
 	createUserTable(db)
 	fmt.Println("user table created")
 	createCategoryTable(db)
 	fmt.Println("category table created")
 	// API
 	router := gin.Default()
-	router.Use(authenticate)
+	router.Use(authenticateBFF)
 	router.GET("/hello", sayHello)
-	router.GET("/users/:id", getUserByID)
+	router.GET("/users/:email", getUserByEmail)
 	router.GET("/categories", getCategories)
-	router.POST("/signup", handleSignUp)
-	router.POST("/signin", signIn)
+	router.POST("/users", postUser)
+	router.POST("/signin", authenticateUser)
 	router.POST("/categories", handlePostCategory)
 	router.GET("/transactions", getTransactions)
 	router.Run("localhost:8080")
@@ -47,7 +39,7 @@ func sayHello(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Hello, World!"})
 }
 
-func authenticate(c *gin.Context) {
+func authenticateBFF(c *gin.Context) {
 	// authenticate
 	var reqKey string
 	if reqKey = c.GetHeader("API_KEY"); reqKey == "" {
@@ -56,7 +48,7 @@ func authenticate(c *gin.Context) {
 		return
 	}
 	fmt.Println("API_KEY", reqKey)
-	if reqKey != os.Getenv("API_KEY") {
+	if reqKey != API_KEY {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "invalid key"})
 		c.Abort()
 		return
@@ -64,14 +56,11 @@ func authenticate(c *gin.Context) {
 	c.Next()
 }
 
-
-
 func getTransactions(c *gin.Context) {
-
 
 }
 
-func signIn(c *gin.Context) {
+func authenticateUser(c *gin.Context) {
 	var creds Credentials
 	if err := c.BindJSON(&creds); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -91,25 +80,27 @@ func signIn(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "password does not match"})
 		return
 	}
-	// create token
-	expirationTime := time.Now().Add(5 * time.Minute)
-	claims := &Claims{
-		Email: creds.Email,
-		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(expirationTime),
-		},
-	}
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	//FIXME should be read from env
-	tokenString, err := token.SignedString([]byte("secret"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "error creating token"})
-		return
-	}
+	// now instead of sending a token, we'll just send "success"
+
+	// // create token
+	// expirationTime := time.Now().Add(5 * time.Minute)
+	// claims := &Claims{
+	// 	Email: creds.Email,
+	// 	RegisteredClaims: jwt.RegisteredClaims{
+	// 		ExpiresAt: jwt.NewNumericDate(expirationTime),
+	// 	},
+	// }
+	// token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	// //FIXME should be read from env
+	// tokenString, err := token.SignedString([]byte("secret"))
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{"message": "error creating token"})
+	// 	return
+	// }
 	// return token
-	c.SetCookie("token", tokenString, 3600, "", "", false, false)
+	// c.SetCookie("token", tokenString, 3600, "", "", false, false)
 	// read the cookie that was just set
-	c.JSON(http.StatusOK, tokenString)
+	c.JSON(http.StatusOK, gin.H{"message": "success"})
 }
 
 func handlePostCategory(c *gin.Context) {
@@ -146,7 +137,7 @@ func handlePostCategory(c *gin.Context) {
 	c.JSON(http.StatusCreated, newCategory)
 }
 
-func handleSignUp(c *gin.Context) {
+func postUser(c *gin.Context) {
 	var newUser User
 	if err := c.BindJSON(&newUser); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -160,19 +151,14 @@ func handleSignUp(c *gin.Context) {
 	c.JSON(http.StatusCreated, newUser)
 }
 
-func getUserByID(c *gin.Context) {
-	idString := c.Param("id")
-	id, err := strconv.Atoi(idString)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"message": "id must be an integer"})
-		return
-	}
-	fmt.Println(id)
+func getUserByEmail(c *gin.Context) {
+	email := c.Param("email")
+	fmt.Println(email)
 	db := initializeDB()
 	defer db.Close()
 	fmt.Println("db initialized")
 	var user User
-	err = db.QueryRow("SELECT * FROM users WHERE id = ?", id).Scan(&user.ID, &user.FirstName, &user.LastName, &user.Email)
+	err := db.QueryRow("SELECT * FROM users WHERE email = ?", email).Scan(&user.ID, &user.FirstName, &user.LastName, &user.Password, &user.Email)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "user not found"})
 		return

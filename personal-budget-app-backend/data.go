@@ -4,17 +4,14 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
-	"os"
 	"github.com/go-sql-driver/mysql"
 )
 
 func initializeDB() *sql.DB {
 	var db *sql.DB
-	fmt.Println(os.Getenv("DBUSER"))
-	fmt.Println(os.Getenv("DBPASS"))
 	cfg := mysql.Config{
-		User:                 os.Getenv("DBUSER"),
-		Passwd:               os.Getenv("DBPASS"),
+		User:                 DBUSER, // env.go, not in repo
+		Passwd:               DBPASS, // env.go, not in repo
 		Net:                  "tcp",
 		Addr:                 "127.0.0.1:3306",
 		DBName:               "personal_budget",
@@ -40,16 +37,6 @@ func addCategoryToDB(db *sql.DB, category Category) (Category, error) {
 		return Category{}, err
 	}
 	return category, nil
-}
-
-func createUser(db *sql.DB, user User) (User, error) {
-	fmt.Println("Hello, World!")
-	_, err := db.Exec("INSERT INTO users (first_name, last_name, email, password) VALUES (?, ?, ?, ?, ?)", user.FirstName, user.LastName, user.Email, user.Password)
-	if err != nil {
-		fmt.Println(err)
-		return User{}, err
-	}
-	return user, nil
 }
 
 func getUsers(db *sql.DB) ([]User, error) {

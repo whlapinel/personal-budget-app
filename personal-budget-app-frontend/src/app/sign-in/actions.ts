@@ -6,13 +6,15 @@ import type { User } from '@/app/lib/data/definitions';
 import { SignJWT } from 'jose'
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt'
+import { useSession } from '../session-context';
 
 dotenv.config()
 
 const secret = process.env.SECRET_KEY
 const key = new TextEncoder().encode(secret);
 
-export async function signInAction(prevState: any, formData: FormData) {
+export async function signInAction(prevState: any, formData: FormData): Promise<{message: string, user: User}> {
+
     console.log('formData', formData)
     const user: any = {
         email: formData.get('email'),
@@ -22,13 +24,14 @@ export async function signInAction(prevState: any, formData: FormData) {
     // retrieve encrypted password from backend
     const encryptedPassword = await getEncryptedPassword(user.email);
 
+    // compare passwords
     try {
         const match = await bcrypt.compare(user.password, encryptedPassword);
         console.log('match:', match);
     } catch (err)
     {
         console.error(err);
-        return { message: 'Error signing in' }
+        return { message: 'Error signing in', user: { email: '', id: '', password: '', firstName: '', lastName: '', expiration: 0 }}
     }
 
     async function getEncryptedPassword(email: string): Promise<string> {
@@ -50,56 +53,24 @@ export async function signInAction(prevState: any, formData: FormData) {
         return encryptedPassword;
     }
 
+    const expiration: Date = new Date(Date.now() + 60 * 1000);
+
     async function encrypt(payload: any) {
         return await new SignJWT(payload)
             .setProtectedHeader({ alg: "HS256" })
             .setIssuedAt()
-            .setExpirationTime("1 minute from now")
+            .setExpirationTime(expiration)
             .sign(key);
     }
 
-    const expires = new Date(Date.now() + 10 * 1000);
-    const session = await encrypt({ user, expires });
+    const session = await encrypt({ user, expires: expiration });
 
     // Save the session in a cookie
-    cookies().set("session", session, { expires, httpOnly: true });
+    cookies().set("session", session, { expires: expiration, httpOnly: true });
     return (
         {
             message: "Signed in successfully",
-            session: session
+            user: {...user, expiration: expiration.getTime()}
         }
     )
-
-    // console.log('stringified user', JSON.stringify(user));
-
-    // // send user to backend
-    // let message: string;
-    // let token: string;
-    // try {
-    //     const response = await fetch(backendUrls.signin, {
-    //         cache: 'no-store',
-    //         method: 'POST',
-    //         body: JSON.stringify(user)
-    //     });
-    //     const headers = response.headers;
-    //     console.log('headers', headers);
-    //     const cookies = headers.getSetCookie();
-    //     console.log('cookies', cookies);
-    //     const data = await response.json();
-    //     console.log('data', data);
-    //     token = data;
-    //     if (data.error) return { message: 'Error signing in' }
-    //     if (data.message === 'user not found' || data.message === 'password does not match') {
-    //         return { message: 'Username or password is incorrect' }
-    //     }
-    // } catch (err) {
-    //     console.error(err);
-    //     return { message: 'Error signing in' }
-    // }
-    // return (
-    //     {
-    //         message: "Signed in successfully",
-    //         token: token
-    //     }
-    // )
 }

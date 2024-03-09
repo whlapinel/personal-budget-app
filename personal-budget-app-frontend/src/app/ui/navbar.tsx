@@ -3,17 +3,22 @@
 import Link from 'next/link'
 import { navigation } from '@/app/navigation'
 import { usePathname } from "next/navigation";
+import { useContext } from 'react';
+import { SessionProvider, useSession } from '../session-context';
 
 export default function NavBar() {
 
-    const path = usePathname();
+    const { user, setUser } = useSession();
 
+    const path = usePathname();
+    
     return (
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex h-16 justify-between">
                 <div className="flex">
                     <div className="flex flex-shrink-0 items-center">
                         <span>logo placeholder</span>
+                        <span>User: {user? user.email : "Please Sign In"}</span>
                     </div>
                     <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
                         {navigation.map((item) => {

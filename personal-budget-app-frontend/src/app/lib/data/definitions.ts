@@ -1,4 +1,14 @@
+import { Dispatch } from "react";
+import { SetStateAction } from "react";
 
+
+
+export type SessionContextType = {
+    user: User | null;
+    setUser: Dispatch<SetStateAction<User | null>>;
+  }
+  
+  
 
 export type User = {
     id: string,
@@ -6,6 +16,7 @@ export type User = {
     firstName: string,
     lastName: string,
     email: string,
+    expiration?: number | null
 }
 
 export type BudgetCategory = {

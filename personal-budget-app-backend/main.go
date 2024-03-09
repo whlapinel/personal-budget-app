@@ -6,7 +6,6 @@ package main
 import (
 	"fmt"
 	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -30,7 +29,7 @@ func main() {
 	router.GET("/categories", getCategories)
 	router.POST("/users", postUser)
 	router.POST("/signin", authenticateUser)
-	router.POST("/categories", handlePostCategory)
+	router.POST("/categories", postCategory)
 	router.GET("/transactions", getTransactions)
 	router.Run("localhost:8080")
 }
@@ -80,51 +79,10 @@ func authenticateUser(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "password does not match"})
 		return
 	}
-	// now instead of sending a token, we'll just send "success"
-
-	// // create token
-	// expirationTime := time.Now().Add(5 * time.Minute)
-	// claims := &Claims{
-	// 	Email: creds.Email,
-	// 	RegisteredClaims: jwt.RegisteredClaims{
-	// 		ExpiresAt: jwt.NewNumericDate(expirationTime),
-	// 	},
-	// }
-	// token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	// //FIXME should be read from env
-	// tokenString, err := token.SignedString([]byte("secret"))
-	// if err != nil {
-	// 	c.JSON(http.StatusInternalServerError, gin.H{"message": "error creating token"})
-	// 	return
-	// }
-	// return token
-	// c.SetCookie("token", tokenString, 3600, "", "", false, false)
-	// read the cookie that was just set
 	c.JSON(http.StatusOK, gin.H{"message": "success"})
 }
 
-func handlePostCategory(c *gin.Context) {
-	// authenticate
-	var token string
-	if token = c.GetHeader("Authorization"); token == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "no token"})
-		return
-	}
-	fmt.Println("token", token)
-	// validate token
-	claims := &Claims{}
-	tkn, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
-		return []byte("secret"), nil
-	})
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "invalid token"})
-		return
-	}
-	if !tkn.Valid {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "invalid token"})
-		return
-	}
-	// create category
+func postCategory(c *gin.Context) {
 	var newCategory Category
 	if err := c.BindJSON(&newCategory); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -152,7 +110,7 @@ func postUser(c *gin.Context) {
 }
 
 func getUserByEmail(c *gin.Context) {
-	email := c.Param("email")
+	email := c.Param("email");
 	fmt.Println(email)
 	db := initializeDB()
 	defer db.Close()

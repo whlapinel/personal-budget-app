@@ -1,17 +1,10 @@
 'use server'
-import { backendUrls } from '@/app/constants/backend-urls'
-import { redirect } from 'next/navigation';
 import { postUser } from '@/app/lib/data/post-data';
-import { User } from '@/app/lib/data/definitions';
 import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import { NextRequest, NextResponse } from "next/server";
-import { KeyLike } from 'crypto';
 import { key } from '@/app/lib/data/auth'
-import bcrypt from "bcrypt";
 
 export default async function signUpAction(prevState: any, formData: FormData) {
-
 
     console.log('formData', formData)
     const user: any = {
@@ -25,7 +18,7 @@ export default async function signUpAction(prevState: any, formData: FormData) {
         return await new SignJWT(payload)
             .setProtectedHeader({ alg: "HS256" })
             .setIssuedAt()
-            .setExpirationTime("20 sec from now")
+            .setExpirationTime("1 minute from now")
             .sign(key);
     }
 
@@ -43,6 +36,9 @@ export default async function signUpAction(prevState: any, formData: FormData) {
     user.password = hash;
     try {
         const data = await postUser(user);
+        if (data.error) {
+            return { message: data.error }
+        }
     } catch (error) {
         console.error('Error creating user', error);
         return { message: 'Error creating user' }

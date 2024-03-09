@@ -1,7 +1,17 @@
+## 3/9/24
+
+- implement session management
+- 1 minute token expiration with warning at 20 seconds left
+- still need to add ability for user to refresh token ("remain signed in")
+- still need to verify that user does not have dashboard access without a token (stored in cookie)
+- need to somehow register "activity" so that token will be refreshed after 40 seconds of inactivity
+- need to implement automatic refresh of token when 30 seconds remain and user is active 
+
 ## 3/3/24
 
 - implement basic signup and signin functionality (email and password)
 - implement JWT auth and session management
+- sessions stored in cookies
 - storing encrypted passwords in db
 - removed "username"
 
@@ -14,7 +24,6 @@
 ## 2/27/24
 
 - removed parallel routes in dashboard and 'views' variable, changed each view to regular route segments
-
 
 ## 2/25/24
 

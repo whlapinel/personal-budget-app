@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google'
 import { twMerge } from 'tailwind-merge'
 import './globals.css'
 import NavBar from './ui/navbar'
+import { SessionProvider } from './session-context'
 
 
 const inter = Inter({ subsets: ['latin'] })
@@ -18,16 +19,20 @@ export default function RootLayout({
 }: {
   children: React.ReactNode
 }) {
+
   return (
-      <html lang="en" className='h-full'>
-        <body className={twMerge(inter.className, 'h-full')}>
+
+    <html lang="en" className='h-full'>
+      <body className={twMerge(inter.className, 'h-full')}>
+        <SessionProvider>
           <div className="min-h-full">
             <NavBar />
             <main className={'py-2 px-2'}>
               {children}
             </main>
           </div>
-        </body>
-      </html>
+        </SessionProvider>
+      </body>
+    </html >
   )
 }

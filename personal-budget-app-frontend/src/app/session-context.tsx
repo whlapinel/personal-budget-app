@@ -3,6 +3,7 @@
 // context/SessionContext.js
 import { createContext, useContext, useState, useEffect } from 'react';
 import { SessionContextType, User } from '@/app/lib/data/definitions';
+import useUserActivity from '@/app/lib/use-user-activity';
 
 
 let SessionContext = createContext<SessionContextType>({
@@ -14,6 +15,18 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [alertShown, setAlertShown] = useState<boolean>(false);
+  
+  function signOut() {
+    alert('You have been logged out.');
+    setTimeLeft(null)
+    setAlertShown(false)
+    setUser(null)
+  }
+
+  useUserActivity(() => {
+    console.log('User is inactive');
+  });
+
 
   useEffect(() => {
     if (timeLeft) {

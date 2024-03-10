@@ -4,28 +4,39 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { SessionContextType, User } from '@/app/lib/data/definitions';
 import useUserActivity from '@/app/lib/use-user-activity';
+import { updateSession } from './lib/data/auth';
 
 
 let SessionContext = createContext<SessionContextType>({
   user: null,
-  setUser: () => { } // default value for setUser
+  setUser: () => { }, // default value for setUser
+  isActive: false
 });
 
 export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [alertShown, setAlertShown] = useState<boolean>(false);
-  
+  const [isActive, setIsActive] = useState<boolean>(false);
+
   function signOut() {
     alert('You have been logged out.');
+    setIsActive(false);
     setTimeLeft(null)
     setAlertShown(false)
     setUser(null)
   }
 
-  useUserActivity(() => {
+  function onInactive() {
     console.log('User is inactive');
-  });
+  }
+
+  async function refreshToken() {
+    console.log('refreshing token');
+    const didUpdate = await updateSession();
+    if (didUpdate) { console.log('token refreshed') }
+    else { console.log('token not refreshed')}      
+  }
 
 
   useEffect(() => {
@@ -34,19 +45,61 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       if ((timeLeft < 20) && (!alertShown)) {
         console.log('timeLeft: ', timeLeft);
         console.log('timeLeft < 20');
-        alert('Your session will expire in 20 seconds');
+        const response = confirm('Your session will expire in 20 seconds. Do you want to remain signed in?');
+        if (response) {
+          console.log('User wants to remain signed in');
+          // send request to server to extend session
+          // if successful, set new expiration time
+          // if not successful, sign out
+        } else {
+          signOut();
+        }
         setAlertShown(true);
       }
-      if (timeLeft < 0) {
-        alert('You have been logged out.');
-        setTimeLeft(null)
-        setAlertShown(false)
-        setUser(null)
+      if ((timeLeft < 0) && (!isActive)) {
+        signOut();
+      }
+      if ((timeLeft < 10) && (isActive)) {
+        // refresh token
+        refreshToken();
+  
       }
     }
   }, [timeLeft])
 
   useEffect(() => { console.log("user: ", user) }, [user])
+
+  console.log("useUserActivity called");
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    function resetTimeout() {
+      console.log("user active, resetting timeout");
+      setIsActive(true);
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        onInactive(); // Trigger the callback when the user is inactive
+      }, 40000); // 40 seconds of inactivity
+    };
+
+    // Define user activities to monitor
+    const events = ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+
+    events.forEach(event => {
+      console.log("adding event listener: " + event);
+      window.addEventListener(event, resetTimeout);
+    });
+
+    resetTimeout(); // Initialize the activity check
+
+    return () => {
+      clearTimeout(timeoutId); // Clean up on component unmount
+      events.forEach(event => {
+        window.removeEventListener(event, resetTimeout);
+      });
+    };
+  }, [onInactive]);
+
 
   useEffect(() => {
     // check every second
@@ -65,14 +118,12 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
 
         console.log('SessionProvider setInterval running! user:', user);
       }
-
-      // if user is active and 20 seconds remain before expiration, alert user
     }, 1000);
     return () => clearInterval(interval);
   }, [user]);
 
   return (
-    <SessionContext.Provider value={{ user, setUser }}>
+    <SessionContext.Provider value={{ user, setUser, isActive }}>
       {children}
     </SessionContext.Provider>
   );

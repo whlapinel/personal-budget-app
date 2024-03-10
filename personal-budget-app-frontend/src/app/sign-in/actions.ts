@@ -7,6 +7,8 @@ import { SignJWT } from 'jose'
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt'
 import { useSession } from '../session-context';
+import { getEncryptedPassword } from '@/app/lib/data/auth';
+import { encrypt } from '@/app/lib/data/auth';
 
 dotenv.config()
 
@@ -34,36 +36,10 @@ export async function signInAction(prevState: any, formData: FormData): Promise<
         return { message: 'Error signing in', user: { email: '', id: '', password: '', firstName: '', lastName: '', expiration: 0 }}
     }
 
-    async function getEncryptedPassword(email: string): Promise<string> {
-        let encryptedPassword: string;
-        try {
-            const response = await fetch(`${backendUrls.users}/${user.email}`, {
-                headers: {
-                    'API_KEY': process.env.API_KEY!
-                },
-                cache: 'no-store',
-            });
-            const data = await response.json();
-            console.log('data', data);
-            encryptedPassword = data.password;
-        } catch (err) {
-            console.error(err);
-            return '';
-        }
-        return encryptedPassword;
+
     }
 
-    const expiration: Date = new Date(Date.now() + 60 * 1000);
-
-    async function encrypt(payload: any) {
-        return await new SignJWT(payload)
-            .setProtectedHeader({ alg: "HS256" })
-            .setIssuedAt()
-            .setExpirationTime(expiration)
-            .sign(key);
-    }
-
-    const session = await encrypt({ user, expires: expiration });
+    const session = await encrypt({ user, expires: expiration }: {user: User, expires: number} );
 
     // Save the session in a cookie
     cookies().set("session", session, { expires: expiration, httpOnly: true });

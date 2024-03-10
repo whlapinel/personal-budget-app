@@ -6,6 +6,7 @@ import { SetStateAction } from "react";
 export type SessionContextType = {
     user: User | null;
     setUser: Dispatch<SetStateAction<User | null>>;
+    isActive: boolean;
   }
   
   

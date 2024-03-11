@@ -3,7 +3,6 @@
 // context/SessionContext.js
 import { createContext, useContext, useState, useEffect } from 'react';
 import { SessionContextType, User } from '@/app/lib/data/definitions';
-import useUserActivity from '@/app/lib/use-user-activity';
 
 
 let SessionContext = createContext<SessionContextType>({
@@ -25,20 +24,26 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     setUser(null)
   }
   
-  function onInactive(){
-    console.log('User is inactive');
-    setIsActive(false)
-  }
+  async function onInactive(){
 
+  }
+  
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
 
     function resetTimeout() {
+
       console.log("user active, resetting timeout");
       setIsActive(true)
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
-        onInactive(); // Trigger the callback when the user is inactive
+        if (!confirm('You will be logged out in 20 seconds due to inactivity. Do you wish to remain signed in?')) {
+          console.log('User is inactive');
+          setIsActive(false)
+        } else {
+          console.log('user chose to remain signed in. Refreshing token...')
+          // call refresh token action
+        }
       }, 40000); // 40 seconds of inactivity
     };
 
@@ -58,7 +63,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         window.removeEventListener(event, resetTimeout);
       });
     };
-  }, [onInactive]);
+  }, [user?.expiration]);
 
 
 
@@ -76,10 +81,9 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       }
       if (timeLeft < 10 && isActive) {
         console.log('User is active and 10 seconds remain. Refreshing token...')
-        
       }
     }
-  }, [timeLeft])
+  }, [user?.expiration])
 
   useEffect(() => { console.log("user: ", user) }, [user])
 

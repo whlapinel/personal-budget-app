@@ -15,17 +15,51 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [timeLeft, setTimeLeft] = useState<number | null>(null);
   const [alertShown, setAlertShown] = useState<boolean>(false);
+  const [isActive, setIsActive] = useState(false);
   
   function signOut() {
     alert('You have been logged out.');
     setTimeLeft(null)
+    setIsActive(false)
     setAlertShown(false)
     setUser(null)
   }
-
-  useUserActivity(() => {
+  
+  function onInactive(){
     console.log('User is inactive');
-  });
+    setIsActive(false)
+  }
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    function resetTimeout() {
+      console.log("user active, resetting timeout");
+      setIsActive(true)
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(() => {
+        onInactive(); // Trigger the callback when the user is inactive
+      }, 40000); // 40 seconds of inactivity
+    };
+
+    // Define user activities to monitor
+    const events = ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+
+    events.forEach(event => {
+      console.log("adding event listener: " + event); 
+      window.addEventListener(event, resetTimeout);
+    });
+
+    resetTimeout(); // Initialize the activity check
+
+    return () => {
+      clearTimeout(timeoutId); // Clean up on component unmount
+      events.forEach(event => {
+        window.removeEventListener(event, resetTimeout);
+      });
+    };
+  }, [onInactive]);
+
 
 
   useEffect(() => {
@@ -38,10 +72,11 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         setAlertShown(true);
       }
       if (timeLeft < 0) {
-        alert('You have been logged out.');
-        setTimeLeft(null)
-        setAlertShown(false)
-        setUser(null)
+        signOut()
+      }
+      if (timeLeft < 10 && isActive) {
+        console.log('User is active and 10 seconds remain. Refreshing token...')
+        
       }
     }
   }, [timeLeft])

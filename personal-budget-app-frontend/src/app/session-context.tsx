@@ -37,7 +37,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
       }, 20000)
     } else {
       console.log('user chose to remain signed in. Refreshing token...')
-      refreshToken();
+      refreshSession();
       // call refresh token action
     }
   }
@@ -72,7 +72,15 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     };
   }, [user?.expiration]);
 
+  async function refreshSession() {
+    const newSession = await refreshToken();
+    const newExpiration: number = newSession?.expires;
+    console.log('newExpiration:', newExpiration);
+    setUser({ ...user!, expiration: newExpiration });
+  }
+  
   useEffect(() => {
+
     // check every second
     const interval = setInterval(() => {
       if (user) {
@@ -84,7 +92,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
         }
         if (secondsLeft < 10 && isActive) {
           console.log('User is active and 10 seconds remain. Refreshing token...')
-          refreshToken();
+          refreshSession();
         }
       }
       // if user is active and 20 seconds remain before expiration, alert user

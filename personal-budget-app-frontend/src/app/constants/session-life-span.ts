@@ -1,0 +1,1 @@
+export const sessionLifeSpan = 60000;

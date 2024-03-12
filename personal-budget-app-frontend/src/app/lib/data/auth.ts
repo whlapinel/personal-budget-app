@@ -12,6 +12,7 @@ function getExpiration() {
 }
 
 export async function encrypt(payload: any) {
+  console.log("encrypt() running")
   const expires = getExpiration();
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
@@ -21,6 +22,7 @@ export async function encrypt(payload: any) {
 }
 
 export async function decrypt(input: string): Promise<any> {
+  console.log("decrypt() running")
   const { payload } = await jwtVerify(input, key, {
     algorithms: ["HS256"],
   });
@@ -30,16 +32,21 @@ export async function decrypt(input: string): Promise<any> {
 }
 
 export async function getToken() {
+  console.log("getToken() running")
   const token = cookies().get("session")?.value;
   if (!token) return null;
   return await decrypt(token);
 }
 
 export async function refreshToken() {
+  console.log("refreshToken() running")
   const token = cookies().get("session")?.value
   if (!token) return;
   // Refresh the session so it doesn't expire
   const parsed = await decrypt(token);
   parsed.expires = getExpiration();
   const newToken = await encrypt(parsed);
+  const newInfo = { expires: parsed.expires, httpOnly: true }
+  cookies().set("session", newToken, { expires: parsed.expires, httpOnly: true });
+  return newInfo;
 }

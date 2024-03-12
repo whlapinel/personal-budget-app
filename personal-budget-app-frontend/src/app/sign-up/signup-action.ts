@@ -2,7 +2,8 @@
 
 import { postUser } from '@/app/lib/data/post-data';
 import { cookies } from "next/headers";
-import {encrypt} from '@/app/lib/data/auth'
+import { encrypt } from '@/app/lib/data/auth'
+import { sessionLifeSpan } from '@/app/constants/session-life-span';
 
 export default async function signUpAction(prevState: any, formData: FormData) {
 
@@ -15,7 +16,7 @@ export default async function signUpAction(prevState: any, formData: FormData) {
     }
 
     // Create the session
-    const expires = new Date(Date.now() + 10 * 1000);
+    const expires = Date.now() + sessionLifeSpan;
     const session = await encrypt({ user, expires });
 
     // Save the session in a cookie
@@ -36,6 +37,12 @@ export default async function signUpAction(prevState: any, formData: FormData) {
         return { message: 'Error creating user' }
     }
     return (
-        { message: 'User created' }
+        {
+            message: 'User created',
+            user: {
+                ...user,
+                expires: expires
+            }
+        }
     )
 }

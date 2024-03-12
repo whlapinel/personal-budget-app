@@ -1,8 +1,8 @@
 'use server'
+
 import { postUser } from '@/app/lib/data/post-data';
-import { SignJWT, jwtVerify } from "jose";
 import { cookies } from "next/headers";
-import { key } from '@/app/lib/data/auth'
+import {encrypt} from '@/app/lib/data/auth'
 
 export default async function signUpAction(prevState: any, formData: FormData) {
 
@@ -12,14 +12,6 @@ export default async function signUpAction(prevState: any, formData: FormData) {
         password: formData.get('password'),
         firstName: formData.get('firstName'),
         lastName: formData.get('lastName'),
-    }
-
-    async function encrypt(payload: any) {
-        return await new SignJWT(payload)
-            .setProtectedHeader({ alg: "HS256" })
-            .setIssuedAt()
-            .setExpirationTime("1 minute from now")
-            .sign(key);
     }
 
     // Create the session

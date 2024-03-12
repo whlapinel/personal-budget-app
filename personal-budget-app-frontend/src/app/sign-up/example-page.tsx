@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
-import { getSession, signin, signOut } from "@/app/lib/data/auth";
+import { getToken, signin, signOut } from "@/app/lib/data/auth";
 
 export default async function Page() {
-  const session = await getSession();
+  const session = await getToken();
   return (
     <section>
       <form

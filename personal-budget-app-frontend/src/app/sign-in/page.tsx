@@ -6,19 +6,10 @@ import {signInAction} from "./actions";
 import { useFormState } from "react-dom";
 import { useEffect } from "react";
 import { useSession } from "../session-context";
-import { User } from "../lib/data/definitions";
-import { Dispatch, SetStateAction } from "react";
 
 const initialState = {
   message: '',
-  user: { 
-    email: '', 
-    id: '', 
-    password: '', 
-    firstName: '', 
-    lastName: '', 
-    expiration: null 
-  }
+  user: null
 }
 
 export default function SignInPage() {
@@ -27,11 +18,9 @@ export default function SignInPage() {
   const { user, setUser } = useSession();
 
   useEffect(() => {
-    console.log("SignInPage useEffect running! expires:", state.user.expiration);
+    console.log("SignInPage useEffect running! expires:", state.user?.expiration);
     setUser(state.user);
     console.log("user: ", user);
-    
-    
   }, [state])
 
   return (
@@ -48,7 +37,7 @@ export default function SignInPage() {
         </div>
         <SubmitButton>Sign In</SubmitButton>
         <p>{state.message}</p>
-        <p>{state.user.expiration}</p>
+        <p>{"token expires in " + Math.round((user?.expiration! - Date.now())/1000) + " seconds."}</p>
       </form>
     </div>
 

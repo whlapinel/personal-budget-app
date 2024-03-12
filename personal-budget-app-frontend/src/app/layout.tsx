@@ -5,8 +5,6 @@ import { twMerge } from 'tailwind-merge'
 import './globals.css'
 import NavBar from './ui/navbar'
 import { SessionProvider } from './session-context'
-import UserInactive from './user-inactive'
-
 
 const inter = Inter({ subsets: ['latin'] })
 

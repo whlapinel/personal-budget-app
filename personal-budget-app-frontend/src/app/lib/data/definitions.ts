@@ -17,7 +17,7 @@ export type User = {
     lastName: string,
     email: string,
     expiration?: number | null
-}
+} | null
 
 export type BudgetCategory = {
     id?: string,  // nanoid

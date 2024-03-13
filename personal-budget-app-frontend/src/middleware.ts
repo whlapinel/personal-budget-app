@@ -10,13 +10,10 @@ import { getToken, refreshToken } from "@/app/lib/data/auth";
 export async function middleware(request: NextRequest) {
   console.log('running middleware');
   const session = await getToken();
-  if (!session) {
-    return NextResponse.redirect(new URL('/sign-in', request.url));
+  if (!session || session.expires < new Date()) {
+    return NextResponse.redirect(new URL('/not-authorized', request.url));
   }
-  if (session.expires < new Date()) {
-    return NextResponse.redirect(new URL('/sign-in', request.url));
-  }
-  return await refreshToken();
+  return NextResponse.next();
 }
 
 export const config = {

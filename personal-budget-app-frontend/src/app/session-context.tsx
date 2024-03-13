@@ -28,83 +28,73 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     setUser(null)
   }
 
-  function onInactive(){
+  function onInactive() {
     setIsActive(false)
     console.log('User is inactive');
-    if (!confirm('You will be logged out in 20 seconds due to inactivity. Do you wish to remain signed in?')) {
-      setTimeout(()=> {
-        signOut();
-      }, 20000)
-    } else {
-      console.log('user chose to remain signed in. Refreshing token...')
-      refreshSession();
-      // call refresh token action
-    }
+    alert('You will be logged out in 20 seconds due to inactivity.')
   }
 
 
-  useEffect(() => {
-    let timeoutId: NodeJS.Timeout;
-    function resetTimeout() {
-      console.log("user active, resetting timeout");
-      setIsActive(true)
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        onInactive();
-      }, 40000); // 40 seconds of inactivity
-    };
+useEffect(() => {
+  let timeoutId: NodeJS.Timeout;
+  function resetTimeout() {
+    console.log("user active, resetting timeout");
+    setIsActive(true)
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => {
+      onInactive();
+    }, 40000); // 40 seconds of inactivity
+  };
 
-    // Define user activities to monitor
-    const events = ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+  // Define user activities to monitor
+  const events = ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'];
 
+  events.forEach(event => {
+    console.log("adding event listener: " + event);
+    window.addEventListener(event, resetTimeout);
+  });
+
+  resetTimeout(); // Initialize the activity check
+
+  return () => {
+    clearTimeout(timeoutId); // Clean up on component unmount
     events.forEach(event => {
-      console.log("adding event listener: " + event);
-      window.addEventListener(event, resetTimeout);
+      window.removeEventListener(event, resetTimeout);
     });
+  };
+}, [user?.expiration]);
 
-    resetTimeout(); // Initialize the activity check
+async function refreshSession() {
+  const newSession = await refreshToken();
+  const newExpiration: number = newSession?.expires;
+  console.log('newExpiration:', newExpiration);
+  setUser({ ...user!, expiration: newExpiration });
+}
 
-    return () => {
-      clearTimeout(timeoutId); // Clean up on component unmount
-      events.forEach(event => {
-        window.removeEventListener(event, resetTimeout);
-      });
-    };
-  }, [user?.expiration]);
-
-  async function refreshSession() {
-    const newSession = await refreshToken();
-    const newExpiration: number = newSession?.expires;
-    console.log('newExpiration:', newExpiration);
-    setUser({ ...user!, expiration: newExpiration });
-  }
-  
-  useEffect(() => {
-
-    // check every second
-    const interval = setInterval(() => {
-      if (user) {
-        const secondsLeft = getSecondsLeft();
-        console.log('SessionProvider setInterval running! user:', user);
-        console.log('Seconds left: ' + secondsLeft);
-        if (secondsLeft <= 0) {
-          signOut()
-        }
-        if (secondsLeft < 10 && isActive) {
-          console.log('User is active and 10 seconds remain. Refreshing token...')
-          refreshSession();
-        }
+useEffect(() => {
+  const interval = setInterval(() => {
+    if (user) {
+      const secondsLeft = getSecondsLeft();
+      console.log('SessionProvider setInterval running! user:', user);
+      console.log('Seconds left: ' + secondsLeft);
+      if (secondsLeft <= 0) {
+        signOut()
       }
-      // if user is active and 20 seconds remain before expiration, alert user
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [user]);
+      if (secondsLeft < 10 && isActive) {
+        console.log('User is active and 10 seconds remain. Refreshing token...')
+        refreshSession();
+      }
+    }
+    // if user is active and 20 seconds remain before expiration, alert user
+  }, 1000);
+  return () => clearInterval(interval);
+}, [user]);
 
-  return (
-    <SessionContext.Provider value={{ user, setUser }}>
-      {children}
-    </SessionContext.Provider>
-  );
+return (
+  <SessionContext.Provider value={{ user, setUser }}>
+    {children}
+  </SessionContext.Provider>
+);
 }
 
 export function useSession() {

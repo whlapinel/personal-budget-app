@@ -5,7 +5,6 @@ import (
 )
 
 type User struct {
-    ID           int        `json:"id"`
     Email        string     `json:"email"`
     Password     string     `json:"password"`
     FirstName    string     `json:"firstName"`
@@ -35,7 +34,7 @@ func (u *User) update() error {
 }
 
 func (u *User) delete() error {
-	id := u.ID
+	id := u.Email
 	db := initializeDB()
 	defer db.Close()
 	_, err := db.Exec("DELETE FROM users WHERE id = ?", id)

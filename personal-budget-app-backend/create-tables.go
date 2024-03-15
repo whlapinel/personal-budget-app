@@ -2,23 +2,20 @@ package main
 
 import (
 	"database/sql"
-	"log"
 )
 
 func createUserTable(db *sql.DB) (sql.Result, error) {
 
 	query :=
 		`CREATE TABLE users (
-			id int AUTO_INCREMENT PRIMARY KEY, 
+			email VARCHAR(100) PRIMARY KEY,
 			first_name VARCHAR(100) NOT NULL, 
 			last_name VARCHAR(100) NOT NULL,
-			password VARCHAR(100) NOT NULL,
-			email VARCHAR(100) NOT NULL,
-			CONSTRAINT unique_email UNIQUE (email)
+			password VARCHAR(100) NOT NULL
 			);`
 	result, err := db.Exec(query)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	return result, nil
 }
@@ -28,17 +25,13 @@ func createCategoryTable(db *sql.DB) (sql.Result, error) {
 	query :=
 		`CREATE TABLE categories (		
 			id int AUTO_INCREMENT PRIMARY KEY,
-			user_id int,
+			email VARCHAR(100),
 			name VARCHAR(100),
-			needed DECIMAL(10,2),
-			assigned DECIMAL(10,2),
-			spent DECIMAL(10,2),
-			available DECIMAL(10,2)
-			)`
+			FOREIGN KEY (email) REFERENCES users(email)
+			);`
 	result, err := db.Exec(query)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
-
 	return result, nil
 }

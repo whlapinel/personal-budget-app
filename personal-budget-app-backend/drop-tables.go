@@ -2,15 +2,14 @@ package main
 
 import (
 	"database/sql"
-	"log"
 )
 
 func dropTables(db *sql.DB) (sql.Result, error) {
 	query :=
-		`DROP TABLE if exists users, categories`
+		`DROP TABLE if exists categories, users`
 	result, err := db.Exec(query)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	return result, err
 }

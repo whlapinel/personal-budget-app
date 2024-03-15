@@ -6,8 +6,8 @@ package main
 import (
 	"fmt"
 	"net/http"
+
 	"github.com/gin-gonic/gin"
-	"github.com/golang-jwt/jwt/v5"
 )
 
 func main() {
@@ -15,20 +15,34 @@ func main() {
 	fmt.Println("db initialized")
 	defer db.Close()
 	// for development only
-	dropTables(db)
-	fmt.Println("tables dropped")
-	createUserTable(db)
-	fmt.Println("user table created")
-	createCategoryTable(db)
-	fmt.Println("category table created")
+	result, err := dropTables(db)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(result)
+		fmt.Println("tables dropped")
+	}
+	result, err = createUserTable(db)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(result)
+		fmt.Println("user table created")
+	}
+	result, err = createCategoryTable(db)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(result)
+		fmt.Println("category table created")
+	}
 	// API
 	router := gin.Default()
 	router.Use(authenticateBFF)
 	router.GET("/hello", sayHello)
 	router.GET("/users/:email", getUserByEmail)
-	router.GET("/categories", getCategories)
 	router.POST("/users", postUser)
-	router.POST("/signin", authenticateUser)
+	router.GET("/categories/:email", getCategoriesByEmail)
 	router.POST("/categories", postCategory)
 	router.GET("/transactions", getTransactions)
 	router.Run("localhost:8080")
@@ -59,36 +73,16 @@ func getTransactions(c *gin.Context) {
 
 }
 
-func authenticateUser(c *gin.Context) {
-	var creds Credentials
-	if err := c.BindJSON(&creds); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-	fmt.Println("creds", creds)
-	db := initializeDB()
-	defer db.Close()
-	rows := db.QueryRow("SELECT password FROM users WHERE email = ?", creds.Email)
-	var password string
-	err := rows.Scan(&password)
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"message": "user not found"})
-		return
-	}
-	if password != creds.Password {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "password does not match"})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "success"})
-}
-
 func postCategory(c *gin.Context) {
 	var newCategory Category
 	if err := c.BindJSON(&newCategory); err != nil {
+		fmt.Println("error in c.BindJSON(&newCategory): ")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	fmt.Println("newCategory: ", newCategory)
 	if err := newCategory.create(); err != nil {
+		fmt.Println("error in newCategory.create(): ")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
@@ -110,13 +104,13 @@ func postUser(c *gin.Context) {
 }
 
 func getUserByEmail(c *gin.Context) {
-	email := c.Param("email");
+	email := c.Param("email")
 	fmt.Println(email)
 	db := initializeDB()
 	defer db.Close()
 	fmt.Println("db initialized")
 	var user User
-	err := db.QueryRow("SELECT * FROM users WHERE email = ?", email).Scan(&user.ID, &user.FirstName, &user.LastName, &user.Password, &user.Email)
+	err := db.QueryRow("SELECT * FROM users WHERE email = ?", email).Scan(&user.Email, &user.FirstName, &user.LastName, &user.Password)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"message": "user not found"})
 		return
@@ -124,40 +118,25 @@ func getUserByEmail(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-func getCategories(c *gin.Context) {
-	// authenticate
-	var token string
-	if token = c.GetHeader("Authorization"); token == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "no token"})
-		return
-	}
-	fmt.Println("token", token)
-	// validate token
-	claims := &Claims{}
-	tkn, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
-		return []byte("secret"), nil
-	})
-	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "invalid token"})
-		return
-	}
-	if !tkn.Valid {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "invalid token"})
-		return
-	}
+func getCategoriesByEmail(c *gin.Context) {
+	var category Category
+	fmt.Println("running getCategoriesByEmail")
 	// get categories
+	email := c.Param("email")
+	fmt.Println("email: ", email)
 	db := initializeDB()
 	defer db.Close()
-	rows, err := db.Query("SELECT * FROM categories WHERE email = ?", claims.Email)
+	rows, err := db.Query("SELECT * FROM categories WHERE email = ?", email)
 	if err != nil {
+		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting categories"})
 		return
 	}
 	var categories []Category
-	var category Category
 	for rows.Next() {
-		err := rows.Scan(&category.ID, &category.UserID, &category.Name)
+		err := rows.Scan(&category.ID, &category.Email, &category.Name)
 		if err != nil {
+			fmt.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting categories"})
 			return
 		} else {

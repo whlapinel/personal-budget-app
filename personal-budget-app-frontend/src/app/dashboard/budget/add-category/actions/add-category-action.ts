@@ -2,23 +2,25 @@
 
 import { backendUrls } from '@/app/constants/backend-urls'
 import { redirect } from 'next/navigation';
-import { postCategory } from '@/app/lib/data/post-data';
+import {cookies} from 'next/headers';
+import type {Category} from '@/app/lib/data/definitions'
 
 export default async function addCategoryAction(prevState: any, formData: FormData) {
+    const API_KEY: string = process.env.API_KEY!;
     console.log('formData', formData)
     console.log('prevState', prevState)
 
-    const category: any = {
-        name: formData.get('name'),
+    const category: Partial<Category> = {
+        name: formData.get('name')!.toString(),
+        email: cookies().get('email')!.value
     }
-    const token = formData.get('token');
 
     console.log('stringified category', JSON.stringify(category));
 
 
     const response = await fetch(backendUrls.categories, {
         headers: {
-            'Authorization': `${token}`
+            'API_KEY': API_KEY,
         },
         cache: 'no-store',
         method: 'POST',
@@ -28,9 +30,6 @@ export default async function addCategoryAction(prevState: any, formData: FormDa
     console.log('data', data);
     if (data.error) {
         return { message: 'Category not created' }
-    }
-    if (data.message === 'no token' || data.message === 'invalid token') {
-        return { message: 'Please sign in again.' }
     }
     return (
         {

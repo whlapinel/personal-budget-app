@@ -1,20 +1,21 @@
 
 import Card from "@/app/ui/card"
 import { Link } from "@/app/ui/link";
-import { Dialog } from "@/app/ui/dialog";
-import { getUser, getCategories } from "@/app/lib/data/get-data";
-import { BudgetCategory } from "@/app/lib/data/definitions";
+import { getCategories } from "@/app/lib/data/get-data";
+import { Category } from "@/app/lib/data/definitions";
+import { cookies } from "next/headers";
 
 export default async function BudgetPage() {
 
-  const userID = 1;
   const today = new Date();
   const month = today.toLocaleString('default', { month: 'long' });
 
-  let categories: BudgetCategory[] = [];
-
+  let categories: Category[] = [];
+  const email = cookies().get('email')?.value!;
+  console.log("BudgetPage() email: ", email);
+ 
   try {
-    categories = await getCategories();
+    categories = await getCategories(email);
     console.log(categories);
   } catch (err) {
     console.error(err);

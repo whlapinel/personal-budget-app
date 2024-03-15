@@ -19,7 +19,7 @@ export default function SignInPage() {
 
   useEffect(() => {
     console.log("SignInPage useEffect running! expires:", state.user?.expiration);
-    setUser(state.user);
+    setUser(state.user!);
     console.log("user: ", user);
   }, [state])
 

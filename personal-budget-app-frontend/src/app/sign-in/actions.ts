@@ -47,10 +47,10 @@ export async function signInAction(prevState: any, formData: FormData): Promise<
                 },
                 cache: 'no-store',
             });
-            if (response.status === 404) {
+            const data = await response.json();
+            if (data.status === 404) {
                 return new Error('User not found');
             }
-            const data = await response.json();
             console.log('data', data);
             encryptedPassword = data.password;
         } catch (err) {

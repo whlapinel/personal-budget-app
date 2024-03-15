@@ -1,4 +1,3 @@
-import Session from "../countdown-timer";
 
 export default function DashboardPage() {
   return (

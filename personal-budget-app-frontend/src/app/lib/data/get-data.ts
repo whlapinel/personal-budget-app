@@ -1,22 +1,21 @@
 import { revalidatePath } from "next/cache";
 // import all definitions
-import { User, Account, Transaction, BudgetCategory } from './definitions';
+import { User, Account, Transaction, Category } from './definitions';
 import { backendUrls } from "@/app/constants/backend-urls";
 
-export async function getUser(userID: string): Promise<User> {
-    const data = await fetch(`http://127.0.0.1:8080/users/${userID}`, { cache: 'no-store' });
+const API_KEY: string = process.env.API_KEY!;
+export async function getUser(email: string): Promise<User> {
+    const data = await fetch(`${backendUrls.users}/${email}`, { cache: 'no-store' });
     const users = await data.json();
     console.log(users);
     return users
 }
 
-
-
-export async function getAccounts(userID: string): Promise<Account[]> {
-    const data = await fetch(`${backendUrls.accounts}/${userID}`, {
+export async function getAccounts(email: string): Promise<Account[]> {
+    const data = await fetch(`${backendUrls.accounts}/${email}`, {
         cache: 'no-store',
         headers: {
-            'Authorization': ``
+            'API_KEY': API_KEY
         }
     });
     const accounts = await data.json();
@@ -24,12 +23,12 @@ export async function getAccounts(userID: string): Promise<Account[]> {
     return accounts
 }
 
-export async function getTransactions(userID: string): Promise<Transaction[]> {
+export async function getTransactions(email: string): Promise<Transaction[]> {
     try {
-        const data = await fetch(`${backendUrls.transactions}/${userID}`, {
+        const data = await fetch(`${backendUrls.transactions}/${email}`, {
             cache: 'no-store',
             headers: {
-                'Authorization': ``
+                'API_KEY': API_KEY
             }
         });
         const transactions = await data.json();
@@ -41,12 +40,12 @@ export async function getTransactions(userID: string): Promise<Transaction[]> {
     }
 }
 
-export async function getCategories(): Promise<BudgetCategory[]> {
+export async function getCategories(email: string): Promise<Category[]> {
     try {
-        const data = await fetch(`${backendUrls.categories}`, {
+        const data = await fetch(`${backendUrls.categories}/${email}`, {
             cache: 'no-store',
             headers: {
-                'Authorization': ``
+                'API_KEY': API_KEY
             }
         });
         const categories = await data.json();

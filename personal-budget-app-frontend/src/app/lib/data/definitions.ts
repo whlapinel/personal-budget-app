@@ -19,9 +19,10 @@ export type User = {
     expiration?: number | null
 } | null
 
-export type BudgetCategory = {
+export type Category = {
     id?: string,  // nanoid
     name: string, // e.g. "Groceries"
+    email: string // user email (foreign key)
 }
 
 export type Goal = {
@@ -29,7 +30,7 @@ export type Goal = {
     name: string,
     amount: number,
     targetDate: Date,
-    category: BudgetCategory
+    category: Category
 }
 
 export type Transaction = {
@@ -39,7 +40,7 @@ export type Transaction = {
     payee: string,
     amount: number,
     memo: string,
-    category: BudgetCategory['id'] | Transaction[] // for split transactions?  Not sure
+    category: Category['id'] | Transaction[] // for split transactions?  Not sure
 }
 
 export type Account = {

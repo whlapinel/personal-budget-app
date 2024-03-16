@@ -7,7 +7,7 @@ import { useRouter } from 'next/navigation';
 
 
 export default function SignUpPage() {
-  const [state, formAction] = useFormState(signUpAction, { message: '' })
+  const [state, formAction] = useFormState(signUpAction, { message: null })
 
   console.log(state);
   const router = useRouter();
@@ -16,7 +16,6 @@ export default function SignUpPage() {
       router.push('/dashboard')
     }, 1000)
   }
-
 
   return (
     <div className='flex flex-col items-center'>

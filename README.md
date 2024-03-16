@@ -23,7 +23,7 @@ https://docs.google.com/presentation/d/121C_A62cB5nhCZLu0aTEuNjg54KBki7RySTbAonf
 - [x] MySQL database
 - [x] Auth
 - [x] Auth: Token needs to expire in 1 minute
-- [] Auth: After 40 seconds of inactivity show warning that token will expire in 20 seconds, provide button to reset
+- [x] Auth: After 40 seconds of inactivity show warning that token will expire in 20 seconds, provide button to reset
 - [] Testing: at least 1 Unit Test
 - [] Testing: at least 1 E2E Test
 - [] Testing: at least 1 Visual Regression test with Applitools

@@ -1,24 +1,29 @@
 import Card from "@/app/ui/card"
-import type { Transaction } from '@/app/lib/data/definitions'
-import type { Account } from '@/app/lib/data/definitions'
+import type { Transaction, Account } from '@/app/lib/data/definitions'
 import {Link} from '@/app/ui/link';
 import { getTransactions } from '@/app/lib/data/get-data';
 import { getAccounts } from '@/app/lib/data/get-data';
-import { getToken } from '@/app/lib/data/auth';
+import { cookies } from 'next/headers';
 
-export default async function RegisterPage(searchParams: URLSearchParams) {
-  const session = await getToken();
-  const email = session.user.email;
-  const transactions = await getTransactions(email);
-  const accounts = await getAccounts(email);
+export default async function RegisterPage(searchParams: { filter: string | null }) {
+  const email = cookies().get('email')?.value!;
+  let transactions: Transaction[] = [];
+  let accounts: Account[] = [];
+  try {
+    transactions = await getTransactions(email);
+  } catch (err) {
+    console.log(err);
+  }
+  try {
+    accounts = await getAccounts(email);
+  } catch (err) {
+    console.log(err);
+  }
   const totalBalance = accounts?.reduce((acc, account) => acc + account.balance, 0);
-  const filter = searchParams?.get('filter');
+  const filter = searchParams.filter;
   console.log(filter);
   console.log(transactions);
-  
   let filteredTransactions: Transaction[] = [];
-
-
   if (filter === null || filter === 'all') {
     filteredTransactions = transactions;
   } else {

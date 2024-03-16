@@ -1,3 +1,7 @@
+## 3/14/24
+
+- FIXME: add category not working, somewhere is logging: Error 1054 (42S22): Unknown column 'user_id' in 'field list' DONE
+
 ## 3/9/24
 
 - implement session management

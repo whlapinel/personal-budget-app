@@ -5,7 +5,7 @@ import { backendUrls } from "@/app/constants/backend-urls";
 
 const API_KEY: string = process.env.API_KEY!;
 export async function getUser(email: string): Promise<User> {
-    const data = await fetch(`${backendUrls.users}/${email}`, { cache: 'no-store' });
+    const data = await fetch(`${backendUrls.users}/${email}`);
     const users = await data.json();
     console.log(users);
     return users
@@ -13,7 +13,6 @@ export async function getUser(email: string): Promise<User> {
 
 export async function getAccounts(email: string): Promise<Account[]> {
     const data = await fetch(`${backendUrls.accounts}/${email}`, {
-        cache: 'no-store',
         headers: {
             'API_KEY': API_KEY
         }
@@ -26,7 +25,6 @@ export async function getAccounts(email: string): Promise<Account[]> {
 export async function getTransactions(email: string): Promise<Transaction[]> {
     try {
         const data = await fetch(`${backendUrls.transactions}/${email}`, {
-            cache: 'no-store',
             headers: {
                 'API_KEY': API_KEY
             }
@@ -41,9 +39,9 @@ export async function getTransactions(email: string): Promise<Transaction[]> {
 }
 
 export async function getCategories(email: string): Promise<Category[]> {
+    console.log('getCategories email: ', email)
     try {
         const data = await fetch(`${backendUrls.categories}/${email}`, {
-            cache: 'no-store',
             headers: {
                 'API_KEY': API_KEY
             }

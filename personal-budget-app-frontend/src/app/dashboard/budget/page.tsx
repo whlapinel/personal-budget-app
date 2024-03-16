@@ -6,24 +6,12 @@ import { Category } from "@/app/lib/data/definitions";
 import { cookies } from "next/headers";
 
 export default async function BudgetPage() {
-
   const today = new Date();
   const month = today.toLocaleString('default', { month: 'long' });
-
-  let categories: Category[] = [];
   const email = cookies().get('email')?.value!;
   console.log("BudgetPage() email: ", email);
- 
-  try {
-    categories = await getCategories(email);
-    console.log(categories);
-  } catch (err) {
-    console.error(err);
-    return (
-      <p>Error getting categories"</p>
-    )
-  }
-
+  const categories: Category[] = await getCategories(email);
+  console.log(categories);
 
   return (
     <>
@@ -50,16 +38,16 @@ export default async function BudgetPage() {
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-gray-200">
-            {categories?.map((category) => (
-              <tr key={category.id}>
-                <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                  {category.name}
-                </td>
-                <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{'placeholder'}</td>
-              </tr>
-            ))}
-          </tbody>
+            <tbody className="divide-y divide-gray-200">
+              {categories?.map((category) => (
+                <tr key={category.id}>
+                  <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
+                    {category.name}
+                  </td>
+                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{'placeholder'}</td>
+                </tr>
+              ))}
+            </tbody>
         </table>
       </Card>
     </>

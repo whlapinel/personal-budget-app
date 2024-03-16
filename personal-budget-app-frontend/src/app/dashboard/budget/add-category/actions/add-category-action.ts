@@ -4,6 +4,7 @@ import { backendUrls } from '@/app/constants/backend-urls'
 import { redirect } from 'next/navigation';
 import {cookies} from 'next/headers';
 import type {Category} from '@/app/lib/data/definitions'
+import { revalidatePath } from 'next/cache';
 
 export default async function addCategoryAction(prevState: any, formData: FormData) {
     const API_KEY: string = process.env.API_KEY!;
@@ -14,10 +15,7 @@ export default async function addCategoryAction(prevState: any, formData: FormDa
         name: formData.get('name')!.toString(),
         email: cookies().get('email')!.value
     }
-
     console.log('stringified category', JSON.stringify(category));
-
-
     const response = await fetch(backendUrls.categories, {
         headers: {
             'API_KEY': API_KEY,
@@ -28,6 +26,7 @@ export default async function addCategoryAction(prevState: any, formData: FormDa
     });
     const data = await response.json();
     console.log('data', data);
+    revalidatePath('/dashboard', 'layout')
     if (data.error) {
         return { message: 'Category not created' }
     }

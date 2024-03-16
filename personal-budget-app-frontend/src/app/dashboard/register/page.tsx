@@ -34,7 +34,9 @@ export default async function RegisterPage(searchParams: { filter: string | null
     <>
       <Card className='bg-amber-200'>
         <div className={'flex gap-4'}>
-          <h1 className="text-2xl font-bold text-gray-900">Filter by Account</h1>
+          <h1 className="text-2xl font-bold text-gray-900">Add Transaction</h1>
+          <Link className=" bg-blue-700 rounded p-2 text-gray-50" href='/dashboard/register/add-transaction'>Add Transaction</Link>
+          <h2 className="text-2xl font-bold text-gray-900">Filter by Account</h2>
           {accounts.map((account) => (
             <div key={account.id} className='flex gap-2'>
               <Link className=" bg-blue-700 rounded p-2 text-gray-50" href={`/dashboard?view=register&filter=${account.name}`} color='blue'>{account.name} {account.balance}</Link>

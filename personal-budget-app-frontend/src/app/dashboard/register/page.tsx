@@ -27,7 +27,7 @@ export default async function RegisterPage(searchParams: { filter: string | null
   if (filter === null || filter === 'all') {
     filteredTransactions = transactions;
   } else {
-    filteredTransactions = transactions.filter((transaction) => transaction.account === filter);
+    filteredTransactions = transactions.filter((transaction) => String(transaction.account) === filter);
   }
 
   return (

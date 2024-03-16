@@ -11,7 +11,6 @@ export type SessionContextType = {
   
 
 export type User = {
-    id: string,
     password: string,
     firstName: string,
     lastName: string,
@@ -20,7 +19,7 @@ export type User = {
 } | null
 
 export type Category = {
-    id?: string,  // nanoid
+    id: number,  
     name: string, // e.g. "Groceries"
     email: string // user email (foreign key)
 }
@@ -44,7 +43,7 @@ export type Transaction = {
 }
 
 export type Account = {
-    id: string,
+    id: number,
     name: string,
     type: AccountType,
     bankName: string,

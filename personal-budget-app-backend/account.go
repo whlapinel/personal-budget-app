@@ -1,11 +1,10 @@
 package main
 
-import (
-)
+import ()
 
 type Account struct {
 	ID       int         `json:"id"`
-	UserID   int         `json:"userID"`
+	Email    string      `json:"email"`
 	Name     string      `json:"name"`
 	Type     AccountType `json:"type"`
 	BankName string      `json:"bankName"`
@@ -22,3 +21,13 @@ const (
 	Investment AccountType = "investment"
 	Other      AccountType = "other"
 )
+
+func (a *Account) create() error {
+	db := initializeDB()
+	defer db.Close()
+	_, err := db.Exec("INSERT INTO accounts (email, name, type, bank_name, balance) VALUES (?, ?, ?, ?, ?)", a.Email, a.Name, a.Type, a.BankName, a.Balance)
+	if err != nil {
+		return err
+	}
+	return nil
+}

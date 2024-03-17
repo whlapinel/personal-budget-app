@@ -36,6 +36,21 @@ func main() {
 		fmt.Println(result)
 		fmt.Println("category table created")
 	}
+	result, err = createAccountTable(db)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(result)
+		fmt.Println("account table created")
+	}
+	result, err = createTransactionTable(db)
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(result)
+		fmt.Println("transaction table created")
+	}
+	// end development only
 	// API
 	router := gin.Default()
 	router.Use(authenticateBFF)
@@ -44,7 +59,10 @@ func main() {
 	router.POST("/users", postUser)
 	router.GET("/categories/:email", getCategoriesByEmail)
 	router.POST("/categories", postCategory)
-	router.GET("/transactions", getTransactions)
+	router.GET("/accounts/:email", getAccountsByEmail)
+	router.POST("/accounts", postAccount)
+	router.GET("/transactions/:email", getTransactionsByAccountID)
+	router.POST("/transactions/", postTransaction)
 	router.Run("localhost:8080")
 }
 
@@ -69,8 +87,62 @@ func authenticateBFF(c *gin.Context) {
 	c.Next()
 }
 
-func getTransactions(c *gin.Context) {
+func getTransactionsByAccountID(c *gin.Context) {
+}
 
+func getAccountsByEmail(c *gin.Context) {
+	var account Account
+	// get accounts
+	email := c.Param("email")
+	fmt.Println("email: ", email)
+	db := initializeDB()
+	defer db.Close()
+	rows, err := db.Query("SELECT * FROM accounts WHERE email = ?", email)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting accounts"})
+		return
+	}
+	var accounts []Account
+	for rows.Next() {
+		err := rows.Scan(&account.ID, &account.Email, &account.Name, &account.Type, &account.BankName, &account.Balance)
+		if err != nil {
+			fmt.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting accounts"})
+			return
+		} else {
+			accounts = append(accounts, account)
+		}
+	}
+	c.JSON(http.StatusOK, accounts)
+}
+
+func postAccount(c *gin.Context) {
+	var newAccount Account
+	if err := c.BindJSON(&newAccount); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	fmt.Println(newAccount)
+	if err := newAccount.create(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, newAccount)
+}
+
+func postTransaction (c *gin.Context) {
+	var newTransaction Transaction
+	if err := c.BindJSON(&newTransaction); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	fmt.Println(newTransaction)
+	if err := newTransaction.create(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, newTransaction)
 }
 
 func postCategory(c *gin.Context) {

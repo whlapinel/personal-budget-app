@@ -43,7 +43,8 @@ export type Transaction = {
 }
 
 export type Account = {
-    id: number,
+    email: string, // user email (foreign key)
+    id: number, // primary key
     name: string,
     type: AccountType,
     bankName: string,

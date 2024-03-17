@@ -6,9 +6,10 @@ import {signInAction} from "./actions";
 import { useFormState } from "react-dom";
 import { useEffect } from "react";
 import { useSession } from "../session-context";
+import type { User } from "../lib/data/definitions";
 
-const initialState = {
-  message: '',
+const initialState: {message: string | null, user: User | null} = {
+  message: null,
   user: null
 }
 
@@ -37,7 +38,6 @@ export default function SignInPage() {
         </div>
         <SubmitButton>Sign In</SubmitButton>
         <p>{state.message}</p>
-        <p>{"token expires in " + Math.round((user?.expiration! - Date.now())/1000) + " seconds."}</p>
       </form>
     </div>
 

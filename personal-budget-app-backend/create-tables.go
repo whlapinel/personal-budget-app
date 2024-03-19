@@ -45,7 +45,7 @@ func createAccountTable(db *sql.DB) (sql.Result, error) {
 			name VARCHAR(100),
 			type VARCHAR(100),
 			bank_name VARCHAR(100),
-			balance FLOAT,
+			starting_balance FLOAT,
 			FOREIGN KEY (email) REFERENCES users(email)
 			);`
 	result, err := db.Exec(query)
@@ -61,7 +61,7 @@ func createTransactionTable(db *sql.DB) (sql.Result, error) {
 		`CREATE TABLE transactions (
 			id int AUTO_INCREMENT PRIMARY KEY,
 			account_id int,
-			date DATE,
+			date datetime,
 			payee VARCHAR(100),
 			amount FLOAT,
 			memo VARCHAR(100),

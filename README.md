@@ -7,7 +7,7 @@ https://docs.google.com/presentation/d/121C_A62cB5nhCZLu0aTEuNjg54KBki7RySTbAonf
 
 - [] Homepage
 - [x] Login
-- [] Logout
+- [x] Logout
 - [x] Signup
 - [] Dashboard
 - [] 3 visualizations (graphs and charts, etc) available from dashboard
@@ -38,6 +38,6 @@ https://docs.google.com/presentation/d/121C_A62cB5nhCZLu0aTEuNjg54KBki7RySTbAonf
 - UI 
 - authentication
 
-#### Separate Golang server will handle 
+#### Separate Go API server will handle 
 - business logic 
 - database queries

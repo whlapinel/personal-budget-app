@@ -1,3 +1,9 @@
+## 3/18/24
+
+- FIXME: email cookie should not be stored separately from session, right??  Why did I do that?
+- FIXME: transactions page not showing
+- FIXME: other random issues with session management 
+
 ## 3/14/24
 
 - FIXME: add category not working, somewhere is logging: Error 1054 (42S22): Unknown column 'user_id' in 'field list' DONE

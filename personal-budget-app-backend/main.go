@@ -4,8 +4,10 @@ package main
 // https://go.dev/doc/tutorial/web-service-gin
 
 import (
+	"database/sql"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,41 +17,41 @@ func main() {
 	fmt.Println("db initialized")
 	defer db.Close()
 	// for development only
-	result, err := dropTables(db)
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println(result)
-		fmt.Println("tables dropped")
-	}
-	result, err = createUserTable(db)
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println(result)
-		fmt.Println("user table created")
-	}
-	result, err = createCategoryTable(db)
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println(result)
-		fmt.Println("category table created")
-	}
-	result, err = createAccountTable(db)
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println(result)
-		fmt.Println("account table created")
-	}
-	result, err = createTransactionTable(db)
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println(result)
-		fmt.Println("transaction table created")
-	}
+	// result, err := dropTables(db)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// } else {
+	// 	fmt.Println(result)
+	// 	fmt.Println("tables dropped")
+	// }
+	// result, err = createUserTable(db)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// } else {
+	// 	fmt.Println(result)
+	// 	fmt.Println("user table created")
+	// }
+	// result, err = createCategoryTable(db)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// } else {
+	// 	fmt.Println(result)
+	// 	fmt.Println("category table created")
+	// }
+	// result, err = createAccountTable(db)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// } else {
+	// 	fmt.Println(result)
+	// 	fmt.Println("account table created")
+	// }
+	// result, err = createTransactionTable(db)
+	// if err != nil {
+	// 	fmt.Println(err)
+	// } else {
+	// 	fmt.Println(result)
+	// 	fmt.Println("transaction table created")
+	// }
 	// end development only
 	// API
 	router := gin.Default()
@@ -61,7 +63,7 @@ func main() {
 	router.POST("/categories", postCategory)
 	router.GET("/accounts/:email", getAccountsByEmail)
 	router.POST("/accounts", postAccount)
-	router.GET("/transactions/:email", getTransactionsByAccountID)
+	router.GET("/transactions/:accountID", getTransactionsByAccountID)
 	router.POST("/transactions/", postTransaction)
 	router.Run("localhost:8080")
 }
@@ -88,6 +90,37 @@ func authenticateBFF(c *gin.Context) {
 }
 
 func getTransactionsByAccountID(c *gin.Context) {
+	var transaction Transaction
+	// get transactions
+	accountID := c.Param("accountID")
+	fmt.Println("accountID: ", accountID)
+	db := initializeDB()
+	defer db.Close()
+	rows, err := db.Query("SELECT * FROM transactions WHERE account_id = ?", accountID)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting transactions"})
+		return
+	}
+	var transactions []Transaction
+	for rows.Next() {
+		var tempDate []uint8
+		err := rows.Scan(&transaction.ID, &transaction.AccountID, &tempDate, &transaction.Payee, &transaction.Amount, &transaction.Memo, &transaction.CategoryID)
+		if err != nil {
+			fmt.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting transactions"})
+			return
+			} else {
+				transaction.Date, err = time.Parse("2006-01-02 00:00:00", string(tempDate))
+				if err != nil {
+					fmt.Println(err)
+					c.JSON(http.StatusInternalServerError, gin.H{"message": "error parsing transaction date"})
+					return
+				}
+				transactions = append(transactions, transaction)
+			}
+	}
+	c.JSON(http.StatusOK, transactions)
 }
 
 func getAccountsByEmail(c *gin.Context) {
@@ -105,13 +138,39 @@ func getAccountsByEmail(c *gin.Context) {
 	}
 	var accounts []Account
 	for rows.Next() {
-		err := rows.Scan(&account.ID, &account.Email, &account.Name, &account.Type, &account.BankName, &account.Balance)
+		err := rows.Scan(&account.ID, &account.Email, &account.Name, &account.Type, &account.BankName, &account.StartingBalance)
 		if err != nil {
 			fmt.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting accounts"})
 			return
 		} else {
 			accounts = append(accounts, account)
+		}
+	}
+
+	// get account balances by retrieving sum of transactions for each account,
+	// add to each account struct instance
+
+	for i, account := range accounts {
+		rows, err := db.Query("SELECT SUM(amount) FROM transactions WHERE account_id = ?", account.ID)
+		if err != nil {
+			fmt.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting account balances"})
+			return
+		}
+		var balance sql.NullFloat64
+		for rows.Next() {
+			err := rows.Scan(&balance)
+			if err != nil {
+				fmt.Println(err)
+				c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting account balances"})
+				return
+			}
+			if balance.Valid {
+				accounts[i].Balance = balance.Float64 + account.StartingBalance
+			} else {
+				accounts[i].Balance = account.StartingBalance
+			}
 		}
 	}
 	c.JSON(http.StatusOK, accounts)
@@ -125,20 +184,22 @@ func postAccount(c *gin.Context) {
 	}
 	fmt.Println(newAccount)
 	if err := newAccount.create(); err != nil {
+		fmt.Println("error in newAccount.create(): ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	c.JSON(http.StatusCreated, newAccount)
 }
 
-func postTransaction (c *gin.Context) {
+func postTransaction(c *gin.Context) {
 	var newTransaction Transaction
 	if err := c.BindJSON(&newTransaction); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	fmt.Println(newTransaction)
+	fmt.Println("newTransaction.AccountID", newTransaction.AccountID)
 	if err := newTransaction.create(); err != nil {
+		fmt.Println("error in newTransaction.create(): ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

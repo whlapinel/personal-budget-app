@@ -1,15 +1,12 @@
 import { Dispatch } from "react";
 import { SetStateAction } from "react";
 
-
-
 export type SessionContextType = {
     user: User | null;
     setUser: Dispatch<SetStateAction<User | null>>;
+    signOut: () => void;
   }
   
-  
-
 export type User = {
     password: string,
     firstName: string,
@@ -34,12 +31,12 @@ export type Goal = {
 
 export type Transaction = {
     id: string,
-    account: Account['id'],
+    accountID: Account['id'],
     date: Date,
     payee: string,
     amount: number,
     memo: string,
-    category: Category['id'] | Transaction[] // for split transactions?  Not sure
+    categoryID: Category['id'] | Transaction[] | null // for split transactions?  Not sure
 }
 
 export type Account = {
@@ -48,7 +45,8 @@ export type Account = {
     name: string,
     type: AccountType,
     bankName: string,
-    balance: number,
+    startingBalance: number,
+    balance: number // not stored in DB, but calculated from transactions
 }
 
 export type AccountType = 'checking' | 'savings' | 'credit' | 'loan' | 'investment' | 'other'

@@ -19,8 +19,8 @@ export default function AddAccountPage() {
             <input type="text" name='bankName' required />
             <label htmlFor='type'>Type</label>
             <input type="text" name='type' required />
-            <label htmlFor='balance'>Balance</label>
-            <input type="float" name='balance' required />
+            <label htmlFor='startingBalance'>Starting Balance</label>
+            <input type="float" name='startingBalance' required />
             <SubmitButton>Submit</SubmitButton>
             <p>{state.message}</p>
         </form>

@@ -1,1 +1,1 @@
-export const sessionLifeSpan = 60000;
+export const sessionLifeSpan = 1000000;

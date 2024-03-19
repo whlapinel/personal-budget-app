@@ -1,6 +1,5 @@
 'use client'
 
-import { userAgent } from "next/server";
 import { SubmitButton } from "../ui/submit-button";
 import {signInAction} from "./actions";
 import { useFormState } from "react-dom";
@@ -15,14 +14,18 @@ const initialState: {message: string | null, user: User | null} = {
 
 export default function SignInPage() {
   const [state, formAction] = useFormState(signInAction, initialState);
-
   const { user, setUser } = useSession();
 
   useEffect(() => {
-    console.log("SignInPage useEffect running! expires:", state.user?.expiration);
-    setUser(state.user!);
-    console.log("user: ", user);
-  }, [state])
+    if (state.user) {
+      console.log("SignInPage useEffect running! expires:", state.user?.expiration);
+      const hasNull = Object.values(state.user).some(value => (value === null || value === undefined));
+      if (!hasNull) {
+        setUser(state.user);
+      }
+      console.log("user: ", user);
+    }
+  }, [state.user])
 
   return (
     <div className="flex flex-col items-center">
@@ -40,6 +43,5 @@ export default function SignInPage() {
         <p>{state.message}</p>
       </form>
     </div>
-
   )
 }

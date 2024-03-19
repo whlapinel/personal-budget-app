@@ -14,7 +14,7 @@ export default function DashboardLayout({
                 <SideNav>
                     <Link className=" bg-blue-700 rounded p-2 text-gray-50" href={'/dashboard/budget'}>Budget</Link>
                     <Link className=" bg-blue-700 rounded p-2 text-gray-50" href={'/dashboard/accounts'}>Accounts</Link>
-                    <Link className=" bg-blue-700 rounded p-2 text-gray-50" href={'/dashboard/register'}>Register</Link>
+                    <Link className=" bg-blue-700 rounded p-2 text-gray-50" href={'/dashboard/transactions'}>Transactions</Link>
                     <Link className=" bg-blue-700 rounded p-2 text-gray-50" href={'/dashboard/reports'}>Reports</Link>
                 </SideNav>
                 {children}

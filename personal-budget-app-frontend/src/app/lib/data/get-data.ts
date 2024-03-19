@@ -18,19 +18,22 @@ export async function getAccounts(email: string): Promise<Account[]> {
         }
     });
     const accounts = await data.json();
-    console.log(accounts);
     return accounts
 }
 
-export async function getTransactions(email: string): Promise<Transaction[]> {
+export async function getTransactions(accountID: number): Promise<Transaction[]> {
     try {
-        const data = await fetch(`${backendUrls.transactions}/${email}`, {
+        const data = await fetch(`${backendUrls.transactions}/${accountID}`, {
             headers: {
                 'API_KEY': API_KEY
             }
         });
         const transactions = await data.json();
         console.log(transactions);
+        // parse date string into date object
+        transactions.forEach((transaction: Transaction) => {
+            transaction.date = new Date(transaction.date);
+        });
         return transactions
     } catch (err) {
         console.log(err);

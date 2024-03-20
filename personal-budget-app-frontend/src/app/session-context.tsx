@@ -5,8 +5,8 @@ import { createContext, useContext, useState, useEffect } from 'react';
 import { SessionContextType, User } from '@/app/lib/data/definitions';
 import { refreshToken } from './lib/data/auth';
 import {useRouter} from 'next/navigation';
-import {signInAction} from "@/app/sign-in/actions"
 import { signOutAction } from './sign-out-action';
+import getSessionAction from './get-session-action';
 
 
 let SessionContext = createContext<SessionContextType>({
@@ -97,6 +97,26 @@ useEffect(() => {
     });
   }
 }, [user]);
+
+async function getSession() {
+  const session = await getSessionAction();
+  console.log('session:', session);
+  if (session) {
+    const user = {...session.user, expiration: session.expires};
+    setUser(user);
+  } else {
+    console.log('No session found.');
+    // signOut();
+  }
+}
+
+useEffect(() => {
+  if (!user) {
+    getSession();
+  }
+}
+, []);
+
 
 return (
   <SessionContext.Provider value={{ user, setUser, signOut }}>

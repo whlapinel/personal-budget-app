@@ -20,7 +20,7 @@ export default function AddTransactionForm({ accounts }: { accounts: Account[] }
             <label htmlFor="accountID">Account</label>
             <select name="accountID">
                 {accounts?.map((account: Account) => (
-                    <option value={account.id}>{account.name}</option>
+                    <option key={account.id} value={account.id}>{account.name}</option>
                 ))}
             </select>
             <label htmlFor="date">Date</label>

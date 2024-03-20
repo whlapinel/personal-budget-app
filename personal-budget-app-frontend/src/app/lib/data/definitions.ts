@@ -49,4 +49,13 @@ export type Account = {
     balance: number // not stored in DB, but calculated from transactions
 }
 
+export type Assignment = {
+    id: number,
+    email: string, // user email (foreign key)
+    categoryID: number,
+    month: string,
+    year: number,
+    amount: number
+}
+
 export type AccountType = 'checking' | 'savings' | 'credit' | 'loan' | 'investment' | 'other'

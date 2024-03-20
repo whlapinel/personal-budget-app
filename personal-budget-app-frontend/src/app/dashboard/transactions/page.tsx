@@ -7,19 +7,19 @@ import { cookies } from 'next/headers';
 import TransactionList from "./transaction-list";
 import { select } from "d3";
 
-export default async function TransactionsPage(searchParams: any) {
+export default async function TransactionsPage({searchParams}: {searchParams: any}) {
   const email = cookies().get('email')?.value!;
   const accounts = await getAccounts(email);
   console.log('accounts: ', accounts);
   console.log('searchParams: ', searchParams);
-  console.log('searchParams.searchParams.selectedAccountID: ', searchParams.searchParams.selectedAccountID);
+  console.log('searchParams.selectedAccountID: ', searchParams.selectedAccountID);
   const accountsList = accounts?.map((account) => {
     return (
-      <Link className={" bg-blue-700 rounded p-2 text-gray-50"} key={account.id} href={`/dashboard/transactions?selectedAccountID=${account.id}`}>{account.name}</Link>
+      <Link className={" bg-blue-700 rounded p-2 text-gray-50"} key={account.id} href={`/dashboard/transactions?selectedAccountID=${account.id}`}>{account.name} ${account.balance}</Link>
     )
   })
   const totalBalance = accounts?.reduce((acc, account) => acc + account.balance, 0);
-  const selectedAccount = accounts.find((account) => account.id === Number(searchParams.searchParams.selectedAccountID));
+  const selectedAccount = accounts.find((account) => account.id === Number(searchParams.selectedAccountID));
   console.log("selectedAccount: ", selectedAccount);
   let filteredTransactions: Transaction[] = [];
 

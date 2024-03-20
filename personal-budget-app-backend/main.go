@@ -8,14 +8,10 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	db := initializeDB()
-	fmt.Println("db initialized")
-	defer db.Close()
 	// for development only
 	// result, err := dropTables(db)
 	// if err != nil {
@@ -24,33 +20,11 @@ func main() {
 	// 	fmt.Println(result)
 	// 	fmt.Println("tables dropped")
 	// }
-	// result, err = createUserTable(db)
+	// err := createTables()
 	// if err != nil {
 	// 	fmt.Println(err)
 	// } else {
-	// 	fmt.Println(result)
-	// 	fmt.Println("user table created")
-	// }
-	// result, err = createCategoryTable(db)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// } else {
-	// 	fmt.Println(result)
-	// 	fmt.Println("category table created")
-	// }
-	// result, err = createAccountTable(db)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// } else {
-	// 	fmt.Println(result)
-	// 	fmt.Println("account table created")
-	// }
-	// result, err = createTransactionTable(db)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// } else {
-	// 	fmt.Println(result)
-	// 	fmt.Println("transaction table created")
+	// 	fmt.Println("tables created")
 	// }
 	// end development only
 	// API
@@ -65,6 +39,10 @@ func main() {
 	router.POST("/accounts", postAccount)
 	router.GET("/transactions/:accountID", getTransactionsByAccountID)
 	router.POST("/transactions/", postTransaction)
+	router.GET("/assignments/:email", getAssignmentsByEmail)
+	router.POST("/assignments", postAssignment)
+	router.GET("/goals/:email", getGoalsByEmail)
+	router.POST("/goals", postGoal)
 	router.Run("localhost:8080")
 }
 
@@ -87,6 +65,97 @@ func authenticateBFF(c *gin.Context) {
 		return
 	}
 	c.Next()
+}
+
+func getGoalsByEmail(c *gin.Context) {
+	var goal Goal
+	// get goals
+	email := c.Param("email")
+	fmt.Println("email: ", email)
+	db := initializeDB()
+	defer db.Close()
+	rows, err := db.Query("SELECT * FROM goals WHERE email = ?", email)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting goals"})
+		return
+	}
+	var goals []Goal
+	for rows.Next() {
+		var tempDate []uint8
+		err := rows.Scan(&goal.ID, &goal.Email, &goal.Name, &goal.Amount, &tempDate, &goal.CategoryID)
+		if err != nil {
+			fmt.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting goals"})
+			return
+		} else {
+			goal.TargetDate, err = time.Parse("2006-01-02 00:00:00", string(tempDate))
+			if err != nil {
+				fmt.Println(err)
+				c.JSON(http.StatusInternalServerError, gin.H{"message": "error parsing goal target date"})
+				return
+			}
+			goals = append(goals, goal)
+		}
+	}
+	c.JSON(http.StatusOK, goals)
+}
+
+func postGoal(c *gin.Context) {
+	var newGoal Goal
+	if err := c.BindJSON(&newGoal); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	fmt.Println(newGoal)
+	if err := newGoal.create(); err != nil {
+		fmt.Println("error in newGoal.create(): ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, newGoal)
+}
+
+func getAssignmentsByEmail(c *gin.Context) {
+	var assignment Assignment
+	// get assignments
+	email := c.Param("email")
+	fmt.Println("email: ", email)
+	db := initializeDB()
+	defer db.Close()
+	rows, err := db.Query("SELECT * FROM assignments WHERE email = ?", email)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting assignments"})
+		return
+	}
+	var assignments []Assignment
+	for rows.Next() {
+		err := rows.Scan(&assignment.ID, &assignment.Email, &assignment.CategoryID, &assignment.Month, &assignment.Year, &assignment.Amount)
+		if err != nil {
+			fmt.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting assignments"})
+			return
+		} else {
+			assignments = append(assignments, assignment)
+		}
+	}
+	c.JSON(http.StatusOK, assignments)
+}
+
+func postAssignment(c *gin.Context) {
+	var newAssignment Assignment
+	if err := c.BindJSON(&newAssignment); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	fmt.Println(newAssignment)
+	if err := newAssignment.create(); err != nil {
+		fmt.Println("error in newAssignment.create(): ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, newAssignment)
 }
 
 func getTransactionsByAccountID(c *gin.Context) {

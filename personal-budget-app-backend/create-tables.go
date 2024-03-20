@@ -2,7 +2,36 @@ package main
 
 import (
 	"database/sql"
+	"fmt"
 )
+
+func createTables() error {
+	db := initializeDB()
+	fmt.Println("db initialized")
+	defer db.Close()
+
+	_, err := createUserTable(db)
+	if err != nil {
+		return err
+	}
+	_, err = createCategoryTable(db)
+	if err != nil {
+		return err
+	}
+	_, err = createAccountTable(db)
+	if err != nil {
+		return err
+	}
+	_, err = createTransactionTable(db)
+	if err != nil {
+		return err
+	}
+	_, err = createAssignmentsTable(db)
+	if err != nil {
+		return err
+	}
+	return nil
+}
 
 func createUserTable(db *sql.DB) (sql.Result, error) {
 
@@ -67,6 +96,47 @@ func createTransactionTable(db *sql.DB) (sql.Result, error) {
 			memo VARCHAR(100),
 			category_id int,
 			FOREIGN KEY (account_id) REFERENCES accounts(id),
+			FOREIGN KEY (category_id) REFERENCES categories(id)
+			);`
+	result, err := db.Exec(query)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func createAssignmentsTable(db *sql.DB) (sql.Result, error) {
+	
+	query :=
+		`CREATE TABLE assignments (
+			id int AUTO_INCREMENT PRIMARY KEY,
+			email VARCHAR(100),
+			category_id VARCHAR(100),
+			month VARCHAR(100),
+			year int,
+			amount FLOAT,
+			FOREIGN KEY (email) REFERENCES users(email)
+			FOREIGN KEY (category_id) REFERENCES categories(id)
+			CHECK (month IN ('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'))
+			);`
+	result, err := db.Exec(query)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func createGoalsTable(db *sql.DB) (sql.Result, error) {
+	
+	query :=
+		`CREATE TABLE goals (
+			id int AUTO_INCREMENT PRIMARY KEY,
+			email VARCHAR(100),
+			name VARCHAR(100),
+			amount FLOAT,
+			target_date datetime,
+			category_id int,
+			FOREIGN KEY (email) REFERENCES users(email)
 			FOREIGN KEY (category_id) REFERENCES categories(id)
 			);`
 	result, err := db.Exec(query)

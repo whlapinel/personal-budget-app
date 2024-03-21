@@ -32,10 +32,11 @@ export async function signInAction(prevState: any, formData: FormData): Promise<
         // retrieve encrypted password from backend
         const encryptedPassword = await getEncryptedPassword(user.email);
         let match: boolean;
+        console.log("encryptedPassword: ", encryptedPassword);
 
         // compare passwords
-        if (encryptedPassword instanceof Error) {
-            return { message: 'Error signing in', user: null }
+        if (encryptedPassword instanceof Error || !encryptedPassword) {
+            return { message: 'username and/or password incorrect', user: null }
         }
         try {
             match = await bcrypt.compare(user.password, encryptedPassword);
@@ -57,10 +58,10 @@ export async function signInAction(prevState: any, formData: FormData): Promise<
                     },
                     cache: 'no-store',
                 });
-                const data = await response.json();
-                if (data.status === 404) {
+                if (response.status === 404) {
                     return new Error('User not found');
                 }
+                const data = await response.json();
                 console.log('data', data);
                 encryptedPassword = data.password;
             } catch (err) {

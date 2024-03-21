@@ -11,18 +11,21 @@ import (
 
 func main() {
 	// for development only
-	result, err := dropTables()
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println(result)
-		fmt.Println("tables dropped")
-	}
-	err = createTables()
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println("tables created")
+	wipeData := false // true if you want to delete tables and start over
+	if (wipeData) {
+		result, err := dropTables()
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println(result)
+			fmt.Println("tables dropped")
+		}
+		err = createTables()
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println("tables created")
+		}
 	}
 	// end development only
 	// API

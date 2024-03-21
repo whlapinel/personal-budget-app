@@ -37,6 +37,7 @@ export type Transaction = {
     amount: number,
     memo: string,
     categoryID: Category['id'] | Transaction[] | null // for split transactions?  Not sure
+    categoryName?: string
 }
 
 export type Account = {

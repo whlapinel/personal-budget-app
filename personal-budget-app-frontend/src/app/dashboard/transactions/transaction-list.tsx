@@ -1,5 +1,6 @@
 import { Account, Transaction } from "@/app/lib/data/definitions";
 import { getTransactions } from "@/app/lib/data/get-data";
+import convertToDollars from "@/app/lib/cents-to-dollars";
 
 export default async function TransactionList({account}: {account: Account}) {
     const transactions = await getTransactions(account.id);
@@ -40,16 +41,16 @@ export default async function TransactionList({account}: {account: Account}) {
                 {transaction.payee}
               </td>
               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                {typeof transaction.categoryID === 'string' ? transaction.categoryID : 'split'}
+                {transaction.categoryName ? transaction.categoryName : ''}
               </td>
               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                 {transaction.memo}
               </td>
               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                {transaction.amount < 0 ? Math.abs(transaction.amount) : null}
+                {transaction.amount < 0 ? `$${convertToDollars(Math.abs(transaction.amount))}` : null}
               </td>
               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                {transaction.amount > 0 ? transaction.amount : null}
+                {transaction.amount > 0 ? `$${convertToDollars(transaction.amount)}` : null}
               </td>
             </tr>
           ))}

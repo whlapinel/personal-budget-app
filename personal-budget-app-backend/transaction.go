@@ -8,13 +8,14 @@ import (
 )
 
 type Transaction struct {
-	ID         int       `json:"id"`
-	AccountID  int       `json:"accountID"` // Changed from Account['id'] to string to simplify, consider interface{} if needing more complexity
-	Date       time.Time `json:"date"`
-	Payee      string    `json:"payee"`
-	Amount     int       `json:"amount"`    // in cents not dollars
-	Memo       *string   `json:"memo"`       // pointer so value can be nil
-	CategoryID *int      `json:"categoryID"` // pointer so value can be nil
+	ID           int       `json:"id"`
+	AccountID    int       `json:"accountID"` // Changed from Account['id'] to string to simplify, consider interface{} if needing more complexity
+	Date         time.Time `json:"date"`
+	Payee        string    `json:"payee"`
+	Amount       int       `json:"amount"`     // in cents not dollars
+	Memo         *string   `json:"memo"`       // pointer so value can be nil
+	CategoryID   *int      `json:"categoryID"` // pointer so value can be nil
+	CategoryName *string   `json:"categoryName"`
 }
 
 func (t *Transaction) create() error {
@@ -34,7 +35,11 @@ func getTransactionsByAccountID(c *gin.Context) {
 	fmt.Println("accountID: ", accountID)
 	db := initializeDB()
 	defer db.Close()
-	rows, err := db.Query("SELECT * FROM transactions WHERE account_id = ?", accountID)
+	rows, err := db.Query(`
+	SELECT transactions.*, categories.name AS category_name 
+	FROM transactions 
+	JOIN categories ON transactions.category_id = categories.id 
+	WHERE transactions.account_id = ?`, accountID)
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting transactions"})
@@ -43,7 +48,7 @@ func getTransactionsByAccountID(c *gin.Context) {
 	var transactions []Transaction
 	for rows.Next() {
 		var tempDate []uint8
-		err := rows.Scan(&transaction.ID, &transaction.AccountID, &tempDate, &transaction.Payee, &transaction.Amount, &transaction.Memo, &transaction.CategoryID)
+		err := rows.Scan(&transaction.ID, &transaction.AccountID, &tempDate, &transaction.Payee, &transaction.Amount, &transaction.Memo, &transaction.CategoryID, &transaction.CategoryName)
 		if err != nil {
 			fmt.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting transactions"})

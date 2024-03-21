@@ -2,6 +2,7 @@
 
 import { backendUrls } from "@/app/constants/backend-urls";
 import { Transaction } from "@/app/lib/data/definitions";
+import { revalidatePath } from "next/cache";
 
 export default async function addTransactionAction(prevState: any, formData: any){
 
@@ -30,6 +31,7 @@ export default async function addTransactionAction(prevState: any, formData: any
     if (data.error) {
         return ({message: data.error})
     }
+    revalidatePath("/dashboard/transactions", "page");
     return ({
         message: 'Transaction added'
     })

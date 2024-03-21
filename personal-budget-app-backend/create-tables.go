@@ -9,27 +9,27 @@ func createTables() error {
 	db := initializeDB()
 	fmt.Println("db initialized")
 	defer db.Close()
-	// _, err := createUserTable(db)
-	// if err != nil {
-	// 	return err
-	// }
-	// _, err = createCategoryTable(db)
-	// if err != nil {
-	// 	return err
-	// }
-	// _, err = createAccountTable(db)
-	// if err != nil {
-	// 	return err
-	// }
-	// _, err = createTransactionTable(db)
-	// if err != nil {
-	// 	return err
-	// }
-	// _, err = createAssignmentsTable(db)
-	// if err != nil {
-	// 	return err
-	// }
-	_, err := createGoalsTable(db)
+	_, err := createUserTable(db)
+	if err != nil {
+		return err
+	}
+	_, err = createCategoryTable(db)
+	if err != nil {
+		return err
+	}
+	_, err = createAccountTable(db)
+	if err != nil {
+		return err
+	}
+	_, err = createTransactionTable(db)
+	if err != nil {
+		return err
+	}
+	_, err = createAssignmentsTable(db)
+	if err != nil {
+		return err
+	}
+	_, err = createGoalsTable(db)
 	if err != nil {
 		return err
 	}
@@ -77,7 +77,7 @@ func createAccountTable(db *sql.DB) (sql.Result, error) {
 			name VARCHAR(100),
 			type VARCHAR(100),
 			bank_name VARCHAR(100),
-			starting_balance FLOAT,
+			starting_balance int,
 			FOREIGN KEY (email) REFERENCES users(email)
 			);`
 	result, err := db.Exec(query)
@@ -95,7 +95,7 @@ func createTransactionTable(db *sql.DB) (sql.Result, error) {
 			account_id int,
 			date datetime,
 			payee VARCHAR(100),
-			amount FLOAT,
+			amount int,
 			memo VARCHAR(100),
 			category_id int,
 			FOREIGN KEY (account_id) REFERENCES accounts(id),
@@ -117,7 +117,7 @@ func createAssignmentsTable(db *sql.DB) (sql.Result, error) {
 			category_id int,
 			month VARCHAR(100),
 			year int,
-			amount FLOAT,
+			amount int,
 			FOREIGN KEY (email) REFERENCES users(email),
 			FOREIGN KEY (category_id) REFERENCES categories(id)
 			);`
@@ -135,7 +135,7 @@ func createGoalsTable(db *sql.DB) (sql.Result, error) {
 			id int AUTO_INCREMENT PRIMARY KEY,
 			email VARCHAR(100),
 			name VARCHAR(100),
-			amount FLOAT,
+			amount int,
 			target_date datetime,
 			category_id int,
 			FOREIGN KEY (email) REFERENCES users(email),

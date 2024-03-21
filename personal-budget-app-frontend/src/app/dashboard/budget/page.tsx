@@ -13,6 +13,7 @@ export default async function BudgetPage() {
   const categories: Category[] = await getCategories(email);
   console.log(categories);
 
+
   return (
     <>
       <Card className='bg-amber-200'>
@@ -44,10 +45,10 @@ export default async function BudgetPage() {
                   <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
                     {category.name}
                   </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{'placeholder'}</td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{'placeholder'}</td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{'placeholder'}</td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{'placeholder'}</td>
+                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{'placeholder needed'} {}</td>
+                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{'placeholder assigned'}</td>
+                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{'placeholder available'}</td>
+                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{'placeholder spent'}</td>
                 </tr>
               ))}
             </tbody>

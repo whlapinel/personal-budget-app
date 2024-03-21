@@ -7,12 +7,12 @@ import (
 )
 
 type Assignment struct {
-	ID         int     `json:"id"`
-	Email      string  `json:"email"`
-	CategoryID int     `json:"categoryID"`
-	Month      string  `json:"month"`
-	Year       int     `json:"year"`
-	Amount     float64 `json:"amount"`
+	ID         int    `json:"id"`
+	Email      string `json:"email"`
+	CategoryID int    `json:"categoryID"`
+	Month      string `json:"month"`
+	Year       int    `json:"year"`
+	Amount     int    `json:"amount"` // in cents not dollars
 }
 
 func (a *Assignment) create() error {

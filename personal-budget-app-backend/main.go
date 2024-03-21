@@ -11,14 +11,14 @@ import (
 
 func main() {
 	// for development only
-	// result, err := dropTables(db)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// } else {
-	// 	fmt.Println(result)
-	// 	fmt.Println("tables dropped")
-	// }
-	err := createTables()
+	result, err := dropTables()
+	if err != nil {
+		fmt.Println(err)
+	} else {
+		fmt.Println(result)
+		fmt.Println("tables dropped")
+	}
+	err = createTables()
 	if err != nil {
 		fmt.Println(err)
 	} else {

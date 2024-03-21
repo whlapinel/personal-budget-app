@@ -5,8 +5,8 @@ export type SessionContextType = {
     user: User | null;
     setUser: Dispatch<SetStateAction<User | null>>;
     signOut: () => void;
-  }
-  
+}
+
 export type User = {
     password: string,
     firstName: string,
@@ -16,7 +16,7 @@ export type User = {
 } | null
 
 export type Category = {
-    id: number,  
+    id: number,
     name: string, // e.g. "Groceries"
     email: string // user email (foreign key)
 }
@@ -26,7 +26,7 @@ export type Goal = {
     name: string,
     amount: number,
     targetDate: Date,
-    category: Category
+    categoryID: number,
 }
 
 export type Transaction = {

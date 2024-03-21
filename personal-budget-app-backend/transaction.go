@@ -1,10 +1,10 @@
 package main
 
 import (
-	"time"
 	"fmt"
-	"net/http"
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"time"
 )
 
 type Transaction struct {
@@ -12,8 +12,8 @@ type Transaction struct {
 	AccountID  int       `json:"accountID"` // Changed from Account['id'] to string to simplify, consider interface{} if needing more complexity
 	Date       time.Time `json:"date"`
 	Payee      string    `json:"payee"`
-	Amount     float64   `json:"amount"`
-	Memo       *string    `json:"memo"`    // pointer so value can be nil
+	Amount     int       `json:"amount"`    // in cents not dollars
+	Memo       *string   `json:"memo"`       // pointer so value can be nil
 	CategoryID *int      `json:"categoryID"` // pointer so value can be nil
 }
 
@@ -48,15 +48,15 @@ func getTransactionsByAccountID(c *gin.Context) {
 			fmt.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting transactions"})
 			return
-			} else {
-				transaction.Date, err = time.Parse("2006-01-02 00:00:00", string(tempDate))
-				if err != nil {
-					fmt.Println(err)
-					c.JSON(http.StatusInternalServerError, gin.H{"message": "error parsing transaction date"})
-					return
-				}
-				transactions = append(transactions, transaction)
+		} else {
+			transaction.Date, err = time.Parse("2006-01-02 00:00:00", string(tempDate))
+			if err != nil {
+				fmt.Println(err)
+				c.JSON(http.StatusInternalServerError, gin.H{"message": "error parsing transaction date"})
+				return
 			}
+			transactions = append(transactions, transaction)
+		}
 	}
 	c.JSON(http.StatusOK, transactions)
 }
@@ -75,5 +75,3 @@ func postTransaction(c *gin.Context) {
 	}
 	c.JSON(http.StatusCreated, newTransaction)
 }
-
-

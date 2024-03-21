@@ -11,7 +11,7 @@ export default async function addAccountAction(prevState: any, formData: any){
         name: formData.get('name')?.toString(),
         type: formData.get('type')?.toString(),
         bankName: formData.get('bankName')?.toString(),
-        startingBalance: Number(formData.get('startingBalance')),
+        startingBalance: Number(formData.get('startingBalance')) * 100, // convert to cents
     }
     console.log('running addAccountAction. account:', account);
     try {

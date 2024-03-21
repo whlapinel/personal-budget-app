@@ -2,9 +2,8 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"github.com/gin-gonic/gin"
-	"database/sql"
+	"net/http"
 )
 
 type Account struct {
@@ -13,8 +12,8 @@ type Account struct {
 	Name            string      `json:"name"`
 	Type            AccountType `json:"type"`
 	BankName        string      `json:"bankName"`
-	StartingBalance float64     `json:"startingBalance"`
-	Balance         float64     `json:"balance"`
+	StartingBalance int         `json:"startingBalance"`
+	Balance         int         `json:"balance"`
 }
 
 type AccountType string
@@ -66,24 +65,42 @@ func getAccountsByEmail(c *gin.Context) {
 	// add to each account struct instance
 
 	for i, account := range accounts {
-		rows, err := db.Query("SELECT SUM(amount) FROM transactions WHERE account_id = ?", account.ID)
+		// make sure there are transactions before running query
+		rows, err := db.Query("SELECT COUNT(*) FROM transactions WHERE account_id = ?", account.ID)
 		if err != nil {
 			fmt.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting account balances"})
 			return
 		}
-		var balance sql.NullFloat64
+		var count int
 		for rows.Next() {
-			err := rows.Scan(&balance)
+			err := rows.Scan(&count)
 			if err != nil {
 				fmt.Println(err)
 				c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting account balances"})
 				return
 			}
-			if balance.Valid {
-				accounts[i].Balance = balance.Float64 + account.StartingBalance
-			} else {
+			if count == 0 {
 				accounts[i].Balance = account.StartingBalance
+				continue
+			} else {
+				// get sum of transactions
+				rows, err = db.Query("SELECT SUM(amount) FROM transactions WHERE account_id = ?", account.ID)
+				if err != nil {
+					fmt.Println(err)
+					c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting account balances"})
+					return
+				}
+				var balance int
+				for rows.Next() {
+					err := rows.Scan(&balance)
+					if err != nil {
+						fmt.Println(err)
+						c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting account balances"})
+						return
+					}
+					accounts[i].Balance = balance + account.StartingBalance
+				}
 			}
 		}
 	}
@@ -104,5 +121,3 @@ func postAccount(c *gin.Context) {
 	}
 	c.JSON(http.StatusCreated, newAccount)
 }
-
-

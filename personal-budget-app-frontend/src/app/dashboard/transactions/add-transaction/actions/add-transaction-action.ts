@@ -11,7 +11,7 @@ export default async function addTransactionAction(prevState: any, formData: any
         accountID: Number(formData.get('accountID')),
         date: new Date(formData.get('date')?.toString()!),
         payee: formData.get('payee')?.toString(),
-        amount: Number(formData.get('amount')),
+        amount: Number(formData.get('amount')) * 100, // convert to cents
         memo: formData.get('memo')?.toString(),
         categoryID: formData.get('categoryID') ? Number(formData.get('categoryID')) : null,
     }

@@ -1,9 +1,10 @@
 package main
 
 import (
-	"time"
 	"fmt"
 	"net/http"
+	"time"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -11,7 +12,7 @@ type Goal struct {
 	ID         string    `json:"id"`
 	Email      string    `json:"email"`
 	Name       string    `json:"name"`
-	Amount     float64   `json:"amount"`
+	Amount     int       `json:"amount"` // in cents not dollars
 	TargetDate time.Time `json:"targetDate"`
 	CategoryID int       `json:"categoryID"`
 }
@@ -48,7 +49,7 @@ func getGoalsByEmail(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting goals"})
 			return
 		} else {
-			goal.TargetDate, err = time.Parse("2006-01-02 00:00:00", string(tempDate))
+			goal.TargetDate, err = time.Parse("2006-01-02T00:00:00Z04:00", string(tempDate))
 			if err != nil {
 				fmt.Println(err)
 				c.JSON(http.StatusInternalServerError, gin.H{"message": "error parsing goal target date"})
@@ -74,5 +75,3 @@ func postGoal(c *gin.Context) {
 	}
 	c.JSON(http.StatusCreated, newGoal)
 }
-
-

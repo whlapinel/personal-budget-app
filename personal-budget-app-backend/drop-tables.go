@@ -4,9 +4,11 @@ import (
 	"database/sql"
 )
 
-func dropTables(db *sql.DB) (sql.Result, error) {
+func dropTables() (sql.Result, error) {
+	db := initializeDB()
+	defer db.Close()
 	query :=
-		`DROP TABLE if exists transactions, categories, accounts, users`
+		`DROP TABLE if exists assignments, goals, transactions, categories, accounts, users`
 	result, err := db.Exec(query)
 	if err != nil {
 		return nil, err

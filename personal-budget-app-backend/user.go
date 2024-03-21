@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+	"github.com/gin-gonic/gin"
 )
 
 type User struct {
@@ -45,3 +47,33 @@ func (u *User) delete() error {
     fmt.Println("Deleted user", id)
     return nil
 }
+
+func postUser(c *gin.Context) {
+	var newUser User
+	if err := c.BindJSON(&newUser); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	fmt.Println(newUser)
+	if err := newUser.create(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, newUser)
+}
+
+func getUserByEmail(c *gin.Context) {
+	email := c.Param("email")
+	fmt.Println(email)
+	db := initializeDB()
+	defer db.Close()
+	fmt.Println("db initialized")
+	var user User
+	err := db.QueryRow("SELECT * FROM users WHERE email = ?", email).Scan(&user.Email, &user.FirstName, &user.LastName, &user.Password)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"message": "user not found"})
+		return
+	}
+	c.JSON(http.StatusOK, user)
+}
+

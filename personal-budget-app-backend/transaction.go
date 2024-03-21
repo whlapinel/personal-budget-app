@@ -2,6 +2,9 @@ package main
 
 import (
 	"time"
+	"fmt"
+	"net/http"
+	"github.com/gin-gonic/gin"
 )
 
 type Transaction struct {
@@ -23,3 +26,54 @@ func (t *Transaction) create() error {
 	}
 	return nil
 }
+
+func getTransactionsByAccountID(c *gin.Context) {
+	var transaction Transaction
+	// get transactions
+	accountID := c.Param("accountID")
+	fmt.Println("accountID: ", accountID)
+	db := initializeDB()
+	defer db.Close()
+	rows, err := db.Query("SELECT * FROM transactions WHERE account_id = ?", accountID)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting transactions"})
+		return
+	}
+	var transactions []Transaction
+	for rows.Next() {
+		var tempDate []uint8
+		err := rows.Scan(&transaction.ID, &transaction.AccountID, &tempDate, &transaction.Payee, &transaction.Amount, &transaction.Memo, &transaction.CategoryID)
+		if err != nil {
+			fmt.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting transactions"})
+			return
+			} else {
+				transaction.Date, err = time.Parse("2006-01-02 00:00:00", string(tempDate))
+				if err != nil {
+					fmt.Println(err)
+					c.JSON(http.StatusInternalServerError, gin.H{"message": "error parsing transaction date"})
+					return
+				}
+				transactions = append(transactions, transaction)
+			}
+	}
+	c.JSON(http.StatusOK, transactions)
+}
+
+func postTransaction(c *gin.Context) {
+	var newTransaction Transaction
+	if err := c.BindJSON(&newTransaction); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	fmt.Println("newTransaction.AccountID", newTransaction.AccountID)
+	if err := newTransaction.create(); err != nil {
+		fmt.Println("error in newTransaction.create(): ", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, newTransaction)
+}
+
+

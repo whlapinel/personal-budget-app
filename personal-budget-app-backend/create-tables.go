@@ -9,24 +9,27 @@ func createTables() error {
 	db := initializeDB()
 	fmt.Println("db initialized")
 	defer db.Close()
-
-	_, err := createUserTable(db)
-	if err != nil {
-		return err
-	}
-	_, err = createCategoryTable(db)
-	if err != nil {
-		return err
-	}
-	_, err = createAccountTable(db)
-	if err != nil {
-		return err
-	}
-	_, err = createTransactionTable(db)
-	if err != nil {
-		return err
-	}
-	_, err = createAssignmentsTable(db)
+	// _, err := createUserTable(db)
+	// if err != nil {
+	// 	return err
+	// }
+	// _, err = createCategoryTable(db)
+	// if err != nil {
+	// 	return err
+	// }
+	// _, err = createAccountTable(db)
+	// if err != nil {
+	// 	return err
+	// }
+	// _, err = createTransactionTable(db)
+	// if err != nil {
+	// 	return err
+	// }
+	// _, err = createAssignmentsTable(db)
+	// if err != nil {
+	// 	return err
+	// }
+	_, err := createGoalsTable(db)
 	if err != nil {
 		return err
 	}
@@ -66,7 +69,7 @@ func createCategoryTable(db *sql.DB) (sql.Result, error) {
 }
 
 func createAccountTable(db *sql.DB) (sql.Result, error) {
-	
+
 	query :=
 		`CREATE TABLE accounts (
 			id int AUTO_INCREMENT PRIMARY KEY,
@@ -85,7 +88,7 @@ func createAccountTable(db *sql.DB) (sql.Result, error) {
 }
 
 func createTransactionTable(db *sql.DB) (sql.Result, error) {
-	
+
 	query :=
 		`CREATE TABLE transactions (
 			id int AUTO_INCREMENT PRIMARY KEY,
@@ -106,18 +109,17 @@ func createTransactionTable(db *sql.DB) (sql.Result, error) {
 }
 
 func createAssignmentsTable(db *sql.DB) (sql.Result, error) {
-	
+
 	query :=
 		`CREATE TABLE assignments (
 			id int AUTO_INCREMENT PRIMARY KEY,
 			email VARCHAR(100),
-			category_id VARCHAR(100),
+			category_id int,
 			month VARCHAR(100),
 			year int,
 			amount FLOAT,
-			FOREIGN KEY (email) REFERENCES users(email)
+			FOREIGN KEY (email) REFERENCES users(email),
 			FOREIGN KEY (category_id) REFERENCES categories(id)
-			CHECK (month IN ('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'))
 			);`
 	result, err := db.Exec(query)
 	if err != nil {
@@ -127,7 +129,7 @@ func createAssignmentsTable(db *sql.DB) (sql.Result, error) {
 }
 
 func createGoalsTable(db *sql.DB) (sql.Result, error) {
-	
+
 	query :=
 		`CREATE TABLE goals (
 			id int AUTO_INCREMENT PRIMARY KEY,
@@ -136,7 +138,7 @@ func createGoalsTable(db *sql.DB) (sql.Result, error) {
 			amount FLOAT,
 			target_date datetime,
 			category_id int,
-			FOREIGN KEY (email) REFERENCES users(email)
+			FOREIGN KEY (email) REFERENCES users(email),
 			FOREIGN KEY (category_id) REFERENCES categories(id)
 			);`
 	result, err := db.Exec(query)

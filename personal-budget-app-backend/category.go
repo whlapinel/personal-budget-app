@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+	"github.com/gin-gonic/gin"
 )
 
 type Category struct {
@@ -21,4 +23,50 @@ func (bc *Category) create() error {
 	}
 	return nil
 }
+
+func getCategoriesByEmail(c *gin.Context) {
+	var category Category
+	fmt.Println("running getCategoriesByEmail")
+	// get categories
+	email := c.Param("email")
+	fmt.Println("email: ", email)
+	db := initializeDB()
+	defer db.Close()
+	rows, err := db.Query("SELECT * FROM categories WHERE email = ?", email)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting categories"})
+		return
+	}
+	var categories []Category
+	for rows.Next() {
+		err := rows.Scan(&category.ID, &category.Email, &category.Name)
+		if err != nil {
+			fmt.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting categories"})
+			return
+		} else {
+			categories = append(categories, category)
+		}
+	}
+	c.JSON(http.StatusOK, categories)
+}
+
+
+func postCategory(c *gin.Context) {
+	var newCategory Category
+	if err := c.BindJSON(&newCategory); err != nil {
+		fmt.Println("error in c.BindJSON(&newCategory): ")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	fmt.Println("newCategory: ", newCategory)
+	if err := newCategory.create(); err != nil {
+		fmt.Println("error in newCategory.create(): ")
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.JSON(http.StatusCreated, newCategory)
+}
+
 

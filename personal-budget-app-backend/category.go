@@ -2,14 +2,16 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 	"github.com/gin-gonic/gin"
+	"net/http"
+	"time"
 )
 
 type Category struct {
-	ID     int    `json:"id"`
-	Email  string `json:"email"`
-	Name   string `json:"name"`
+	ID    int     `json:"id"`
+	Email string  `json:"email"`
+	Name  string  `json:"name"`
+	Goals *[]Goal `json:"goals"` // not stored in DB, but should be retrieved along with category
 }
 
 func (bc *Category) create() error {
@@ -22,6 +24,30 @@ func (bc *Category) create() error {
 		return err
 	}
 	return nil
+}
+
+func getCategoriesByID(c *gin.Context) {
+	var category Category
+	// get categories
+	id := c.Param("id")
+	fmt.Println("id: ", id)
+	db := initializeDB()
+	defer db.Close()
+	rows, err := db.Query("SELECT * FROM categories WHERE id = ?", id)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting categories"})
+		return
+	}
+	for rows.Next() {
+		err := rows.Scan(&category.ID, &category.Email, &category.Name)
+		if err != nil {
+			fmt.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting categories"})
+			return
+		}
+	}
+	c.JSON(http.StatusOK, category)
 }
 
 func getCategoriesByEmail(c *gin.Context) {
@@ -49,9 +75,38 @@ func getCategoriesByEmail(c *gin.Context) {
 			categories = append(categories, category)
 		}
 	}
+	// get goals for each category
+	for i, category := range categories {
+		rows, err := db.Query("SELECT * FROM goals WHERE category_id = ?", category.ID)
+		if err != nil {
+			fmt.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting goals"})
+			return
+		}
+		var goals []Goal
+		for rows.Next() {
+			var goal Goal
+			var tempDate []uint8
+			err := rows.Scan(&goal.ID, &goal.Email, &goal.Name, &goal.Amount, &tempDate, &goal.CategoryID, &goal.Periodicity)
+			if err != nil {
+				fmt.Println(err)
+				c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting goals"})
+				return
+			} else {
+				goal.TargetDate, err = time.Parse("2006-01-02 00:00:00", string(tempDate))
+				if err != nil {
+					fmt.Println(err)
+					c.JSON(http.StatusInternalServerError, gin.H{"message": "error parsing goal target date"})
+					return
+				}
+				goals = append(goals, goal)
+			}
+		}
+		categories[i].Goals = &goals
+	}
+
 	c.JSON(http.StatusOK, categories)
 }
-
 
 func postCategory(c *gin.Context) {
 	var newCategory Category
@@ -68,5 +123,3 @@ func postCategory(c *gin.Context) {
 	}
 	c.JSON(http.StatusCreated, newCategory)
 }
-
-

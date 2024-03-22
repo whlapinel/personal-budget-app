@@ -35,6 +35,7 @@ func main() {
 	router.GET("/users/:email", getUserByEmail)
 	router.POST("/users", postUser)
 	router.GET("/categories/:email", getCategoriesByEmail)
+	router.GET("/categories/id/:id", getCategoriesByID)
 	router.POST("/categories", postCategory)
 	router.GET("/accounts/:email", getAccountsByEmail)
 	router.POST("/accounts", postAccount)
@@ -43,6 +44,7 @@ func main() {
 	router.GET("/assignments/:email", getAssignmentsByEmail)
 	router.POST("/assignments", postAssignment)
 	router.GET("/goals/:email", getGoalsByEmail)
+	router.GET("/goals/categoryID/:categoryID", getGoalByCategoryID)
 	router.POST("/goals", postGoal)
 	router.Run("localhost:8080")
 }

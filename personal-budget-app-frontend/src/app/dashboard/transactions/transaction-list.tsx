@@ -47,10 +47,10 @@ export default async function TransactionList({account}: {account: Account}) {
                 {transaction.memo}
               </td>
               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                {transaction.amount < 0 ? `$${convertToDollars(Math.abs(transaction.amount))}` : null}
+                {transaction.amount < 0 ? `${convertToDollars(Math.abs(transaction.amount))}` : null}
               </td>
               <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                {transaction.amount > 0 ? `$${convertToDollars(transaction.amount)}` : null}
+                {transaction.amount > 0 ? `${convertToDollars(transaction.amount)}` : null}
               </td>
             </tr>
           ))}

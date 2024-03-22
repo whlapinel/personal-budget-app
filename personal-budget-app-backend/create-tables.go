@@ -138,6 +138,7 @@ func createGoalsTable(db *sql.DB) (sql.Result, error) {
 			amount int,
 			target_date datetime,
 			category_id int,
+			periodicity VARCHAR(100),
 			FOREIGN KEY (email) REFERENCES users(email),
 			FOREIGN KEY (category_id) REFERENCES categories(id)
 			);`

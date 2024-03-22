@@ -11,6 +11,28 @@ export async function getUser(email: string): Promise<User> {
     return users
 }
 
+export async function getGoal(categoryID: number): Promise<Goal> {
+    const data = await fetch(`${backendUrls.goals}/categoryID/${categoryID}`, {
+        headers: {
+            'API_KEY': API_KEY
+        }
+    });
+    const goal = await data.json();
+    return goal
+}
+
+export async function getCategoryByID(categoryID: string): Promise<Category> {
+    // FIXME complete this function
+    const data = await fetch (`${backendUrls.categories}/id/${categoryID}`, {
+        headers: {
+            'API_KEY': API_KEY,
+        }
+    });
+    const category: Category = await data.json();
+    console.log(category);
+    return category
+}
+
 export async function getAccounts(email: string): Promise<Account[]> {
     const data = await fetch(`${backendUrls.accounts}/${email}`, {
         headers: {
@@ -51,6 +73,7 @@ export async function getCategories(email: string): Promise<Category[]> {
         });
         const categories = await data.json();
         console.log(categories);
+        console.log(categories[0].goals)
         return categories
     } catch (err) {
         console.log(err);

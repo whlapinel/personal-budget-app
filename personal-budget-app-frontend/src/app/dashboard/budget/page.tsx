@@ -4,10 +4,19 @@ import { Link } from "@/app/ui/link";
 import { getCategories } from "@/app/lib/data/get-data";
 import { Category } from "@/app/lib/data/definitions";
 import { cookies } from "next/headers";
+import CategoryRow from "./category-row";
 
-export default async function BudgetPage() {
+export default async function BudgetPage({searchParams}: {searchParams: any}) {
+  const monthParam = Number(searchParams.month);
+  const yearParam = Number(searchParams.year);
   const today = new Date();
-  const month = today.toLocaleString('default', { month: 'long' });
+  const viewedMonth = monthParam || today.getMonth();
+  const viewedYear = yearParam || today.getFullYear();
+  const viewedDate = new Date(viewedYear, viewedMonth);
+  console.log("BudgetPage() month: ", viewedMonth)
+  console.log("BudgetPage() year: ", viewedYear)
+  console.log("BudgetPage() viewedDate: ", viewedDate)
+  const monthString = viewedDate.toLocaleString('default', { month: 'long' });
   const email = cookies().get('email')?.value!;
   console.log("BudgetPage() email: ", email);
   const categories: Category[] = await getCategories(email);
@@ -17,7 +26,7 @@ export default async function BudgetPage() {
   return (
     <>
       <Card className='bg-amber-200'>
-        <h1 className="text-2xl font-bold text-gray-900">{month} Budget</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{monthString} Budget</h1>
         <Link className=" bg-blue-700 rounded p-2 text-gray-50" href='/dashboard/budget/add-category'>Add Budget Item</Link>
         <table className="min-w-full divide-y divide-gray-300">
           <thead>
@@ -41,15 +50,7 @@ export default async function BudgetPage() {
           </thead>
             <tbody className="divide-y divide-gray-200">
               {categories?.map((category) => (
-                <tr key={category.id}>
-                  <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
-                    {category.name}
-                  </td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{'placeholder needed'} {}</td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{'placeholder assigned'}</td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{'placeholder available'}</td>
-                  <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{'placeholder spent'}</td>
-                </tr>
+                <CategoryRow key={category.id} category={category} month={viewedMonth} />
               ))}
             </tbody>
         </table>

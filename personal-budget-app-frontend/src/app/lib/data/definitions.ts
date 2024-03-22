@@ -19,15 +19,20 @@ export type Category = {
     id: number,
     name: string, // e.g. "Groceries"
     email: string // user email (foreign key)
+    goals?: Goal[]
 }
 
 export type Goal = {
     id: string,
     name: string,
     amount: number,
-    targetDate: Date,
+    targetDate: string,
     categoryID: number,
+    email: string
+    periodicity: Periodicity
 }
+
+export type Periodicity = 'monthly' | 'yearly' | 'onetime' | 'weekly' | 'biweekly' | 'quarterly'
 
 export type Transaction = {
     id: string,

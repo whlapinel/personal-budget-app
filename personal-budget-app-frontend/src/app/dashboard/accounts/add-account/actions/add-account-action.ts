@@ -2,6 +2,7 @@
 
 import { backendUrls } from "@/app/constants/backend-urls";
 import type { Account } from "@/app/lib/data/definitions";
+import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
 
 export default async function addAccountAction(prevState: any, formData: any){
@@ -27,6 +28,7 @@ export default async function addAccountAction(prevState: any, formData: any){
         }
         const data = await response.json();
         console.log('addAccountAction data:', data);
+        revalidatePath("/dashboard/accounts", "page");
 
         return ({
             message: 'Account added'

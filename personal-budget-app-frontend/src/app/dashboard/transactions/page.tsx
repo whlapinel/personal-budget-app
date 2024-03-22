@@ -16,7 +16,7 @@ export default async function TransactionsPage({searchParams}: {searchParams: an
   console.log('searchParams.selectedAccountID: ', searchParams.selectedAccountID);
   const accountsList = accounts?.map((account) => {
     return (
-      <Link className={" bg-blue-700 rounded p-2 text-gray-50"} key={account.id} href={`/dashboard/transactions?selectedAccountID=${account.id}`}>{account.name} ${convertToDollars(account.balance)}</Link>
+      <Link className={" bg-blue-700 rounded p-2 text-gray-50"} key={account.id} href={`/dashboard/transactions?selectedAccountID=${account.id}`}>{account.name} {convertToDollars(account.balance)}</Link>
     )
   })
   const totalBalance = accounts?.reduce((acc, account) => acc + account.balance, 0);

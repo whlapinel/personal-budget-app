@@ -6,13 +6,14 @@ package main
 import (
 	"fmt"
 	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
 	// for development only
 	wipeData := false // true if you want to delete tables and start over
-	if (wipeData) {
+	if wipeData {
 		result, err := dropTables()
 		if err != nil {
 			fmt.Println(err)
@@ -20,11 +21,23 @@ func main() {
 			fmt.Println(result)
 			fmt.Println("tables dropped")
 		}
+		err = dropSprocs()
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println("stored procedures dropped")
+		}
 		err = createTables()
 		if err != nil {
 			fmt.Println(err)
 		} else {
 			fmt.Println("tables created")
+		}
+		err = createSprocs()
+		if err != nil {
+			fmt.Println(err)
+		} else {
+			fmt.Println("stored procedures created")
 		}
 	}
 	// end development only

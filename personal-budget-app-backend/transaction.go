@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Transaction struct {
@@ -25,10 +26,16 @@ func (t *Transaction) create() error {
 	if err != nil {
 		return err
 	}
+	_, err = db.Exec("CALL update_account_balance(?)", t.AccountID)
+	if err != nil {
+		return err
+	}
+	fmt.Println("Transaction created and account balance updated for account: ", t.AccountID)
 	return nil
 }
 
 func getTransactionsByAccountID(c *gin.Context) {
+	fmt.Println("getTransactionsByAccountID")
 	var transaction Transaction
 	// get transactions
 	accountID := c.Param("accountID")
@@ -36,9 +43,8 @@ func getTransactionsByAccountID(c *gin.Context) {
 	db := initializeDB()
 	defer db.Close()
 	rows, err := db.Query(`
-	SELECT transactions.*, categories.name AS category_name 
+	SELECT * 
 	FROM transactions 
-	JOIN categories ON transactions.category_id = categories.id 
 	WHERE transactions.account_id = ?`, accountID)
 	if err != nil {
 		fmt.Println(err)
@@ -48,7 +54,8 @@ func getTransactionsByAccountID(c *gin.Context) {
 	var transactions []Transaction
 	for rows.Next() {
 		var tempDate []uint8
-		err := rows.Scan(&transaction.ID, &transaction.AccountID, &tempDate, &transaction.Payee, &transaction.Amount, &transaction.Memo, &transaction.CategoryID, &transaction.CategoryName)
+		err := rows.Scan(&transaction.ID, &transaction.AccountID, &tempDate, &transaction.Payee, &transaction.Amount, &transaction.Memo, &transaction.CategoryID)
+		fmt.Println("transaction: ", transaction)
 		if err != nil {
 			fmt.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting transactions"})

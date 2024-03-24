@@ -78,6 +78,7 @@ func createAccountTable(db *sql.DB) (sql.Result, error) {
 			type VARCHAR(100),
 			bank_name VARCHAR(100),
 			starting_balance int,
+			balance int,
 			FOREIGN KEY (email) REFERENCES users(email)
 			);`
 	result, err := db.Exec(query)

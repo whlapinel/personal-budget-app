@@ -2,8 +2,9 @@ package main
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 type Account struct {
@@ -30,7 +31,7 @@ const (
 func (a *Account) create() error {
 	db := initializeDB()
 	defer db.Close()
-	_, err := db.Exec("INSERT INTO accounts (email, name, type, bank_name, starting_balance) VALUES (?, ?, ?, ?, ?)", a.Email, a.Name, a.Type, a.BankName, a.StartingBalance)
+	_, err := db.Exec("INSERT INTO accounts (email, name, type, bank_name, starting_balance, balance) VALUES (?, ?, ?, ?, ?, ?)", a.Email, a.Name, a.Type, a.BankName, a.StartingBalance, a.StartingBalance)
 	if err != nil {
 		return err
 	}
@@ -52,7 +53,7 @@ func getAccountsByEmail(c *gin.Context) {
 	}
 	var accounts []Account
 	for rows.Next() {
-		err := rows.Scan(&account.ID, &account.Email, &account.Name, &account.Type, &account.BankName, &account.StartingBalance)
+		err := rows.Scan(&account.ID, &account.Email, &account.Name, &account.Type, &account.BankName, &account.StartingBalance, &account.Balance)
 		if err != nil {
 			fmt.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting accounts"})
@@ -61,49 +62,51 @@ func getAccountsByEmail(c *gin.Context) {
 			accounts = append(accounts, account)
 		}
 	}
+	// since I just added a stored procedure to update account balances, I
+	// should not need any of the below commented out code.  Keeping just in case.
+
 	// get account balances by retrieving sum of transactions for each account,
 	// add to each account struct instance
-
-	for i, account := range accounts {
-		// make sure there are transactions before running query
-		rows, err := db.Query("SELECT COUNT(*) FROM transactions WHERE account_id = ?", account.ID)
-		if err != nil {
-			fmt.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting account balances"})
-			return
-		}
-		var count int
-		for rows.Next() {
-			err := rows.Scan(&count)
-			if err != nil {
-				fmt.Println(err)
-				c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting account balances"})
-				return
-			}
-			if count == 0 {
-				accounts[i].Balance = account.StartingBalance
-				continue
-			} else {
-				// get sum of transactions
-				rows, err = db.Query("SELECT SUM(amount) FROM transactions WHERE account_id = ?", account.ID)
-				if err != nil {
-					fmt.Println(err)
-					c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting account balances"})
-					return
-				}
-				var balance int
-				for rows.Next() {
-					err := rows.Scan(&balance)
-					if err != nil {
-						fmt.Println(err)
-						c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting account balances"})
-						return
-					}
-					accounts[i].Balance = balance + account.StartingBalance
-				}
-			}
-		}
-	}
+	// for i, account := range accounts {
+	// 	// make sure there are transactions before running query
+	// 	rows, err := db.Query("SELECT COUNT(*) FROM transactions WHERE account_id = ?", account.ID)
+	// 	if err != nil {
+	// 		fmt.Println(err)
+	// 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting account balances"})
+	// 		return
+	// 	}
+	// 	var count int
+	// 	for rows.Next() {
+	// 		err := rows.Scan(&count)
+	// 		if err != nil {
+	// 			fmt.Println(err)
+	// 			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting account balances"})
+	// 			return
+	// 		}
+	// 		if count == 0 {
+	// 			accounts[i].Balance = account.StartingBalance
+	// 			continue
+	// 		} else {
+	// 			// get sum of transactions
+	// 			rows, err = db.Query("SELECT SUM(amount) FROM transactions WHERE account_id = ?", account.ID)
+	// 			if err != nil {
+	// 				fmt.Println(err)
+	// 				c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting account balances"})
+	// 				return
+	// 			}
+	// 			var balance int
+	// 			for rows.Next() {
+	// 				err := rows.Scan(&balance)
+	// 				if err != nil {
+	// 					fmt.Println(err)
+	// 					c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting account balances"})
+	// 					return
+	// 				}
+	// 				accounts[i].Balance = balance + account.StartingBalance
+	// 			}
+	// 		}
+	// 	}
+	// }
 	c.JSON(http.StatusOK, accounts)
 }
 

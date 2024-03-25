@@ -6,6 +6,11 @@ import { revalidatePath } from "next/cache";
 
 export default async function addTransactionAction(prevState: any, formData: any){
 
+    const type = formData.get('type')?.toString();
+    if (type === 'debit') {
+        formData.set('amount', (Number(formData.get('amount')) * -1).toString())
+    }
+
 
     // validate formData
     const transaction: Partial<Transaction> = {

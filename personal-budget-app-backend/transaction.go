@@ -16,7 +16,7 @@ type Transaction struct {
 	Amount       int       `json:"amount"`     // in cents not dollars
 	Memo         *string   `json:"memo"`       // pointer so value can be nil
 	CategoryID   *int      `json:"categoryID"` // pointer so value can be nil
-	CategoryName *string   `json:"categoryName"`
+	CategoryName *string   `json:"categoryName"` // stored in DB under categories.name
 }
 
 func (t *Transaction) create() error {
@@ -26,7 +26,7 @@ func (t *Transaction) create() error {
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec("CALL update_account_balance(?)", t.AccountID)
+	_, err = db.Exec("CALL update_account_balance(?, ?)", t.AccountID, t.Amount)
 	if err != nil {
 		return err
 	}
@@ -43,8 +43,9 @@ func getTransactionsByAccountID(c *gin.Context) {
 	db := initializeDB()
 	defer db.Close()
 	rows, err := db.Query(`
-	SELECT * 
-	FROM transactions 
+	SELECT transactions.*, categories.name 
+	FROM transactions
+	LEFT JOIN categories ON categories.id = transactions.category_id 
 	WHERE transactions.account_id = ?`, accountID)
 	if err != nil {
 		fmt.Println(err)
@@ -54,7 +55,7 @@ func getTransactionsByAccountID(c *gin.Context) {
 	var transactions []Transaction
 	for rows.Next() {
 		var tempDate []uint8
-		err := rows.Scan(&transaction.ID, &transaction.AccountID, &tempDate, &transaction.Payee, &transaction.Amount, &transaction.Memo, &transaction.CategoryID)
+		err := rows.Scan(&transaction.ID, &transaction.AccountID, &tempDate, &transaction.Payee, &transaction.Amount, &transaction.Memo, &transaction.CategoryID, &transaction.CategoryName)
 		fmt.Println("transaction: ", transaction)
 		if err != nil {
 			fmt.Println(err)

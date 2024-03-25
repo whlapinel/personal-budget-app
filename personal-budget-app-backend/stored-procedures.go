@@ -41,29 +41,15 @@ func createSprocUpdateAccountBalance(db *sql.DB) (sql.Result, error) {
 	query :=
 		`
 		CREATE PROCEDURE update_account_balance(
-			IN account_id INT
+			IN account_id INT,
+			IN amount INT
 		)
 		BEGIN
 			DECLARE new_balance INT DEFAULT 0;
-			DECLARE starting_balance INT;
-		
-			-- Retrieve the total amount from transactions for the given account_id
-			SELECT SUM(amount) INTO new_balance
-			FROM transactions
-			WHERE account_id = account_id;
-		
-			-- Retrieve the starting balance for the account
-			SELECT balance INTO starting_balance
-			FROM accounts
-			WHERE id = account_id;
-		
-			-- Calculate the new balance by adding the sum of transactions to the starting balance
-			SET new_balance = new_balance + starting_balance;
-		
-			-- Update the accounts table with the new balance
-			UPDATE accounts
-			SET balance = new_balance
-			WHERE id = account_id;
+			DECLARE old_balance INT DEFAULT 0;
+			SELECT balance INTO old_balance FROM accounts WHERE id = account_id;
+			SET new_balance = old_balance + amount;
+			UPDATE accounts SET balance = new_balance WHERE id = account_id;
 		END;
 		`
 	result, err := db.Exec(query)

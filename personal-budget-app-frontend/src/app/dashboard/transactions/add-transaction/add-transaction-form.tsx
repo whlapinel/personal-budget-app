@@ -6,7 +6,7 @@ import { SubmitButton } from '@/app/ui/submit-button';
 import { useSession } from '@/app/session-context';
 import { Account } from '@/app/lib/data/definitions';
 import {Category} from '@/app/lib/data/definitions'
-import { Radio } from '@/app/ui/radio';
+import { Radio, RadioGroup } from '@/app/ui/radio';
 
 const initialState: { message: string | null } = {
     message: null,
@@ -29,6 +29,11 @@ export default function AddTransactionForm({ accounts, categories }: { accounts:
             <input type="date" name="date" />
             <label htmlFor="payee">Payee</label>
             <input type="text" name="payee" />
+            <label htmlFor="type">Type</label>
+            <select name='type'>
+                <option value="debit">Debit</option>
+                <option value="credit">Credit</option>
+            </select>
             <label htmlFor="memo">Memo</label>
             <input type="text" name="memo" />
             <label htmlFor="amount">Amount</label>

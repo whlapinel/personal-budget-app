@@ -2,7 +2,8 @@
 import Card from "@/app/ui/card"
 import { Link } from "@/app/ui/link";
 import { getCategories } from "@/app/lib/data/get-data";
-import { Category } from "@/app/lib/data/definitions";
+import { getGoals } from "@/app/lib/data/get-data";
+import { Category, Goal } from "@/app/lib/data/definitions";
 import { cookies } from "next/headers";
 import CategoryRow from "./category-row";
 

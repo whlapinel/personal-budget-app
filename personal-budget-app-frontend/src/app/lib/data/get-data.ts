@@ -1,7 +1,8 @@
 import { revalidatePath } from "next/cache";
 // import all definitions
-import { User, Account, Transaction, Category } from './definitions';
+import { User, Account, Transaction, Category, Goal } from './definitions';
 import { backendUrls } from "@/app/constants/backend-urls";
+
 
 const API_KEY: string = process.env.API_KEY!;
 export async function getUser(email: string): Promise<User> {
@@ -11,14 +12,16 @@ export async function getUser(email: string): Promise<User> {
     return users
 }
 
-export async function getGoal(categoryID: number): Promise<Goal> {
-    const data = await fetch(`${backendUrls.goals}/categoryID/${categoryID}`, {
+export async function getGoals(email: string): Promise<Goal[]> {
+    
+    // FIXME I think this URL should be changed somehow... not sure
+    const data = await fetch(`${backendUrls.goals}/${email}`, {
         headers: {
             'API_KEY': API_KEY
         }
     });
-    const goal = await data.json();
-    return goal
+    const goals = await data.json();
+    return goals
 }
 
 export async function getCategoryByID(categoryID: string): Promise<Category> {

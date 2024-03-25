@@ -87,7 +87,7 @@ func getGoalsByEmail(c *gin.Context) {
 	var goals []Goal
 	for rows.Next() {
 		var tempDate []uint8
-		err := rows.Scan(&goal.ID, &goal.Email, &goal.Name, &goal.Amount, &tempDate, &goal.CategoryID)
+		err := rows.Scan(&goal.ID, &goal.Email, &goal.Name, &goal.Amount, &tempDate, &goal.CategoryID, &goal.Periodicity)
 		if err != nil {
 			fmt.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting goals"})

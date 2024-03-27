@@ -21,7 +21,7 @@ export default async function EditAssignmentPage({params, searchParams}: {params
         return null;
     }
     const assignments: Assignment[] = await getAssignments(categoryID);
-    const currAssignment = assignments.find((assignment) => {
+    const currAssignment = assignments?.find((assignment) => {
         return assignment.month === monthParam && assignment.year === yearParam;
     });
     const currAmount = currAssignment ? currAssignment.amount : null;
@@ -34,6 +34,6 @@ export default async function EditAssignmentPage({params, searchParams}: {params
 
 
     return (
-        <EditAssignmentForm category={category} month={monthParam} year={yearParam} currAssignmentAmount={currAmount}/>
+        <EditAssignmentForm category={category} month={monthParam} year={yearParam} currAssignmentAmount={currAmount || 0}/>
     )
 }

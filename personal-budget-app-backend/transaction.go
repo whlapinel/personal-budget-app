@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-
+	"database/sql"
 	"github.com/gin-gonic/gin"
 )
 
@@ -19,6 +19,30 @@ type Transaction struct {
 	CategoryName *string   `json:"categoryName"` // stored in DB under categories.name
 	Email        string    `json:"email"`
 }
+
+func createTransactionTable(db *sql.DB) (sql.Result, error) {
+
+	query :=
+		`CREATE TABLE transactions (
+			id int AUTO_INCREMENT PRIMARY KEY,
+			account_id int,
+			date datetime,
+			payee VARCHAR(100),
+			amount int,
+			memo VARCHAR(100),
+			category_id int,
+			email VARCHAR(100),
+			FOREIGN KEY (email) REFERENCES users(email),
+			FOREIGN KEY (account_id) REFERENCES accounts(id),
+			FOREIGN KEY (category_id) REFERENCES categories(id)
+			);`
+	result, err := db.Exec(query)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 
 func (t *Transaction) Save() error {
 	db := initializeDB()

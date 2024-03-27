@@ -21,7 +21,7 @@ export default function EditAssignmentForm({ category, month, year, currAssignme
     return (
         <div className="flex justify-center">
             <form className="flex justify-center items-center flex-col w-64" action={formAction}>
-                <p>Currently Assigned: {convertToDollars(currAssignmentAmount || 0)}</p>
+                <p>Currently Assigned: {convertToDollars(currAssignmentAmount)}</p>
                 <label htmlFor="amount">New Amount</label>
                 <input type="float" name="amount" />
                 <input type="hidden" name="month" value={month} />

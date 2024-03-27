@@ -1,5 +1,5 @@
 import convertToDollars from "@/app/lib/cents-to-dollars";
-import { Category, Goal, Transaction } from "@/app/lib/data/definitions";
+import { Category, Goal, Transaction, Assignment } from "@/app/lib/data/definitions";
 import { getAccounts, getAssignments } from "@/app/lib/data/get-data";
 import { Link } from "@/app/ui/link";
 
@@ -24,22 +24,27 @@ export default async function CategoryRow({ category, month, year, transactions 
         return (acc + goal.amount);
     }, 0);
 
-    const goalString = goalsThisMonth.length > 0 ? `${convertToDollars(totalNeeded)} for ${goalsThisMonth[0].name}` : 'No goal assigned';
-
-    const totalSpent: number = transactions.reduce((acc, transaction) => {
-        return (acc + transaction.amount);
-    }, 0);
-
     const assignedAmount = assignments?.find((assignment) => {
         return assignment.month === month && assignment.year === year;
     })?.amount || 0;
 
+    const neededRemaining: number = totalNeeded - assignedAmount;
+    const goalString = goalsThisMonth.length > 0 ? `${convertToDollars(neededRemaining)} for `: 'No goal assigned';
+    
+    const totalSpent: number = transactions.reduce((acc, transaction) => {
+        return (acc + transaction.amount);
+    }, 0);
+    
+    
+    const overspent: boolean = totalSpent > assignedAmount;
+    
+    const goalsLink = goalsThisMonth.length > 0 ? <Link href={`/dashboard/budget/view-goals/${category.id}?month=${month}&year=${year}`}>Goals</Link> : null;
     return (
         <tr key={category.id}>
             <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
                 {category.name}
             </td>
-            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{goalString}</td>
+            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{goalString}{goalsLink}</td>
             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                 <Link href={`/dashboard/budget/edit-assignment/${category.id}?month=${month}&year=${year}`}>{convertToDollars(assignedAmount)}</Link></td>
             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{'placeholder available'}</td>

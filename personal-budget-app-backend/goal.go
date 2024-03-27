@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"time"
-
+	"database/sql"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,6 +28,28 @@ const (
 	Quarterly Periodicity = "quarterly"
 	Yearly    Periodicity = "yearly"
 )
+
+func createGoalsTable(db *sql.DB) (sql.Result, error) {
+
+	query :=
+		`CREATE TABLE goals (
+			id int AUTO_INCREMENT PRIMARY KEY,
+			email VARCHAR(100),
+			name VARCHAR(100),
+			amount int,
+			target_date datetime,
+			category_id int,
+			periodicity VARCHAR(100),
+			FOREIGN KEY (email) REFERENCES users(email),
+			FOREIGN KEY (category_id) REFERENCES categories(id)
+			);`
+	result, err := db.Exec(query)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 
 func (g *Goal) Save() error {
 	db := initializeDB()

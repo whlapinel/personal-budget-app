@@ -1,10 +1,11 @@
 
 import Card from "@/app/ui/card"
 import { Link } from "@/app/ui/link";
-import { getTransactions, getCategories } from "@/app/lib/data/get-data";
+import { getTransactions, getCategories, getAccounts, getAssignmentsByEmail } from "@/app/lib/data/get-data";
 import { Category, Goal, Transaction } from "@/app/lib/data/definitions";
 import { cookies } from "next/headers";
 import CategoryRow from "./category-row";
+import convertToDollars from "@/app/lib/cents-to-dollars";
 
 export default async function BudgetPage({ searchParams }: { searchParams: any }) {
   const monthParam = Number(searchParams.month);
@@ -23,14 +24,28 @@ export default async function BudgetPage({ searchParams }: { searchParams: any }
   const transactions: Transaction[] = await getTransactions(email);
   console.log(categories);
 
+  const accounts = await getAccounts(email);
+  const totalBalance = accounts?.reduce((acc, account) => acc + account.balance, 0);
+
+  const assignments = await getAssignmentsByEmail(email);
+  console.log('assignments: ', assignments);
+  const assignmentsForMonth = assignments.filter((assignment) => {
+    return assignment.month === viewedMonth && assignment.year === viewedYear;
+  }
+  )
+  console.log('assignmentsForMonth: ', assignmentsForMonth);
+  const monthlyAssigned = assignmentsForMonth.reduce((acc, assignment) => acc + assignment.amount, 0);
+
+  console.log('accounts: ', accounts);
 
   return (
     <>
       <Card className='bg-amber-200'>
         <h1 className="text-2xl font-bold text-gray-900">{monthString} Budget</h1>
+        <h2 className="text-xl font-bold text-gray-900">Unassigned: {convertToDollars(totalBalance - monthlyAssigned)}</h2>
         <Link href={`/dashboard/budget?month=${viewedMonth - 1}&year=${viewedYear}`} className="bg-blue-700 rounded p-2 text-gray-50">Previous Month</Link>
         <Link href={`/dashboard/budget?month=${viewedMonth + 1}&year=${viewedYear}`} className="bg-blue-700 rounded p-2 text-gray-50">Next Month</Link>
-        <Link className=" bg-blue-700 rounded p-2 text-gray-50" href='/dashboard/budget/add-category'>Add Budget Item</Link>
+        <Link className=" bg-blue-700 rounded p-2 text-gray-50" href='/dashboard/budget/add-category'>Add Budget Category</Link>
         <table className="min-w-full divide-y divide-gray-300">
           <thead>
             <tr>

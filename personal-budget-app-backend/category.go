@@ -5,14 +5,34 @@ import (
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"time"
+	"database/sql"
 )
 
 type Category struct {
-	ID    int     `json:"id"`
-	Email string  `json:"email"`
-	Name  string  `json:"name"`
-	Goals *[]Goal `json:"goals"` // not stored in DB, but should be retrieved along with category
+	ID      int     `json:"id"`
+	Email   string  `json:"email"` 
+	Name    string  `json:"name"` 
+	Goals   *[]Goal `json:"goals"`   // not stored in DB, but should be retrieved along with category
+	Balance int     `json:"balance"` // should be updated whenever spending or assignments occur
 }
+
+func createCategoryTable(db *sql.DB) (sql.Result, error) {
+
+	query :=
+		`CREATE TABLE categories (		
+			id int AUTO_INCREMENT PRIMARY KEY,
+			email VARCHAR(100),
+			name VARCHAR(100),
+			balance int,
+			FOREIGN KEY (email) REFERENCES users(email)
+			);`
+	result, err := db.Exec(query)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 
 func (bc *Category) Save() error {
 	fmt.Println("Creating category")

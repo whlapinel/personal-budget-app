@@ -7,6 +7,7 @@ import { refreshToken } from './lib/data/auth';
 import {useRouter} from 'next/navigation';
 import { signOutAction } from './sign-out-action';
 import getSessionAction from './get-session-action';
+import { inactiveTimeout } from './constants/session-life-span';
 
 
 let SessionContext = createContext<SessionContextType>({
@@ -61,7 +62,7 @@ useEffect(() => {
       clearTimeout(timeoutId);
       timeoutId = setTimeout(() => {
         onInactive();
-      }, 40000); // 40 seconds of inactivity
+      }, inactiveTimeout); // milliseconds of inactivity
   };
 
   // Define user activities to monitor
@@ -87,7 +88,6 @@ useEffect(() => {
         refreshSession();
       }
     }
-    // if user is active and 20 seconds remain before expiration, alert user
   }, 1000);
   return () => {
     clearInterval(interval);

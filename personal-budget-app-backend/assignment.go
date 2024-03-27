@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
-
+	"database/sql"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,6 +16,27 @@ type Assignment struct {
 	Amount     int    `json:"amount"` // in cents not dollars
 }
 
+func createAssignmentsTable(db *sql.DB) (sql.Result, error) {
+
+	query :=
+		`CREATE TABLE assignments (
+			id int AUTO_INCREMENT PRIMARY KEY,
+			email VARCHAR(100),
+			category_id int,
+			month VARCHAR(100),
+			year int,
+			amount int,
+			FOREIGN KEY (email) REFERENCES users(email),
+			FOREIGN KEY (category_id) REFERENCES categories(id)
+			);`
+	result, err := db.Exec(query)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+
 func (a *Assignment) Save() error {
 	db := initializeDB()
 	defer db.Close()
@@ -24,6 +45,33 @@ func (a *Assignment) Save() error {
 		return err
 	}
 	return nil
+}
+
+func getAssignmentsByEmail(c *gin.Context) {
+	var assignment Assignment
+	// get assignments
+	email := c.Param("email")
+	fmt.Println("email: ", email)
+	db := initializeDB()
+	defer db.Close()
+	rows, err := db.Query("SELECT * FROM assignments WHERE email = ?", email)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting assignments"})
+		return
+	}
+	var assignments []Assignment
+	for rows.Next() {
+		err := rows.Scan(&assignment.ID, &assignment.Email, &assignment.CategoryID, &assignment.Month, &assignment.Year, &assignment.Amount)
+		if err != nil {
+			fmt.Println(err)
+			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting assignments"})
+			return
+		} else {
+			assignments = append(assignments, assignment)
+		}
+	}
+	c.JSON(http.StatusOK, assignments)
 }
 
 func getAssignmentsByCategoryID(c *gin.Context) {

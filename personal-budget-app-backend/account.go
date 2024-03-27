@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
-
+	"database/sql"
 	"github.com/gin-gonic/gin"
 )
 
@@ -27,6 +27,27 @@ const (
 	Investment AccountType = "investment"
 	Other      AccountType = "other"
 )
+
+func createAccountTable(db *sql.DB) (sql.Result, error) {
+
+	query :=
+		`CREATE TABLE accounts (
+			id int AUTO_INCREMENT PRIMARY KEY,
+			email VARCHAR(100),
+			name VARCHAR(100),
+			type VARCHAR(100),
+			bank_name VARCHAR(100),
+			starting_balance int,
+			balance int,
+			FOREIGN KEY (email) REFERENCES users(email)
+			);`
+	result, err := db.Exec(query)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 
 func (a *Account) Save() error {
 	db := initializeDB()

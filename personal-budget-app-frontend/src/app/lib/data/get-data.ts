@@ -1,8 +1,9 @@
 'use server'
 
+
 import { revalidatePath } from "next/cache";
 // import all definitions
-import { User, Account, Transaction, Category, Goal } from './definitions';
+import { User, Account, Transaction, Category, Goal, Assignment } from './definitions';
 import { backendUrls } from "@/app/constants/backend-urls";
 
 
@@ -93,8 +94,18 @@ export async function getCategories(email: string): Promise<Category[]> {
     }
 }
 
-export async function getAssignments(categoryID: number): Promise<any> {
+export async function getAssignments(categoryID: number): Promise<Assignment[]> {
     const data = await fetch(`${backendUrls.assignments}/${categoryID}`, {
+        headers: {
+            'API_KEY': API_KEY
+        }
+    });
+    const assignments = await data.json();
+    return assignments
+}
+
+export async function getAssignmentsByEmail(email: string): Promise<Assignment[]> {
+    const data = await fetch(`${backendUrls.assignments}/email/${email}`, {
         headers: {
             'API_KEY': API_KEY
         }

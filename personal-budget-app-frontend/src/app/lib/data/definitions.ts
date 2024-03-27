@@ -18,18 +18,21 @@ export type User = {
 export type Category = {
     id: number,
     name: string, // e.g. "Groceries"
-    email: string // user email (foreign key)
-    goals?: Goal[]
+    email: string, // user email (foreign key)
+    goals?: Goal[],
+    assignments?: Assignment[],
+    spent?: number,
+    available?: number
 }
 
 export type Goal = {
     id: string,
     name: string,
     amount: number,
-    targetDate: string,
+    targetDate: Date,
     categoryID: number,
-    email: string
-    periodicity: Periodicity
+    email: string,
+    periodicity: Periodicity,
 }
 
 export type Periodicity = 'monthly' | 'yearly' | 'onetime' | 'weekly' | 'biweekly' | 'quarterly'
@@ -57,10 +60,10 @@ export type Account = {
 }
 
 export type Assignment = {
-    id: number,
+    id?: number,
     email: string, // user email (foreign key)
     categoryID: number,
-    month: string,
+    month: number,
     year: number,
     amount: number
 }

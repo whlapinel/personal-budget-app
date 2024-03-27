@@ -61,7 +61,7 @@ func main() {
 	router.POST("/transactions/", postTransaction)
 
 	//assignments routes
-	router.GET("/assignments/:email", getAssignmentsByEmail)
+	router.GET("/assignments/:categoryID", getAssignmentsByCategoryID)
 	router.POST("/assignments", postAssignment)
 
 	//goals routes... not sure this is needed since it's being sent as a property of categories

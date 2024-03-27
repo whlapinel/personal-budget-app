@@ -1,3 +1,5 @@
+'use server'
+
 import { revalidatePath } from "next/cache";
 // import all definitions
 import { User, Account, Transaction, Category, Goal } from './definitions';
@@ -74,7 +76,14 @@ export async function getCategories(email: string): Promise<Category[]> {
                 'API_KEY': API_KEY
             }
         });
-        const categories = await data.json();
+        const categories: Category[] = await data.json();
+        for (const category of categories) {
+            if (category.goals) {
+                for (const goal of category.goals) {
+                    goal.targetDate = new Date(goal.targetDate);
+                }
+            }
+        }
         console.log(categories);
         console.log(categories[0].goals)
         return categories
@@ -82,4 +91,14 @@ export async function getCategories(email: string): Promise<Category[]> {
         console.log(err);
         return []
     }
+}
+
+export async function getAssignments(categoryID: number): Promise<any> {
+    const data = await fetch(`${backendUrls.assignments}/${categoryID}`, {
+        headers: {
+            'API_KEY': API_KEY
+        }
+    });
+    const assignments = await data.json();
+    return assignments
 }

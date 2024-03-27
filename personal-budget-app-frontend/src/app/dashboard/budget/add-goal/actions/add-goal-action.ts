@@ -52,7 +52,7 @@ export default async function addGoalAction(prevState: any, formData: FormData) 
         categoryID: categoryID,
         name: name,
         amount: amount, // convert to cents
-        targetDate: targetDate.toDateString(),
+        targetDate: targetDate,
         email: email,
         periodicity: periodicity,
     }

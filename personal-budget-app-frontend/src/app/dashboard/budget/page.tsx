@@ -6,7 +6,7 @@ import { Category, Goal, Transaction } from "@/app/lib/data/definitions";
 import { cookies } from "next/headers";
 import CategoryRow from "./category-row";
 
-export default async function BudgetPage({searchParams}: {searchParams: any}) {
+export default async function BudgetPage({ searchParams }: { searchParams: any }) {
   const monthParam = Number(searchParams.month);
   const yearParam = Number(searchParams.year);
   const today = new Date();
@@ -47,26 +47,25 @@ export default async function BudgetPage({searchParams}: {searchParams: any}) {
                 Available
               </th>
               <th scope="col" className="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
-                Spent  
-              </th> 
+                Spent
+              </th>
             </tr>
           </thead>
-            <tbody className="divide-y divide-gray-200">
-              {categories?.map((category) => {
-                const filteredTransactions = transactions.filter((transaction)=> {
-                  
-                  return(
-                    (transaction.categoryID === category.id) && transaction.date.getMonth() === viewedMonth && transaction.date.getFullYear() === viewedYear
-                    )
-                  })
+          <tbody className="divide-y divide-gray-200">
+            {categories?.map((category) => {
+              const filteredTransactions = transactions.filter((transaction) => {
 
-                
                 return (
-                  <CategoryRow key={category.id} category={category} month={viewedMonth} transactions={filteredTransactions}/>
-                  )
-                }
-              )}
-            </tbody>
+                  (transaction.categoryID === category.id) && transaction.date.getMonth() === viewedMonth && transaction.date.getFullYear() === viewedYear
+                )
+              })
+
+              return (
+                <CategoryRow key={category.id} category={category} month={viewedMonth} year={viewedYear} transactions={filteredTransactions} />
+              )
+            }
+            )}
+          </tbody>
         </table>
       </Card>
     </>

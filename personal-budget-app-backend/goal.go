@@ -29,7 +29,7 @@ const (
 	Yearly    Periodicity = "yearly"
 )
 
-func (g *Goal) create() error {
+func (g *Goal) Save() error {
 	db := initializeDB()
 	defer db.Close()
 	_, err := db.Exec("INSERT INTO goals (email, name, amount, target_date, category_id, periodicity) VALUES (?, ?, ?, ?, ?, ?)", g.Email, g.Name, g.Amount, g.TargetDate, g.CategoryID, g.Periodicity)
@@ -112,7 +112,7 @@ func postGoal(c *gin.Context) {
 		return
 	}
 	fmt.Println(newGoal)
-	if err := newGoal.create(); err != nil {
+	if err := newGoal.Save(); err != nil {
 		fmt.Println("error in newGoal.create(): ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

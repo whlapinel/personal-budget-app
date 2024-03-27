@@ -5,7 +5,6 @@ package main
 
 import (
 	"fmt"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -44,41 +43,29 @@ func main() {
 	// API
 	router := gin.Default()
 	router.Use(authenticateBFF)
-	router.GET("/hello", sayHello)
+
+	// user routes
 	router.GET("/users/:email", getUserByEmail)
 	router.POST("/users", postUser)
+
+	//categories routes
 	router.GET("/categories/:email", getCategoriesByEmail)
-	router.GET("/categories/id/:id", getCategoriesByID)
 	router.POST("/categories", postCategory)
+
+	//accounts routes
 	router.GET("/accounts/:email", getAccountsByEmail)
 	router.POST("/accounts", postAccount)
-	router.GET("/transactions/:accountID", getTransactionsByAccountID)
+
+	//transactions routes
+	router.GET("/transactions/:email", getTransactionsByEmail)
 	router.POST("/transactions/", postTransaction)
+
+	//assignments routes
 	router.GET("/assignments/:email", getAssignmentsByEmail)
 	router.POST("/assignments", postAssignment)
-	router.GET("/goals/:email", getGoalsByEmail)
+
+	//goals routes... not sure this is needed since it's being sent as a property of categories
 	router.GET("/goals/categoryID/:categoryID", getGoalByCategoryID)
 	router.POST("/goals", postGoal)
 	router.Run("localhost:8080")
-}
-
-func sayHello(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"message": "Hello, World!"})
-}
-
-func authenticateBFF(c *gin.Context) {
-	// authenticate
-	var reqKey string
-	if reqKey = c.GetHeader("API_KEY"); reqKey == "" {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "no key"})
-		c.Abort()
-		return
-	}
-	fmt.Println("API_KEY", reqKey)
-	if reqKey != API_KEY {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "invalid key"})
-		c.Abort()
-		return
-	}
-	c.Next()
 }

@@ -2,8 +2,7 @@ import { Account, Transaction } from "@/app/lib/data/definitions";
 import { getTransactions } from "@/app/lib/data/get-data";
 import convertToDollars from "@/app/lib/cents-to-dollars";
 
-export default async function TransactionList({account}: {account: Account}) {
-    const transactions = await getTransactions(account.id);
+export default async function TransactionList({account, transactions}: {account: Account, transactions: Transaction[]}) {
     return (
       <table className="min-w-full divide-y divide-gray-300">
         <thead>

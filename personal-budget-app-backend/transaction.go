@@ -13,16 +13,17 @@ type Transaction struct {
 	AccountID    int       `json:"accountID"` // Changed from Account['id'] to string to simplify, consider interface{} if needing more complexity
 	Date         time.Time `json:"date"`
 	Payee        string    `json:"payee"`
-	Amount       int       `json:"amount"`     // in cents not dollars
-	Memo         *string   `json:"memo"`       // pointer so value can be nil
-	CategoryID   *int      `json:"categoryID"` // pointer so value can be nil
+	Amount       int       `json:"amount"`       // in cents not dollars
+	Memo         *string   `json:"memo"`         // pointer so value can be nil
+	CategoryID   *int      `json:"categoryID"`   // pointer so value can be nil
 	CategoryName *string   `json:"categoryName"` // stored in DB under categories.name
+	Email        string    `json:"email"`
 }
 
-func (t *Transaction) create() error {
+func (t *Transaction) Save() error {
 	db := initializeDB()
 	defer db.Close()
-	_, err := db.Exec("INSERT INTO transactions (account_id, date, payee, amount, memo, category_id) VALUES (?, ?, ?, ?, ?, ?)", t.AccountID, t.Date, t.Payee, t.Amount, t.Memo, t.CategoryID)
+	_, err := db.Exec("INSERT INTO transactions (account_id, date, payee, amount, memo, category_id, email) VALUES (?, ?, ?, ?, ?, ?, ?)", t.AccountID, t.Date, t.Payee, t.Amount, t.Memo, t.CategoryID, t.Email)
 	if err != nil {
 		return err
 	}
@@ -34,19 +35,19 @@ func (t *Transaction) create() error {
 	return nil
 }
 
-func getTransactionsByAccountID(c *gin.Context) {
-	fmt.Println("getTransactionsByAccountID")
+func getTransactionsByEmail(c *gin.Context) {
+	fmt.Println("getTransactionsByEmail")
 	var transaction Transaction
 	// get transactions
-	accountID := c.Param("accountID")
-	fmt.Println("accountID: ", accountID)
+	email := c.Param("email")
+	fmt.Println("email: ", email)
 	db := initializeDB()
 	defer db.Close()
 	rows, err := db.Query(`
 	SELECT transactions.*, categories.name 
 	FROM transactions
 	LEFT JOIN categories ON categories.id = transactions.category_id 
-	WHERE transactions.account_id = ?`, accountID)
+	WHERE transactions.email = ?`, email)
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting transactions"})
@@ -55,7 +56,7 @@ func getTransactionsByAccountID(c *gin.Context) {
 	var transactions []Transaction
 	for rows.Next() {
 		var tempDate []uint8
-		err := rows.Scan(&transaction.ID, &transaction.AccountID, &tempDate, &transaction.Payee, &transaction.Amount, &transaction.Memo, &transaction.CategoryID, &transaction.CategoryName)
+		err := rows.Scan(&transaction.ID, &transaction.AccountID, &tempDate, &transaction.Payee, &transaction.Amount, &transaction.Memo, &transaction.CategoryID, &transaction.Email, &transaction.CategoryName)
 		fmt.Println("transaction: ", transaction)
 		if err != nil {
 			fmt.Println(err)
@@ -81,7 +82,7 @@ func postTransaction(c *gin.Context) {
 		return
 	}
 	fmt.Println("newTransaction.AccountID", newTransaction.AccountID)
-	if err := newTransaction.create(); err != nil {
+	if err := newTransaction.Save(); err != nil {
 		fmt.Println("error in newTransaction.create(): ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

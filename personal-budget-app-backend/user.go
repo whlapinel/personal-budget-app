@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"github.com/gin-gonic/gin"
+	"database/sql"
 )
 
 type User struct {
@@ -13,8 +14,7 @@ type User struct {
     LastName     string     `json:"lastName"`
 }
 
-func (u *User) create() error {
-    fmt.Println("Creating user")
+func (u *User) Save() error {
 	db := initializeDB()
 	defer db.Close()
 	_, err := db.Exec("INSERT INTO users (password, first_name, last_name, email) VALUES (?, ?, ?, ?)", u.Password, u.FirstName, u.LastName, u.Email)
@@ -22,44 +22,31 @@ func (u *User) create() error {
 		fmt.Println(err)
 		return err
 	}
-    return nil
+	return nil
 }
 
-func (u *User) getByID() (*User) {
-    fmt.Println("Getting user by ID")
-    return u
-}
-
-func (u *User) update() error {
-    fmt.Println("Updating user")
-    return nil
-}
-
-func (u *User) delete() error {
-	id := u.Email
-	db := initializeDB()
-	defer db.Close()
-	_, err := db.Exec("DELETE FROM users WHERE id = ?", id)
+func (u *User) Delete(db *sql.DB) error {
+	_, err := db.Exec("DELETE FROM users WHERE email = ?", u.Email)
 	if err != nil {
 		fmt.Println(err)
 		return err
 	}
-    fmt.Println("Deleted user", id)
-    return nil
+	return nil
 }
 
-func postUser(c *gin.Context) {
-	var newUser User
-	if err := c.BindJSON(&newUser); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+func (u *User) Get(db *sql.DB) (*User, error) {
+    fmt.Println("Getting user by ID")
+	err := db.QueryRow("SELECT * FROM users WHERE email = ?", u.Email).Scan(&u.Email, &u.FirstName, &u.LastName, &u.Password)
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
 	}
-	fmt.Println(newUser)
-	if err := newUser.create(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	c.JSON(http.StatusCreated, newUser)
+    return u, nil
+}
+
+func (u *User) Update() error {
+    fmt.Println("Updating user")
+    return nil
 }
 
 func getUserByEmail(c *gin.Context) {
@@ -77,3 +64,18 @@ func getUserByEmail(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+
+func postUser(c *gin.Context) {
+	var user *User
+	err := c.BindJSON(&user)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": "bad request"})
+		return
+	}
+	err = user.Save()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "internal server error"})
+		return
+	}
+	c.JSON(http.StatusCreated, gin.H{"message": "user created"})
+}

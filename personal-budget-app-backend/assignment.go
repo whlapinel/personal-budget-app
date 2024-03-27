@@ -15,7 +15,7 @@ type Assignment struct {
 	Amount     int    `json:"amount"` // in cents not dollars
 }
 
-func (a *Assignment) create() error {
+func (a *Assignment) Save() error {
 	db := initializeDB()
 	defer db.Close()
 	_, err := db.Exec("INSERT INTO assignments (email, category_id, month, year, amount) VALUES (?, ?, ?, ?, ?)", a.Email, a.CategoryID, a.Month, a.Year, a.Amount)
@@ -59,8 +59,8 @@ func postAssignment(c *gin.Context) {
 		return
 	}
 	fmt.Println(newAssignment)
-	if err := newAssignment.create(); err != nil {
-		fmt.Println("error in newAssignment.create(): ", err)
+	if err := newAssignment.Save(); err != nil {
+		fmt.Println("error in newAssignment.Save(): ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

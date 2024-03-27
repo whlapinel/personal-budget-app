@@ -18,6 +18,9 @@ export default function AddGoalForm({ category }: { category: Category }) {
     if (!user) return null;
     const email = user.email;
 
+    console.log('AddGoalForm category:', category);
+    
+
     return (
         <form action={formAction}>
             <label htmlFor="name">Name</label>

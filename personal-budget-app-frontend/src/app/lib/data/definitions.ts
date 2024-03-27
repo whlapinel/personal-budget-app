@@ -43,6 +43,7 @@ export type Transaction = {
     memo: string,
     categoryID: Category['id'] | Transaction[] | null // for split transactions?  Not sure
     categoryName?: string
+    email: string // user email (foreign key)
 }
 
 export type Account = {

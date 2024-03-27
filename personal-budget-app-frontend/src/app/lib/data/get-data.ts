@@ -46,9 +46,9 @@ export async function getAccounts(email: string): Promise<Account[]> {
     return accounts
 }
 
-export async function getTransactions(accountID: number): Promise<Transaction[]> {
+export async function getTransactions(email: string): Promise<Transaction[]> {
     try {
-        const data = await fetch(`${backendUrls.transactions}/${accountID}`, {
+        const data = await fetch(`${backendUrls.transactions}/${email}`, {
             headers: {
                 'API_KEY': API_KEY
             }

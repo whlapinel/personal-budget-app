@@ -1,9 +1,8 @@
 
 import Card from "@/app/ui/card"
 import { Link } from "@/app/ui/link";
-import { getCategories } from "@/app/lib/data/get-data";
-import { getGoals } from "@/app/lib/data/get-data";
-import { Category, Goal } from "@/app/lib/data/definitions";
+import { getTransactions, getCategories } from "@/app/lib/data/get-data";
+import { Category, Goal, Transaction } from "@/app/lib/data/definitions";
 import { cookies } from "next/headers";
 import CategoryRow from "./category-row";
 
@@ -21,6 +20,7 @@ export default async function BudgetPage({searchParams}: {searchParams: any}) {
   const email = cookies().get('email')?.value!;
   console.log("BudgetPage() email: ", email);
   const categories: Category[] = await getCategories(email);
+  const transactions: Transaction[] = await getTransactions(email);
   console.log(categories);
 
 
@@ -28,6 +28,8 @@ export default async function BudgetPage({searchParams}: {searchParams: any}) {
     <>
       <Card className='bg-amber-200'>
         <h1 className="text-2xl font-bold text-gray-900">{monthString} Budget</h1>
+        <Link href={`/dashboard/budget?month=${viewedMonth - 1}&year=${viewedYear}`} className="bg-blue-700 rounded p-2 text-gray-50">Previous Month</Link>
+        <Link href={`/dashboard/budget?month=${viewedMonth + 1}&year=${viewedYear}`} className="bg-blue-700 rounded p-2 text-gray-50">Next Month</Link>
         <Link className=" bg-blue-700 rounded p-2 text-gray-50" href='/dashboard/budget/add-category'>Add Budget Item</Link>
         <table className="min-w-full divide-y divide-gray-300">
           <thead>
@@ -50,9 +52,20 @@ export default async function BudgetPage({searchParams}: {searchParams: any}) {
             </tr>
           </thead>
             <tbody className="divide-y divide-gray-200">
-              {categories?.map((category) => (
-                <CategoryRow key={category.id} category={category} month={viewedMonth} />
-              ))}
+              {categories?.map((category) => {
+                const filteredTransactions = transactions.filter((transaction)=> {
+                  
+                  return(
+                    (transaction.categoryID === category.id) && transaction.date.getMonth() === viewedMonth && transaction.date.getFullYear() === viewedYear
+                    )
+                  })
+
+                
+                return (
+                  <CategoryRow key={category.id} category={category} month={viewedMonth} transactions={filteredTransactions}/>
+                  )
+                }
+              )}
             </tbody>
         </table>
       </Card>

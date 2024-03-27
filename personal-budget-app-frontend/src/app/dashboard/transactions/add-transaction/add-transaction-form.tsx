@@ -44,6 +44,7 @@ export default function AddTransactionForm({ accounts, categories }: { accounts:
                     <option key={category.id} value={category.id}>{category.name}</option>
                 ))}
             </select>
+            <input type="hidden" name="email" value={email} />
             <SubmitButton>Add</SubmitButton>
             <p>{state.message}</p>
         </form>

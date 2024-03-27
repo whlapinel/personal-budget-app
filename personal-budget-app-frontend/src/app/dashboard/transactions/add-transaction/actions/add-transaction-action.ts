@@ -20,6 +20,7 @@ export default async function addTransactionAction(prevState: any, formData: any
         amount: Number(formData.get('amount')) * 100, // convert to cents
         memo: formData.get('memo')?.toString(),
         categoryID: formData.get('categoryID') ? Number(formData.get('categoryID')) : null,
+        email: formData.get('email')?.toString()!,
     }
     console.log('running addTransactionAction. transaction:', transaction);
 

@@ -99,6 +99,8 @@ func createTransactionTable(db *sql.DB) (sql.Result, error) {
 			amount int,
 			memo VARCHAR(100),
 			category_id int,
+			email VARCHAR(100),
+			FOREIGN KEY (email) REFERENCES users(email),
 			FOREIGN KEY (account_id) REFERENCES accounts(id),
 			FOREIGN KEY (category_id) REFERENCES categories(id)
 			);`

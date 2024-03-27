@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+
 	"github.com/go-sql-driver/mysql"
 )
 
@@ -29,5 +30,3 @@ func initializeDB() *sql.DB {
 	fmt.Println("Connected!")
 	return db
 }
-
-

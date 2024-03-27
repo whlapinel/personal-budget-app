@@ -4,6 +4,7 @@ import { backendUrls } from "@/app/constants/backend-urls";
 import { Goal } from "@/app/lib/data/definitions"
 import { Periodicity } from "@/app/lib/data/definitions"
 import { ca } from "date-fns/locale";
+import { revalidatePath } from "next/cache";
 
 export default async function addGoalAction(prevState: any, formData: FormData) {
     console.log('running addGoalAction');
@@ -51,7 +52,7 @@ export default async function addGoalAction(prevState: any, formData: FormData) 
         categoryID: categoryID,
         name: name,
         amount: amount, // convert to cents
-        targetDate: targetDate,
+        targetDate: targetDate.toDateString(),
         email: email,
         periodicity: periodicity,
     }
@@ -67,6 +68,7 @@ export default async function addGoalAction(prevState: any, formData: FormData) 
     }
     const data = await response.json();
     console.log('addGoalAction data:', data);
+    revalidatePath('/dashboard/budget');
 
     return ({
         message: 'Goal added',

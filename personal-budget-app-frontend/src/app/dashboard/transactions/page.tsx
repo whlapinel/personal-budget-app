@@ -11,6 +11,7 @@ import convertToDollars from "@/app/lib/cents-to-dollars";
 export default async function TransactionsPage({searchParams}: {searchParams: any}) {
   const email = cookies().get('email')?.value!;
   const accounts = await getAccounts(email);
+  const transactions = await getTransactions(email);
   console.log('accounts: ', accounts);
   console.log('searchParams: ', searchParams);
   console.log('searchParams.selectedAccountID: ', searchParams.selectedAccountID);
@@ -36,7 +37,7 @@ export default async function TransactionsPage({searchParams}: {searchParams: an
             <Link className=" bg-blue-700 rounded p-2 text-gray-50" href='/dashboard/transactions/add-transaction'>Add Transaction</Link>
           </div>
           {selectedAccount !== undefined ?
-            <TransactionList account={selectedAccount} />
+            <TransactionList account={selectedAccount} transactions={transactions.filter((transaction)=> transaction.accountID === selectedAccount.id)}/>
             :
             null
           }

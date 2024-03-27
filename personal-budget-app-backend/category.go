@@ -14,7 +14,7 @@ type Category struct {
 	Goals *[]Goal `json:"goals"` // not stored in DB, but should be retrieved along with category
 }
 
-func (bc *Category) create() error {
+func (bc *Category) Save() error {
 	fmt.Println("Creating category")
 	db := initializeDB()
 	defer db.Close()
@@ -24,30 +24,6 @@ func (bc *Category) create() error {
 		return err
 	}
 	return nil
-}
-
-func getCategoriesByID(c *gin.Context) {
-	var category Category
-	// get categories
-	id := c.Param("id")
-	fmt.Println("id: ", id)
-	db := initializeDB()
-	defer db.Close()
-	rows, err := db.Query("SELECT * FROM categories WHERE id = ?", id)
-	if err != nil {
-		fmt.Println(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting categories"})
-		return
-	}
-	for rows.Next() {
-		err := rows.Scan(&category.ID, &category.Email, &category.Name)
-		if err != nil {
-			fmt.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting categories"})
-			return
-		}
-	}
-	c.JSON(http.StatusOK, category)
 }
 
 func getCategoriesByEmail(c *gin.Context) {
@@ -104,7 +80,6 @@ func getCategoriesByEmail(c *gin.Context) {
 		}
 		categories[i].Goals = &goals
 	}
-
 	c.JSON(http.StatusOK, categories)
 }
 
@@ -116,8 +91,8 @@ func postCategory(c *gin.Context) {
 		return
 	}
 	fmt.Println("newCategory: ", newCategory)
-	if err := newCategory.create(); err != nil {
-		fmt.Println("error in newCategory.create(): ")
+	if err := newCategory.Save(); err != nil {
+		fmt.Println("error in newCategory.Save(): ")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}

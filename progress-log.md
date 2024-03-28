@@ -1,3 +1,6 @@
+## 3/27/24
+- Been working on a lot without updating here.  Major breakthrough today when I realized it will be a lot easier to do all the crunching on the backend and put as little of the calculation on the frontend as possible. Originally I had a route for each table basically. But today I created a MonthlyBudget struct and a monthly_budget route handler to provide all the necessary data for the budget page in one package instead of making the BFF do it and wasting a lot of roundtrips in the process.
+
 ## 3/18/24
 
 - FIXME: email cookie should not be stored separately from session, right??  Why did I do that?

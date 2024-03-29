@@ -25,8 +25,6 @@ const (
 	Other      AccountType = "other"
 )
 
-
-
 func (a *Account) Save() error {
 	db := database.InitializeDB()
 	defer db.Close()

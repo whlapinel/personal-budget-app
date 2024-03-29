@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"strconv"
 	"github.com/gin-gonic/gin"
-	"personal-budget-app-backend/models"
+	"personal-budget-app-backend/models/monthly_budget"
 )
 
 func RegisterMonthlyBudgetRoutes(router *gin.Engine) error {
@@ -33,7 +33,7 @@ func GetMonthlyBudgetHandler(c *gin.Context) {
 	fmt.Println("email: ", email)
 	fmt.Println("month: ", month)
 	fmt.Println("year: ", year)
-	monthlyBudget, err := models.GetMonthlyBudget(email, month, year)
+	monthlyBudget, err := monthly_budget.GetMonthlyBudget(email, month, year)
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting monthly budget"})

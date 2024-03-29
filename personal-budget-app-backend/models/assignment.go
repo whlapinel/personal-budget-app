@@ -13,8 +13,6 @@ type Assignment struct {
 	Amount     int    `json:"amount"` // in cents not dollars
 }
 
-
-
 func (a *Assignment) Save() error {
 	db := database.InitializeDB()
 	defer db.Close()

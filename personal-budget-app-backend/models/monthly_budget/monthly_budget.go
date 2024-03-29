@@ -1,8 +1,9 @@
-package models
+package monthly_budget
 
 import (
 	"fmt"
 	"personal-budget-app-backend/database"
+	"personal-budget-app-backend/models"
 )
 
 type MonthlyBudget struct {
@@ -253,7 +254,7 @@ func getCategoryData(categoryID int, month int, year int) (*CategoryData, error)
 func getCategoryMap(email string, month int, year int) (*CategoryArray, error) {
 	fmt.Println("running getCategoryMap()")
 	var categoryArray CategoryArray
-	categories, err := GetCategories(email)
+	categories, err := models.GetCategories(email)
 	if err != nil {
 		return nil, err
 	}

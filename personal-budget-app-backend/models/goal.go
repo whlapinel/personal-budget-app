@@ -22,8 +22,6 @@ const (
 	Monthly   Periodicity = "monthly"
 )
 
-
-
 func (g *Goal) Save() error {
 	db := database.InitializeDB()
 	defer db.Close()
@@ -33,7 +31,6 @@ func (g *Goal) Save() error {
 	}
 	return nil
 }
-
 
 func GetGoals(categoryID string) ([]Goal, error) {
 	db := database.InitializeDB()

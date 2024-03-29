@@ -8,7 +8,6 @@ import (
 	"personal-budget-app-backend/secrets"
 )
 
-
 func InitializeDB() *sql.DB {
 	var db *sql.DB
 	cfg := mysql.Config{
@@ -32,33 +31,4 @@ func InitializeDB() *sql.DB {
 	return db
 }
 
-func CreateTables() error {
-	db := InitializeDB()
-	fmt.Println("db initialized")
-	defer db.Close()
-	_, err := CreateUserTable(db)
-	if err != nil {
-		return err
-	}
-	_, err = CreateCategoryTable(db)
-	if err != nil {
-		return err
-	}
-	_, err = CreateAccountTable(db)
-	if err != nil {
-		return err
-	}
-	_, err = CreateTransactionTable(db)
-	if err != nil {
-		return err
-	}
-	_, err = CreateAssignmentsTable(db)
-	if err != nil {
-		return err
-	}
-	_, err = CreateGoalsTable(db)
-	if err != nil {
-		return err
-	}
-	return nil
-}
+

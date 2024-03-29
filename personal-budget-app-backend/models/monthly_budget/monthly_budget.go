@@ -297,7 +297,7 @@ func getAssigned(categoryID int, month int, year int) (int, error) {
 	fmt.Println("running getAssigned()")
 	db := database.InitializeDB()
 	defer db.Close()
-	const assignedQuery = `SELECT IFNULL(SUM(amount),0) FROM assignments WHERE category_id = ? AND month = ? and year = ?`
+	const assignedQuery = `SELECT IFNULL(SUM(amount),0) FROM monthly_budget WHERE category_id = ? AND month = ? and year = ?`
 	rows, err := db.Query(assignedQuery, categoryID, month, year)
 	if err != nil {
 		fmt.Println(err)

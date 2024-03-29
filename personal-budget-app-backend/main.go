@@ -11,9 +11,9 @@ import (
 
 func main() {
 	// for development only
-	wipeData := false // true if you want to delete tables and start over
-	if wipeData {
-		database.WipeData()
+	createDB := false // true if you want to delete database and start over
+	if createDB {
+		database.CreateDB()
 	}
 	// end development only
 	// API

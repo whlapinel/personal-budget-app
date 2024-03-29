@@ -1,58 +1,27 @@
-package main
+package routes
 
 import (
 	"fmt"
 	"net/http"
-	"database/sql"
+	"personal-budget-app-backend/database"
+	"personal-budget-app-backend/models"
 	"github.com/gin-gonic/gin"
 )
 
-type Assignment struct {
-	ID         int    `json:"id"`
-	Email      string `json:"email"`
-	CategoryID int    `json:"categoryID"`
-	Month      int    `json:"month"`
-	Year       int    `json:"year"`
-	Amount     int    `json:"amount"` // in cents not dollars
-}
-
-func createAssignmentsTable(db *sql.DB) (sql.Result, error) {
-
-	query :=
-		`CREATE TABLE assignments (
-			id int AUTO_INCREMENT PRIMARY KEY,
-			email VARCHAR(100),
-			category_id int,
-			month VARCHAR(100),
-			year int,
-			amount int,
-			FOREIGN KEY (email) REFERENCES users(email),
-			FOREIGN KEY (category_id) REFERENCES categories(id)
-			);`
-	result, err := db.Exec(query)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
-}
-
-
-func (a *Assignment) Save() error {
-	db := initializeDB()
-	defer db.Close()
-	_, err := db.Exec("INSERT INTO assignments (email, category_id, month, year, amount) VALUES (?, ?, ?, ?, ?)", a.Email, a.CategoryID, a.Month, a.Year, a.Amount)
-	if err != nil {
-		return err
-	}
+func RegisterAssignmentsRoutes(router *gin.Engine) error {
+	router.POST("/assignments", PostAssignment)
+	router.GET("/assignments/:email", GetAssignmentsByEmail)
+	router.GET("/assignments/category/:categoryID", GetAssignmentsByCategoryID)
 	return nil
 }
 
-func getAssignmentsByEmail(c *gin.Context) {
-	var assignment Assignment
+
+func GetAssignmentsByEmail(c *gin.Context) {
+	var assignment models.Assignment
 	// get assignments
 	email := c.Param("email")
 	fmt.Println("email: ", email)
-	db := initializeDB()
+	db := database.InitializeDB()
 	defer db.Close()
 	rows, err := db.Query("SELECT * FROM assignments WHERE email = ?", email)
 	if err != nil {
@@ -60,7 +29,7 @@ func getAssignmentsByEmail(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting assignments"})
 		return
 	}
-	var assignments []Assignment
+	var assignments []models.Assignment
 	for rows.Next() {
 		err := rows.Scan(&assignment.ID, &assignment.Email, &assignment.CategoryID, &assignment.Month, &assignment.Year, &assignment.Amount)
 		if err != nil {
@@ -74,12 +43,12 @@ func getAssignmentsByEmail(c *gin.Context) {
 	c.JSON(http.StatusOK, assignments)
 }
 
-func getAssignmentsByCategoryID(c *gin.Context) {
-	var assignment Assignment
+func GetAssignmentsByCategoryID(c *gin.Context) {
+	var assignment models.Assignment
 	// get assignments
 	categoryID := c.Param("categoryID")
 	fmt.Println("categoryID: ", categoryID)
-	db := initializeDB()
+	db := database.InitializeDB()
 	defer db.Close()
 	rows, err := db.Query("SELECT * FROM assignments WHERE category_id = ?", categoryID)
 	if err != nil {
@@ -87,7 +56,7 @@ func getAssignmentsByCategoryID(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting assignments"})
 		return
 	}
-	var assignments []Assignment
+	var assignments []models.Assignment
 	for rows.Next() {
 		err := rows.Scan(&assignment.ID, &assignment.Email, &assignment.CategoryID, &assignment.Month, &assignment.Year, &assignment.Amount)
 		if err != nil {
@@ -101,14 +70,15 @@ func getAssignmentsByCategoryID(c *gin.Context) {
 	c.JSON(http.StatusOK, assignments)
 }
 
-func postAssignment(c *gin.Context) {
-	var newAssignment Assignment
+
+func PostAssignment(c *gin.Context) {
+	var newAssignment models.Assignment
 	if err := c.BindJSON(&newAssignment); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	// see if there's already an assignment for this category, month, and year
-	db := initializeDB()
+	db := database.InitializeDB()
 	defer db.Close()
 	rows, err := db.Query("SELECT * FROM assignments WHERE category_id = ? AND month = ? AND year = ?", newAssignment.CategoryID, newAssignment.Month, newAssignment.Year)
 	if err != nil {
@@ -117,7 +87,7 @@ func postAssignment(c *gin.Context) {
 		return
 	}
 	for rows.Next() {
-		var assignment Assignment
+		var assignment models.Assignment
 		err := rows.Scan(&assignment.ID, &assignment.Email, &assignment.CategoryID, &assignment.Month, &assignment.Year, &assignment.Amount)
 		if err != nil {
 			fmt.Println(err)
@@ -131,6 +101,24 @@ func postAssignment(c *gin.Context) {
 			if err != nil {
 				fmt.Println(err)
 				c.JSON(http.StatusInternalServerError, gin.H{"message": "error updating assignment"})
+				return
+			}
+			// update category balance
+			// get category
+			var category *models.Category
+			category, err = category.Get(assignment.CategoryID)
+			if err != nil {
+				fmt.Println(err)
+				c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting category"})
+				return
+			}
+			// update category balance
+			category.Balance = category.Balance + assignment.Amount
+			// update category row in DB
+			_, err = db.Exec("UPDATE categories SET balance = ? WHERE id = ?", category.Balance, category.ID)
+			if err != nil {
+				fmt.Println(err)
+				c.JSON(http.StatusInternalServerError, gin.H{"message": "error updating category"})
 				return
 			}
 			c.JSON(http.StatusOK, assignment)

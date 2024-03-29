@@ -1,66 +1,37 @@
-package main
+package routes
 
 import (
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"net/http"
+	"personal-budget-app-backend/database"
+	"personal-budget-app-backend/models"
+	"github.com/gin-gonic/gin"
 	"time"
-	"database/sql"
 )
 
-type Category struct {
-	ID      int     `json:"id"`
-	Email   string  `json:"email"` 
-	Name    string  `json:"name"` 
-	Goals   *[]Goal `json:"goals"`   // not stored in DB, but should be retrieved along with category
-}
-
-func createCategoryTable(db *sql.DB) (sql.Result, error) {
-
-	query :=
-		`CREATE TABLE categories (		
-			id int AUTO_INCREMENT PRIMARY KEY,
-			email VARCHAR(100),
-			name VARCHAR(100),
-			FOREIGN KEY (email) REFERENCES users(email)
-			);`
-	result, err := db.Exec(query)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
-}
-
-
-func (bc *Category) Save() error {
-	fmt.Println("Creating category")
-	db := initializeDB()
-	defer db.Close()
-	_, err := db.Exec("INSERT INTO categories (email, name) VALUES (?, ?)", bc.Email, bc.Name)
-	if err != nil {
-		fmt.Println(err)
-		return err
-	}
+func RegisterCategoriesRoutes(router *gin.Engine) error {
+	router.GET("/categories/:email", GetCategoriesByEmailHandler)
+	router.POST("/categories", PostCategory)
 	return nil
 }
 
-func getCategoriesByEmail(c *gin.Context) {
-	var category Category
+func GetCategoriesByEmailHandler(c *gin.Context) {
+	var category models.Category
 	fmt.Println("running getCategoriesByEmail")
 	// get categories
 	email := c.Param("email")
 	fmt.Println("email: ", email)
-	db := initializeDB()
+	db := database.InitializeDB()
 	defer db.Close()
-	rows, err := db.Query("SELECT * FROM categories WHERE email = ?", email)
+	rows, err := db.Query("SELECT id, email, name, IFNULL(balance, 0) FROM categories WHERE email = ?", email)
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting categories"})
 		return
 	}
-	var categories []Category
+	var categories []models.Category
 	for rows.Next() {
-		err := rows.Scan(&category.ID, &category.Email, &category.Name)
+		err := rows.Scan(&category.ID, &category.Email, &category.Name, &category.Balance)
 		if err != nil {
 			fmt.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting categories"})
@@ -77,9 +48,9 @@ func getCategoriesByEmail(c *gin.Context) {
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting goals"})
 			return
 		}
-		var goals []Goal
+		var goals []models.Goal
 		for rows.Next() {
-			var goal Goal
+			var goal models.Goal
 			var tempDate []uint8
 			err := rows.Scan(&goal.ID, &goal.Email, &goal.Name, &goal.Amount, &tempDate, &goal.CategoryID, &goal.Periodicity)
 			if err != nil {
@@ -101,8 +72,8 @@ func getCategoriesByEmail(c *gin.Context) {
 	c.JSON(http.StatusOK, categories)
 }
 
-func postCategory(c *gin.Context) {
-	var newCategory Category
+func PostCategory(c *gin.Context) {
+	var newCategory models.Category
 	if err := c.BindJSON(&newCategory); err != nil {
 		fmt.Println("error in c.BindJSON(&newCategory): ")
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

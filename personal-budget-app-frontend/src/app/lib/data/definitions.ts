@@ -7,6 +7,26 @@ export type SessionContextType = {
     signOut: () => void;
 }
 
+export type MonthlyBudget = {
+    email: string                 
+	month: number                 
+	year: number                  
+	budgetFunds: number           
+	unassigned: number            
+	totalAssignedThisMonth: number
+	assignedInFuture: number      
+	categoryArray: CategoryData[]
+}
+
+export type CategoryData = {
+    id: number
+    name: string
+    needed: number
+    assigned: number
+    spent: number
+    available: number
+}
+
 export type User = {
     password: string,
     firstName: string,
@@ -35,7 +55,7 @@ export type Goal = {
     periodicity: Periodicity,
 }
 
-export type Periodicity = 'monthly' | 'yearly' | 'onetime' | 'weekly' | 'biweekly' | 'quarterly'
+export type Periodicity = 'monthly' | 'onetime'
 
 export type Transaction = {
     id: string,

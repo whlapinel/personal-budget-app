@@ -1,21 +1,25 @@
-package main
+package database
 
 import (
 	"database/sql"
 )
 
-func dropSprocs() error {
-	db := initializeDB()
+func DropSprocs() error {
+	db := InitializeDB()
 	defer db.Close()
 	_, err := dropSprocUpdateAccountBalance(db)
+	if err != nil {
+		return err
+	}
+	_, err = dropSprocUpdateCategoryBalance(db)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func createSprocs() error {
-	db := initializeDB()
+func CreateSprocs() error {
+	db := InitializeDB()
 	defer db.Close()
 	_, err := createSprocUpdateAccountBalance(db)
 	if err != nil {
@@ -62,6 +66,19 @@ func createSprocUpdateAccountBalance(db *sql.DB) (sql.Result, error) {
 	}
 	return result, nil
 }
+
+func dropSprocUpdateCategoryBalance(db *sql.DB) (sql.Result, error) {
+	query :=
+		`
+		DROP PROCEDURE IF EXISTS update_category_balance;
+		`
+	result, err := db.Exec(query)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
 
 func createSprocUpdateCategoryBalance(db *sql.DB) (sql.Result, error) {
 	// when 1. assignments for a category are updated  or new transactions 

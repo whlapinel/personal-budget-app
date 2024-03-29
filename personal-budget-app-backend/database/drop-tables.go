@@ -1,11 +1,11 @@
-package main
+package database
 
 import (
 	"database/sql"
 )
 
-func dropTables() (sql.Result, error) {
-	db := initializeDB()
+func DropTables()(sql.Result, error) {
+	db := InitializeDB()
 	defer db.Close()
 	query :=
 		`DROP TABLE if exists assignments, goals, transactions, categories, accounts, users`

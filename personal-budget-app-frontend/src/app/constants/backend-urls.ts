@@ -8,4 +8,5 @@ export const backendUrls = {
     accounts: `${baseUrl}/accounts`,
     goals: `${baseUrl}/goals`,
     users: `${baseUrl}/users`,
+    monthlyBudget: `${baseUrl}/monthly-budget`,
 }

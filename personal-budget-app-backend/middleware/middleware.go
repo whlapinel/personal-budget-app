@@ -1,12 +1,13 @@
-package main
+package middleware
 
 import (
 	"fmt"
 	"net/http"
 	"github.com/gin-gonic/gin"
+	"personal-budget-app-backend/secrets"
 )
 
-func authenticateBFF(c *gin.Context) {
+func AuthenticateBFF(c *gin.Context) {
 	// authenticate
 	var reqKey string
 	if reqKey = c.GetHeader("API_KEY"); reqKey == "" {
@@ -15,7 +16,7 @@ func authenticateBFF(c *gin.Context) {
 		return
 	}
 	fmt.Println("API_KEY", reqKey)
-	if reqKey != API_KEY {
+	if reqKey != secrets.API_KEY {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "invalid key"})
 		c.Abort()
 		return

@@ -1,8 +1,6 @@
-module pb/backend
+module personal-budget-app-backend
 
 go 1.22.0
-
-replace pb/backend => ./
 
 require (
 	github.com/gin-gonic/gin v1.9.1

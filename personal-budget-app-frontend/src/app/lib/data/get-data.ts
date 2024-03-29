@@ -3,11 +3,22 @@
 
 import { revalidatePath } from "next/cache";
 // import all definitions
-import { User, Account, Transaction, Category, Goal, Assignment } from './definitions';
+import { User, Account, Transaction, Category, Goal, Assignment, MonthlyBudget } from './definitions';
 import { backendUrls } from "@/app/constants/backend-urls";
 
 
 const API_KEY: string = process.env.API_KEY!;
+
+export async function getMonthlyBudget(email: string, month: number, year: number): Promise<MonthlyBudget> {
+    const data = await fetch(`${backendUrls.monthlyBudget}/${email}/${month}/${year}`, {
+        headers: {
+            'API_KEY': API_KEY
+        }
+    });
+    const monthlyBudget = await data.json();
+    return monthlyBudget
+}
+
 export async function getUser(email: string): Promise<User> {
     const data = await fetch(`${backendUrls.users}/${email}`);
     const users = await data.json();

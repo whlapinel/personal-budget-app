@@ -1,72 +1,28 @@
-package main
+package routes
 
 import (
 	"fmt"
 	"net/http"
+	"personal-budget-app-backend/database"
+	"personal-budget-app-backend/models"
 	"time"
-	"database/sql"
+
 	"github.com/gin-gonic/gin"
 )
 
-type Goal struct {
-	ID          string      `json:"id"`
-	Email       string      `json:"email"`
-	Name        string      `json:"name"`
-	Amount      int         `json:"amount"` // in cents not dollars
-	TargetDate  time.Time   `json:"targetDate"`
-	CategoryID  int         `json:"categoryID"`
-	Periodicity Periodicity `json:"periodicity"`
-}
-
-type Periodicity string
-
-const (
-	Onetime   Periodicity = "onetime"
-	Weekly    Periodicity = "weekly"
-	BiWeekly  Periodicity = "biweekly"
-	Monthly   Periodicity = "monthly"
-	Quarterly Periodicity = "quarterly"
-	Yearly    Periodicity = "yearly"
-)
-
-func createGoalsTable(db *sql.DB) (sql.Result, error) {
-
-	query :=
-		`CREATE TABLE goals (
-			id int AUTO_INCREMENT PRIMARY KEY,
-			email VARCHAR(100),
-			name VARCHAR(100),
-			amount int,
-			target_date datetime,
-			category_id int,
-			periodicity VARCHAR(100),
-			FOREIGN KEY (email) REFERENCES users(email),
-			FOREIGN KEY (category_id) REFERENCES categories(id)
-			);`
-	result, err := db.Exec(query)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
-}
-
-
-func (g *Goal) Save() error {
-	db := initializeDB()
-	defer db.Close()
-	_, err := db.Exec("INSERT INTO goals (email, name, amount, target_date, category_id, periodicity) VALUES (?, ?, ?, ?, ?, ?)", g.Email, g.Name, g.Amount, g.TargetDate, g.CategoryID, g.Periodicity)
-	if err != nil {
-		return err
-	}
+func RegisterGoalsRoutes(router *gin.Engine) error {
+	router.GET("/goals/:email", GetGoalsByEmail)
+	router.GET("/goals/category/:categoryID", GetGoalsByCategoryID)
+	router.POST("/goals", PostGoal)
 	return nil
 }
 
-func getGoalByCategoryID(c *gin.Context) {
-	var goal Goal
+func GetGoalsByCategoryID(c *gin.Context) {
+	var goal models.Goal
 	// get goal
 	categoryID := c.Param("categoryID")
 	fmt.Println("categoryID: ", categoryID)
-	db := initializeDB()
+	db := database.InitializeDB()
 	defer db.Close()
 	rows, err := db.Query("SELECT * FROM goals WHERE category_id = ?", categoryID)
 	if err != nil {
@@ -93,12 +49,12 @@ func getGoalByCategoryID(c *gin.Context) {
 	c.JSON(http.StatusOK, goal)
 }
 
-func getGoalsByEmail(c *gin.Context) {
-	var goal Goal
+func GetGoalsByEmail(c *gin.Context) {
+	var goal models.Goal
 	// get goals
 	email := c.Param("email")
 	fmt.Println("email: ", email)
-	db := initializeDB()
+	db := database.InitializeDB()
 	defer db.Close()
 	rows, err := db.Query("SELECT * FROM goals WHERE email = ?", email)
 	if err != nil {
@@ -106,7 +62,7 @@ func getGoalsByEmail(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting goals"})
 		return
 	}
-	var goals []Goal
+	var goals []models.Goal
 	for rows.Next() {
 		var tempDate []uint8
 		err := rows.Scan(&goal.ID, &goal.Email, &goal.Name, &goal.Amount, &tempDate, &goal.CategoryID, &goal.Periodicity)
@@ -127,8 +83,8 @@ func getGoalsByEmail(c *gin.Context) {
 	c.JSON(http.StatusOK, goals)
 }
 
-func postGoal(c *gin.Context) {
-	var newGoal Goal
+func PostGoal(c *gin.Context) {
+	var newGoal models.Goal
 	if err := c.BindJSON(&newGoal); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return

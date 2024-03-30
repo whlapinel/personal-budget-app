@@ -18,7 +18,6 @@ type Transaction struct {
 	Email        string    `json:"email"`
 }
 
-
 func (t *Transaction) Save() error {
 	db := database.InitializeDB()
 	defer db.Close()
@@ -30,6 +29,14 @@ func (t *Transaction) Save() error {
 	if err != nil {
 		return err
 	}
-	fmt.Println("Transaction created and account balance updated for account: ", t.AccountID)
+	// get month of transaction date
+	month := t.Date.Month()
+	year := t.Date.Year()
+
+	_, err = db.Exec("CALL update_monthly_budget_spent(?, ?, ?, ?)", t.CategoryID, month, year, t.Amount)
+	if err != nil {
+		return err
+	}
+	fmt.Println("Transaction created and account balance and monthly budget updated for account: ", t.AccountID)
 	return nil
 }

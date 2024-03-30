@@ -5,17 +5,17 @@ import (
 	"net/http"
 	"personal-budget-app-backend/database"
 	"personal-budget-app-backend/models"
+
 	"github.com/gin-gonic/gin"
-	"time"
 )
 
 func RegisterCategoriesRoutes(router *gin.Engine) error {
-	router.GET("/categories/:email", GetCategoriesByEmailHandler)
+	router.GET("/categories/:email", GetCategories)
 	router.POST("/categories", PostCategory)
 	return nil
 }
 
-func GetCategoriesByEmailHandler(c *gin.Context) {
+func GetCategories(c *gin.Context) {
 	var category models.Category
 	fmt.Println("running getCategoriesByEmail")
 	// get categories
@@ -23,7 +23,7 @@ func GetCategoriesByEmailHandler(c *gin.Context) {
 	fmt.Println("email: ", email)
 	db := database.InitializeDB()
 	defer db.Close()
-	rows, err := db.Query("SELECT id, email, name, IFNULL(balance, 0) FROM categories WHERE email = ?", email)
+	rows, err := db.Query("SELECT * FROM categories WHERE email = ?", email)
 	if err != nil {
 		fmt.Println(err)
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting categories"})
@@ -31,7 +31,7 @@ func GetCategoriesByEmailHandler(c *gin.Context) {
 	}
 	var categories []models.Category
 	for rows.Next() {
-		err := rows.Scan(&category.ID, &category.Email, &category.Name, &category.Balance)
+		err := rows.Scan(&category.ID, &category.Email, &category.Name)
 		if err != nil {
 			fmt.Println(err)
 			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting categories"})
@@ -39,35 +39,6 @@ func GetCategoriesByEmailHandler(c *gin.Context) {
 		} else {
 			categories = append(categories, category)
 		}
-	}
-	// get goals for each category
-	for i, category := range categories {
-		rows, err := db.Query("SELECT * FROM goals WHERE category_id = ?", category.ID)
-		if err != nil {
-			fmt.Println(err)
-			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting goals"})
-			return
-		}
-		var goals []models.Goal
-		for rows.Next() {
-			var goal models.Goal
-			var tempDate []uint8
-			err := rows.Scan(&goal.ID, &goal.Email, &goal.Name, &goal.Amount, &tempDate, &goal.CategoryID, &goal.Periodicity)
-			if err != nil {
-				fmt.Println(err)
-				c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting goals"})
-				return
-			} else {
-				goal.TargetDate, err = time.Parse("2006-01-02 00:00:00", string(tempDate))
-				if err != nil {
-					fmt.Println(err)
-					c.JSON(http.StatusInternalServerError, gin.H{"message": "error parsing goal target date"})
-					return
-				}
-				goals = append(goals, goal)
-			}
-		}
-		categories[i].Goals = &goals
 	}
 	c.JSON(http.StatusOK, categories)
 }

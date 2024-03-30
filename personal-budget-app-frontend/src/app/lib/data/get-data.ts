@@ -3,20 +3,42 @@
 
 import { revalidatePath } from "next/cache";
 // import all definitions
-import { User, Account, Transaction, Category, Goal, Assignment, MonthlyBudget } from './definitions';
+import { User, Account, Transaction, Category, Goal, Assignment, MonthlyBudget, BudgetPageData } from './definitions';
 import { backendUrls } from "@/app/constants/backend-urls";
 
 
 const API_KEY: string = process.env.API_KEY!;
 
-export async function getMonthlyBudget(email: string, month: number, year: number): Promise<MonthlyBudget> {
-    const data = await fetch(`${backendUrls.monthlyBudget}/${email}/${month}/${year}`, {
+export async function getCategories(email: string): Promise<Category[]> {
+    const data = await fetch(`${backendUrls.categories}/${email}`, {
         headers: {
             'API_KEY': API_KEY
         }
     });
-    const monthlyBudget = await data.json();
-    return monthlyBudget
+    const categories = await data.json();
+    return categories
+}
+
+export async function getBudgetPageData(email: string, month: number, year: number): Promise<BudgetPageData> {
+    const response = await fetch(`${backendUrls.budgetPageData}/${email}/${month}/${year}`, {
+        headers: {
+            'API_KEY': API_KEY
+        }
+    });
+    const budgetPageData = await response.json();
+    console.log("bugetPageData: ", budgetPageData);
+    
+    return budgetPageData
+}
+
+export async function getMonthlyBudgets(email: string, month: number, year: number): Promise<MonthlyBudget[]> {
+    const data = await fetch(`${backendUrls.monthlyBudgets}/${email}/${month}/${year}`, {
+        headers: {
+            'API_KEY': API_KEY
+        }
+    });
+    const monthlyBudgets = await data.json();
+    return monthlyBudgets
 }
 
 export async function getUser(email: string): Promise<User> {
@@ -26,10 +48,9 @@ export async function getUser(email: string): Promise<User> {
     return users
 }
 
-export async function getGoals(email: string): Promise<Goal[]> {
+export async function getGoals(email: string, categoryID: number, month: number, year: number): Promise<Goal[]> {
     
-    // FIXME I think this URL should be changed somehow... not sure
-    const data = await fetch(`${backendUrls.goals}/${email}`, {
+    const data = await fetch(`${backendUrls.goals}/${email}/${categoryID}/${month}/${year}`, {
         headers: {
             'API_KEY': API_KEY
         }
@@ -74,31 +95,6 @@ export async function getTransactions(email: string): Promise<Transaction[]> {
             transaction.date = new Date(transaction.date);
         });
         return transactions
-    } catch (err) {
-        console.log(err);
-        return []
-    }
-}
-
-export async function getCategories(email: string): Promise<Category[]> {
-    console.log('getCategories email: ', email)
-    try {
-        const data = await fetch(`${backendUrls.categories}/${email}`, {
-            headers: {
-                'API_KEY': API_KEY
-            }
-        });
-        const categories: Category[] = await data.json();
-        for (const category of categories) {
-            if (category.goals) {
-                for (const goal of category.goals) {
-                    goal.targetDate = new Date(goal.targetDate);
-                }
-            }
-        }
-        console.log(categories);
-        console.log(categories[0].goals)
-        return categories
     } catch (err) {
         console.log(err);
         return []

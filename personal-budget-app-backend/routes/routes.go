@@ -5,10 +5,12 @@ import (
 )
 
 func RegisterRoutes(router *gin.Engine) {
-	RegisterMonthlyBudgetRoutes(router)
+	RegisterMonthlyBudgetsRoutes(router)
 	RegisterUserRoutes(router)
 	RegisterCategoriesRoutes(router)
-	RegisterAssignmentsRoutes(router)
+	// RegisterAssignmentsRoutes(router)
 	RegisterGoalsRoutes(router)
 	RegisterAccountsRoutes(router)
+	RegisterTransactionsRoutes(router)
+	RegisterBudgetPageDataRoutes(router)
 }

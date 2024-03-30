@@ -10,13 +10,30 @@ type MonthlyBudget struct {
 	Month      int    `json:"month"`
 	Year       int    `json:"year"`
 	CategoryID int    `json:"categoryID"`
-	Amount     int    `json:"amount"` // in cents not dollars
+	Assigned   int    `json:"assigned"` // in cents not dollars
+	Spent      int    `json:"spent"`    // in cents not dollars
+	Balance    int    `json:"balance"`  // in cents not dollars, not in DB. calculated as assigned - spent
 }
 
 func (m *MonthlyBudget) Save() error {
 	db := database.InitializeDB()
 	defer db.Close()
-	_, err := db.Exec("INSERT INTO monthly_budgets (email, month, year, category_id, amount) VALUES (?, ?, ?, ?, ?)", m.Email, m.Month, m.Year, m.CategoryID, m.Amount)
+	// check to see if monthly budget already exists
+	var count int
+	var query string
+	err := db.QueryRow("SELECT COUNT(*) FROM monthly_budgets WHERE email = ? AND month = ? AND year = ? AND category_id = ?", m.Email, m.Month, m.Year, m.CategoryID).Scan(&count)
+	if err != nil {
+		return err
+	}
+	if count > 0 {
+		query = "UPDATE monthly_budgets SET assigned = ? WHERE email = ? AND month = ? AND year = ? AND category_id = ?"
+		_, err := db.Exec(query, m.Assigned, m.Email, m.Month, m.Year, m.CategoryID)
+		if err != nil {
+			return err
+		}
+		return nil
+	}
+	_, err = db.Exec("INSERT INTO monthly_budgets (email, month, year, category_id, assigned, spent) VALUES (?, ?, ?, ?, ?)", m.Email, m.Month, m.Year, m.CategoryID, m.Assigned)
 	if err != nil {
 		return err
 	}
@@ -33,10 +50,11 @@ func GetMonthlyBudgets(email string, month int, year int) ([]MonthlyBudget, erro
 	var monthlyBudgets []MonthlyBudget
 	for rows.Next() {
 		var monthlyBudget MonthlyBudget
-		err := rows.Scan(&monthlyBudget.ID, &monthlyBudget.Email, &monthlyBudget.Month, &monthlyBudget.Year, &monthlyBudget.CategoryID, &monthlyBudget.Amount)
+		err := rows.Scan(&monthlyBudget.ID, &monthlyBudget.Email, &monthlyBudget.Month, &monthlyBudget.Year, &monthlyBudget.CategoryID, &monthlyBudget.Assigned, &monthlyBudget.Spent)
 		if err != nil {
 			return nil, err
 		}
+		monthlyBudget.Balance = monthlyBudget.Assigned - monthlyBudget.Spent
 		monthlyBudgets = append(monthlyBudgets, monthlyBudget)
 	}
 	return monthlyBudgets, nil

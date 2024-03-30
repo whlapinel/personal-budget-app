@@ -5,16 +5,43 @@ import (
 	"net/http"
 	"personal-budget-app-backend/database"
 	"personal-budget-app-backend/models"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
 )
 
 func RegisterGoalsRoutes(router *gin.Engine) error {
-	router.GET("/goals/:email", GetGoalsByEmail)
+	router.GET("/goals/:email/:categoryID/:month/:year", GetGoals)
 	router.GET("/goals/category/:categoryID", GetGoalsByCategoryID)
 	router.POST("/goals", PostGoal)
 	return nil
+}
+
+func GetGoals(c *gin.Context) {
+	// get goals
+	email := c.Param("email")
+	categoryID, err := strconv.Atoi(c.Param("categoryID"))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err})
+		return
+	}
+	month, err := strconv.Atoi(c.Param("month"))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err})
+		return
+	}
+	year, err := strconv.Atoi(c.Param("year"))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err})
+		return
+	}
+	goals, err := models.GetGoals(email, categoryID, month, year)
+	if err != nil {
+		fmt.Println(err)
+		c.JSON(http.StatusInternalServerError, gin.H{"message": err})
+	}
+	c.JSON(http.StatusOK, goals)
 }
 
 func GetGoalsByCategoryID(c *gin.Context) {

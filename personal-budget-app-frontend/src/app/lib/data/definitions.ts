@@ -7,24 +7,32 @@ export type SessionContextType = {
     signOut: () => void;
 }
 
-export type MonthlyBudget = {
-    email: string                 
-	month: number                 
-	year: number                  
-	budgetFunds: number           
-	unassigned: number            
-	totalAssignedThisMonth: number
-	assignedInFuture: number      
-	categoryArray: CategoryData[]
+export type BudgetPageData = {
+    currentFunds: number
+    projIncome: number
+    totalAvailable: number
+    totalUnassigned: number
+    categoryRows: CategoryData[]
 }
 
 export type CategoryData = {
-    id: number
-    name: string
-    needed: number
+    categoryID: number
+    categoryName: string
     assigned: number
     spent: number
     available: number
+    goalsSum: number
+}
+
+export type MonthlyBudget = {
+    id?: number
+    email: string
+    categoryID: number
+    month: number
+    year: number
+    assigned: number
+    spent?: number
+    balance?: number
 }
 
 export type User = {
@@ -39,10 +47,6 @@ export type Category = {
     id: number,
     name: string, // e.g. "Groceries"
     email: string, // user email (foreign key)
-    goals?: Goal[],
-    assignments?: Assignment[],
-    spent?: number,
-    available?: number
 }
 
 export type Goal = {

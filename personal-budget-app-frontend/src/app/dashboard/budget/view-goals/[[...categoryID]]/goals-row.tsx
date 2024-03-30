@@ -4,6 +4,8 @@ import { Goal } from "@/app/lib/data/definitions";
 
 export default async function GoalsRow({ goal }: { goal: Goal }) {
 
+    const parsedDate = new Date(goal.targetDate);
+
     return (
         <tr>
             <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
@@ -13,7 +15,7 @@ export default async function GoalsRow({ goal }: { goal: Goal }) {
                 {convertToDollars(goal.amount)}
             </td>
             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                {goal.targetDate.toLocaleDateString()}
+                {parsedDate.toLocaleDateString()}
             </td>
             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                 {goal.periodicity}

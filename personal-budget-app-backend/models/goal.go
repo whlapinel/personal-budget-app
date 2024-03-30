@@ -18,8 +18,8 @@ type Goal struct {
 type Periodicity string
 
 const (
-	Onetime   Periodicity = "onetime"
-	Monthly   Periodicity = "monthly"
+	Onetime Periodicity = "onetime"
+	Monthly Periodicity = "monthly"
 )
 
 func (g *Goal) Save() error {
@@ -32,16 +32,17 @@ func (g *Goal) Save() error {
 	return nil
 }
 
-func GetGoals(categoryID string) ([]Goal, error) {
+func GetGoals(email string, categoryID, month, year int) (*[]Goal, error) {
+	var goal Goal
 	db := database.InitializeDB()
 	defer db.Close()
-	rows, err := db.Query("SELECT * FROM goals WHERE category_id = ?", categoryID)
+	// this should cover both monthly goals and onetime goals with a target_date that falls within the month
+	rows, err := db.Query("SELECT * FROM goals WHERE email = ? AND category_id = ? AND (periodicity = 'monthly' OR (MONTH(target_date) = ? AND YEAR(target_date) = ?))", email, categoryID, month, year)
 	if err != nil {
 		return nil, err
 	}
 	var goals []Goal
 	for rows.Next() {
-		var goal Goal
 		var tempDate []uint8
 		err := rows.Scan(&goal.ID, &goal.Email, &goal.Name, &goal.Amount, &tempDate, &goal.CategoryID, &goal.Periodicity)
 		if err != nil {
@@ -52,6 +53,7 @@ func GetGoals(categoryID string) ([]Goal, error) {
 			return nil, err
 		}
 		goals = append(goals, goal)
+
 	}
-	return goals, nil
+	return &goals, nil
 }

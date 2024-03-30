@@ -3,7 +3,7 @@
 import { useFormState } from "react-dom";
 import { SubmitButton } from "@/app/ui/submit-button";
 import { useSession } from "@/app/session-context";
-import { editAssignmentAction } from "../actions/editAssignmentAction";
+import { editBudgetAction } from "../actions/edit-budget-action";
 import { Category } from "@/app/lib/data/definitions";
 import convertToDollars from "@/app/lib/cents-to-dollars";
 
@@ -13,7 +13,7 @@ const initialState: any = {
 }
 
 export default function EditAssignmentForm({ category, month, year, currAssignmentAmount }: { category: Category, month: number, year: number, currAssignmentAmount: number }) {
-    const [state, formAction] = useFormState(editAssignmentAction, initialState)
+    const [state, formAction] = useFormState(editBudgetAction, initialState)
 
     console.log('EditAssignmentForm category:', category);
 

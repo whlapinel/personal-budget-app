@@ -1,4 +1,4 @@
-import { getCategories } from "@/app/lib/data/get-data";
+import { getGoals } from "@/app/lib/data/get-data";
 import { cookies } from "next/headers";
 import { Goal } from "@/app/lib/data/definitions";
 import Card from "@/app/ui/card";
@@ -13,13 +13,8 @@ export default async function ViewGoalsPage({ params, searchParams }: { params: 
   const viewedMonth = new Date(year, month);
   const email = cookies().get('email')?.value!;
 
-  const categories = await getCategories(email);
-  const category = categories.find((category) => {
-    return category.id === categoryID;
-  })!;
-  console.log('ViewGoalsPage category:', category);
-  const goals = category.goals || [];
-  console.log('ViewGoalsPage goals:', goals);
+  const goals = await getGoals(email, categoryID, month, year);
+  console.log("goals: ", goals)
 
 
 

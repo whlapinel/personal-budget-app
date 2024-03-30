@@ -1,0 +1,136 @@
+// package routes
+
+// import (
+// 	"fmt"
+// 	"net/http"
+// 	"personal-budget-app-backend/database"
+// 	"personal-budget-app-backend/models"
+// 	"github.com/gin-gonic/gin"
+// )
+
+// func RegisterAssignmentsRoutes(router *gin.Engine) error {
+// 	router.POST("/assignments", PostAssignment)
+// 	router.GET("/assignments/:email", GetAssignmentsByEmail)
+// 	router.GET("/assignments/category/:categoryID", GetAssignmentsByCategoryID)
+// 	return nil
+// }
+
+
+// func GetAssignmentsByEmail(c *gin.Context) {
+// 	var assignment models.Assignment
+// 	// get assignments
+// 	email := c.Param("email")
+// 	fmt.Println("email: ", email)
+// 	db := database.InitializeDB()
+// 	defer db.Close()
+// 	rows, err := db.Query("SELECT * FROM assignments WHERE email = ?", email)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting assignments"})
+// 		return
+// 	}
+// 	var assignments []models.Assignment
+// 	for rows.Next() {
+// 		err := rows.Scan(&assignment.ID, &assignment.Email, &assignment.CategoryID, &assignment.Month, &assignment.Year, &assignment.Amount)
+// 		if err != nil {
+// 			fmt.Println(err)
+// 			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting assignments"})
+// 			return
+// 		} else {
+// 			assignments = append(assignments, assignment)
+// 		}
+// 	}
+// 	c.JSON(http.StatusOK, assignments)
+// }
+
+// func GetAssignmentsByCategoryID(c *gin.Context) {
+// 	var assignment models.Assignment
+// 	// get assignments
+// 	categoryID := c.Param("categoryID")
+// 	fmt.Println("categoryID: ", categoryID)
+// 	db := database.InitializeDB()
+// 	defer db.Close()
+// 	rows, err := db.Query("SELECT * FROM assignments WHERE category_id = ?", categoryID)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting assignments"})
+// 		return
+// 	}
+// 	var assignments []models.Assignment
+// 	for rows.Next() {
+// 		err := rows.Scan(&assignment.ID, &assignment.Email, &assignment.CategoryID, &assignment.Month, &assignment.Year, &assignment.Amount)
+// 		if err != nil {
+// 			fmt.Println(err)
+// 			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting assignments"})
+// 			return
+// 		} else {
+// 			assignments = append(assignments, assignment)
+// 		}
+// 	}
+// 	c.JSON(http.StatusOK, assignments)
+// }
+
+
+// func PostAssignment(c *gin.Context) {
+// 	var newAssignment models.Assignment
+// 	if err := c.BindJSON(&newAssignment); err != nil {
+// 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	// see if there's already an assignment for this category, month, and year
+// 	db := database.InitializeDB()
+// 	defer db.Close()
+// 	rows, err := db.Query("SELECT * FROM assignments WHERE category_id = ? AND month = ? AND year = ?", newAssignment.CategoryID, newAssignment.Month, newAssignment.Year)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 		c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting assignments"})
+// 		return
+// 	}
+// 	for rows.Next() {
+// 		var assignment models.Assignment
+// 		err := rows.Scan(&assignment.ID, &assignment.Email, &assignment.CategoryID, &assignment.Month, &assignment.Year, &assignment.Amount)
+// 		if err != nil {
+// 			fmt.Println(err)
+// 			c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting assignments"})
+// 			return
+// 		} else {
+// 			// overwrite the assignment amount
+// 			assignment.Amount = newAssignment.Amount
+// 			// update the assignment row in DB
+// 			_, err := db.Exec("UPDATE assignments SET amount = ? WHERE id = ?", assignment.Amount, assignment.ID)
+// 			if err != nil {
+// 				fmt.Println(err)
+// 				c.JSON(http.StatusInternalServerError, gin.H{"message": "error updating assignment"})
+// 				return
+// 			}
+// 			// update category balance
+// 			// get category
+// 			var category *models.Category
+// 			category, err = category.Get(assignment.CategoryID)
+// 			if err != nil {
+// 				fmt.Println(err)
+// 				c.JSON(http.StatusInternalServerError, gin.H{"message": "error getting category"})
+// 				return
+// 			}
+// 			// update category balance
+// 			category.Balance = category.Balance + assignment.Amount
+// 			// update category row in DB
+// 			_, err = db.Exec("UPDATE categories SET balance = ? WHERE id = ?", category.Balance, category.ID)
+// 			if err != nil {
+// 				fmt.Println(err)
+// 				c.JSON(http.StatusInternalServerError, gin.H{"message": "error updating category"})
+// 				return
+// 			}
+// 			c.JSON(http.StatusOK, assignment)
+// 			return
+// 		}
+// 	}
+// 	// no assignment found, so create a new one
+// 	fmt.Println(newAssignment)
+// 	if err := newAssignment.Save(); err != nil {
+// 		fmt.Println("error in newAssignment.Save(): ", err)
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+// 	c.JSON(http.StatusCreated, newAssignment)
+// }

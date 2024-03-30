@@ -11,9 +11,19 @@ import (
 
 func main() {
 	// for development only
-	createDB := false // true if you want to delete database and start over
+	createDB := true // true if you want to delete database and start over
 	if createDB {
-		database.CreateDB()
+		err := database.CreateDB()
+		if err != nil {
+			panic(err)
+		}
+	}
+	createDummyData := false // true if you want to create dummy data
+	if createDummyData {
+		err := database.CreateDummyData()
+		if err != nil {
+			panic(err)
+		}
 	}
 	// end development only
 	// API

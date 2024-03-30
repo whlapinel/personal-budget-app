@@ -1,7 +1,7 @@
-import { getAssignments, getCategories } from "@/app/lib/data/get-data";
+import { getAssignments, getCategories, getMonthlyBudgets } from "@/app/lib/data/get-data";
 import EditAssignmentForm from "./edit-assignment-form";
 import { cookies } from "next/headers";
-import { Assignment } from "@/app/lib/data/definitions";
+import { Assignment, MonthlyBudget } from "@/app/lib/data/definitions";
 
 export default async function EditAssignmentPage({params, searchParams}: {params: any, searchParams: any}) {
 
@@ -20,11 +20,12 @@ export default async function EditAssignmentPage({params, searchParams}: {params
         console.log('AddGoalPage invalid categoryID');
         return null;
     }
-    const assignments: Assignment[] = await getAssignments(categoryID);
-    const currAssignment = assignments?.find((assignment) => {
+    const budgets: MonthlyBudget[] = await getMonthlyBudgets(email, monthParam, yearParam);
+
+    const currBudget = budgets?.find((assignment) => {
         return assignment.month === monthParam && assignment.year === yearParam;
     });
-    const currAmount = currAssignment ? currAssignment.amount : null;
+    const currAssigned = currBudget ? currBudget.assigned : null;
 
     const categories = await getCategories(email);
     const category = categories.find((category) => {
@@ -34,6 +35,6 @@ export default async function EditAssignmentPage({params, searchParams}: {params
 
 
     return (
-        <EditAssignmentForm category={category} month={monthParam} year={yearParam} currAssignmentAmount={currAmount || 0}/>
+        <EditAssignmentForm category={category} month={monthParam} year={yearParam} currAssignmentAmount={currAssigned || 0}/>
     )
 }

@@ -5,13 +5,13 @@ import (
 )
 
 func CreateDB() error {
-	// err := CreateTables()
-	// if err != nil {
-	// 	return err
-	// } else {
-	// 	fmt.Println("tables created")
-	// }
-	err := CreateSprocs()
+	err := CreateTables()
+	if err != nil {
+		return err
+	} else {
+		fmt.Println("tables created")
+	}
+	err = CreateSprocs()
 	if err != nil {
 		return err
 	} else {

@@ -11,7 +11,7 @@ import (
 
 func main() {
 	// for development only
-	createDB := true // true if you want to delete database and start over
+	createDB := false // true if you want to delete database and start over
 	if createDB {
 		err := database.CreateDB()
 		if err != nil {

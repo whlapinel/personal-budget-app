@@ -29,11 +29,7 @@ func (t *Transaction) Save() error {
 	if err != nil {
 		return err
 	}
-	// get month of transaction date
-	month := t.Date.Month()
-	year := t.Date.Year()
-
-	_, err = db.Exec("CALL update_monthly_budget_spent(?, ?, ?, ?)", t.CategoryID, month, year, t.Amount)
+	_, err = db.Exec("CALL update_monthly_budget_spent(?, ?, ?, ?)", t.CategoryID, t.Date.Month(), t.Date.Year(), t.Amount)
 	if err != nil {
 		return err
 	}
@@ -41,20 +37,56 @@ func (t *Transaction) Save() error {
 	return nil
 }
 
-func (t *Transaction) reverseAccountUpdate() error {
+func GetTransactionsByEmail(email string) ([]Transaction, error) {
 	db := database.InitializeDB()
 	defer db.Close()
-	_, err := db.Exec("CALL update_account_balance(?, ?)", t.AccountID, -t.Amount)
+	rows, err := db.Query(`
+	SELECT t.*, categories.name 
+	FROM transactions t
+	LEFT JOIN categories ON categories.id = t.category_id 
+	WHERE t.email = ?`, email)
+	if err != nil {
+		return nil, err
+	}
+	var transactions []Transaction
+	for rows.Next() {
+		var transaction Transaction
+		var tempDate []uint8
+		err := rows.Scan(&transaction.ID, &transaction.AccountID, &tempDate, &transaction.Payee, &transaction.Amount, &transaction.Memo, &transaction.CategoryID, &transaction.Email, &transaction.CategoryName)
+		if err != nil {
+			return nil, err
+		}
+		transaction.Date, err = time.Parse("2006-01-02 00:00:00", string(tempDate))
+		if err != nil {
+			return nil, err
+		}
+		transactions = append(transactions, transaction)
+	}
+	return transactions, nil
+}
+
+func (t *Transaction) updateAccountAndMonthlyBudget() error {
+	db := database.InitializeDB()
+	defer db.Close()
+	_, err := db.Exec("CALL update_account_balance(?, ?)", t.AccountID, t.Amount)
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec("CALL update_monthly_budget_spent(?, ?, ?, ?)", t.CategoryID, t.Date.Month(), t.Date.Year(), t.Amount)
 	if err != nil {
 		return err
 	}
 	return nil
 }
 
-func (t *Transaction) reverseMonthlyBudgetUpdate() error {
+func (t *Transaction) reverseUpdateAccountAndMonthlyBudget() error {
 	db := database.InitializeDB()
 	defer db.Close()
-	_, err := db.Exec("CALL update_monthly_budget_spent(?, ?, ?, ?)", t.CategoryID, t.Date.Month(), t.Date.Year(), -t.Amount)
+	_, err := db.Exec("CALL update_account_balance(?, ?)", t.AccountID, -t.Amount)
+	if err != nil {
+		return err
+	}
+	_, err = db.Exec("CALL update_monthly_budget_spent(?, ?, ?, ?)", t.CategoryID, t.Date.Month(), t.Date.Year(), -t.Amount)
 	if err != nil {
 		return err
 	}
@@ -65,12 +97,8 @@ func (ot *Transaction) Update(nt *Transaction) error {
 	// method called on old transaction (ot) with param new transaction (nt)
 	db := database.InitializeDB()
 	defer db.Close()
-	// get previous transaction amount
-	err := db.QueryRow("SELECT amount FROM transactions WHERE id = ?", ot.ID).Scan(&ot.Amount)
-	if ot.Amount != nt.Amount {
-		ot.reverseAccountUpdate()
-		ot.reverseMonthlyBudgetUpdate()
-	}
+	// reverse old transaction updates
+	err := ot.reverseUpdateAccountAndMonthlyBudget()
 	if err != nil {
 		return err
 	}
@@ -79,13 +107,32 @@ func (ot *Transaction) Update(nt *Transaction) error {
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec("CALL update_account_balance(?, ?)", nt.AccountID, nt.Amount)
+	err = nt.updateAccountAndMonthlyBudget()
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec("CALL update_monthly_budget_spent(?, ?, ?, ?)", nt.CategoryID, nt.Date.Month(), nt.Date.Year(), nt.Amount)
+	return nil
+}
+
+func (t *Transaction) Delete() error {
+	db := database.InitializeDB()
+	defer db.Close()
+	// get transaction amount
+	var amount int
+	err := db.QueryRow("SELECT amount FROM transactions WHERE id = ?", t.ID).Scan(&amount)
 	if err != nil {
 		return err
 	}
+	// reverse transaction updates
+	err = t.reverseUpdateAccountAndMonthlyBudget()
+	if err != nil {
+		return err
+	}
+	// delete transaction
+	_, err = db.Exec("DELETE FROM transactions WHERE id = ?", t.ID)
+	if err != nil {
+		return err
+	}
+	fmt.Println("Transaction deleted and account balance and monthly budget updated for account: ", t.AccountID)
 	return nil
 }

@@ -6,6 +6,7 @@ import (
 	"personal-budget-app-backend/database"
 	"personal-budget-app-backend/models"
 	"strconv"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -72,7 +73,7 @@ func PostTransaction(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	fmt.Println("newTransaction.AccountID", newTransaction.AccountID)
+	fmt.Println("routest.PostTransaction(): newTransaction: ", newTransaction)
 	if err := newTransaction.Save(); err != nil {
 		fmt.Println("error in newTransaction.Save(): ", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

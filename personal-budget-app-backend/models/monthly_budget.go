@@ -33,7 +33,7 @@ func (m *MonthlyBudget) Save() error {
 		}
 		return nil
 	}
-	_, err = db.Exec("INSERT INTO monthly_budgets (email, month, year, category_id, assigned, spent) VALUES (?, ?, ?, ?, ?)", m.Email, m.Month, m.Year, m.CategoryID, m.Assigned)
+	_, err = db.Exec("INSERT INTO monthly_budgets (email, month, year, category_id, assigned, spent) VALUES (?, ?, ?, ?, ?, 0)", m.Email, m.Month, m.Year, m.CategoryID, m.Assigned)
 	if err != nil {
 		return err
 	}

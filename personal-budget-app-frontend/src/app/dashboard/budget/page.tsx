@@ -25,8 +25,10 @@ export default async function BudgetPage({ searchParams }: { searchParams: any }
   const monthString = viewedDate.toLocaleString('default', { month: 'long' });
   const email = cookies().get('email')?.value!;
   console.log("BudgetPage() email: ", email);
-
-  const budgetPageData = await getBudgetPageData(email, viewedMonth, viewedYear);
+  // JS month is zero-indexed whereas Go is not. So we need to add 1 to the month
+  // when we send anything to the backend
+  
+  const budgetPageData = await getBudgetPageData(email, viewedMonth + 1, viewedYear);
 
   const categoryRows = budgetPageData?.categoryRows;
 

@@ -25,14 +25,20 @@ func (t *Transaction) Save() error {
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec("CALL update_account_balance(?, ?)", t.AccountID, t.Amount)
+	// check for existence of monthly_budget for this category. if results are null, insert new row
+	row, err := db.Query("SELECT * from monthly_budgets where category_id = ? AND month = ? AND year = ?", t.CategoryID, t.Date.Month(), t.Date.Year())
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec("CALL update_monthly_budget_spent(?, ?, ?, ?)", t.CategoryID, t.Date.Month(), t.Date.Year(), t.Amount)
-	if err != nil {
-		return err
+	if !row.Next() {
+		_, err = db.Exec("INSERT INTO monthly_budgets (email, category_id, month, year, assigned, spent) VALUES (?, ?, ?, ?, 0, ?)", t.Email, t.CategoryID, t.Date.Month(), t.Date.Year(), -t.Amount)
+		if err != nil {
+			return err
+		}
+	} else {
+		if err := t.updateMonthlyBudgetSpent(); err != nil {return err}
 	}
+	if err := t.updateAccountBalance(); err != nil {return err}
 	fmt.Println("Transaction created and account balance and monthly budget updated for account: ", t.AccountID)
 	return nil
 }
@@ -65,14 +71,40 @@ func GetTransactionsByEmail(email string) ([]Transaction, error) {
 	return transactions, nil
 }
 
-func (t *Transaction) updateAccountAndMonthlyBudget() error {
+func (t *Transaction) updateAccountBalance() error {
 	db := database.InitializeDB()
 	defer db.Close()
 	_, err := db.Exec("CALL update_account_balance(?, ?)", t.AccountID, t.Amount)
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec("CALL update_monthly_budget_spent(?, ?, ?, ?)", t.CategoryID, t.Date.Month(), t.Date.Year(), t.Amount)
+	return nil
+}
+
+func (t *Transaction) updateMonthlyBudgetSpent() error {
+	db := database.InitializeDB()
+	defer db.Close()
+	_, err := db.Exec("CALL update_monthly_budget_spent(?, ?, ?, ?)", t.CategoryID, t.Date.Month(), t.Date.Year(), -t.Amount)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (t *Transaction) reverseUpdateAccountBalance() error {
+	db := database.InitializeDB()
+	defer db.Close()
+	_, err := db.Exec("CALL update_account_balance(?, ?)", t.AccountID, -t.Amount)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func (t *Transaction) reverseUpdateMonthlyBudgetSpent() error {
+	db := database.InitializeDB()
+	defer db.Close()
+	_, err := db.Exec("CALL update_monthly_budget_spent(?, ?, ?, ?)", t.CategoryID, t.Date.Month(), t.Date.Year(), -t.Amount)
 	if err != nil {
 		return err
 	}
@@ -86,7 +118,7 @@ func (t *Transaction) reverseUpdateAccountAndMonthlyBudget() error {
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec("CALL update_monthly_budget_spent(?, ?, ?, ?)", t.CategoryID, t.Date.Month(), t.Date.Year(), -t.Amount)
+	_, err = db.Exec("CALL update_monthly_budget_spent(?, ?, ?, ?)", t.CategoryID, t.Date.Month(), t.Date.Year(), t.Amount)
 	if err != nil {
 		return err
 	}
@@ -98,7 +130,11 @@ func (ot *Transaction) Update(nt *Transaction) error {
 	db := database.InitializeDB()
 	defer db.Close()
 	// reverse old transaction updates
-	err := ot.reverseUpdateAccountAndMonthlyBudget()
+	err := ot.reverseUpdateAccountBalance()
+	if err != nil {
+		return err
+	}
+	err = ot.reverseUpdateMonthlyBudgetSpent()
 	if err != nil {
 		return err
 	}
@@ -107,7 +143,11 @@ func (ot *Transaction) Update(nt *Transaction) error {
 	if err != nil {
 		return err
 	}
-	err = nt.updateAccountAndMonthlyBudget()
+	err = nt.updateAccountBalance()
+	if err != nil {
+		return err
+	}
+	err = nt.updateMonthlyBudgetSpent()
 	if err != nil {
 		return err
 	}

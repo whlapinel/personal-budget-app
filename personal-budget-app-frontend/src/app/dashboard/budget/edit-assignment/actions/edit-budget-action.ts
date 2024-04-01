@@ -10,7 +10,7 @@ export async function editBudgetAction(prevState: any, formData: FormData) {
     console.log('running editAssignmentAction');
     console.log('email:', email);
     console.log('formData:', formData);
-    const month = Number(formData.get('month'));
+    const month = Number(formData.get('month')) + 1; // JS months are 0-indexed
     const year = Number(formData.get('year'));
     const categoryID = Number(formData.get('categoryID'));
     const assigned = Number(formData.get('amount')) * 100; // convert to cents
@@ -32,7 +32,7 @@ export async function editBudgetAction(prevState: any, formData: FormData) {
             body: JSON.stringify(assignment)
         });
         const data = await response.json();
-        console.log('addGoalAction data:', data);
+        console.log('editBudgetAction data:', data);
         if (data.error) {
             return ({
                 message: data.error,

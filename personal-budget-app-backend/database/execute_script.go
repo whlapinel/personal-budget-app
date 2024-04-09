@@ -4,11 +4,16 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"personal-budget-app-backend/util"
 	"strings"
 )
 
 func ExecuteScript(fileName string, separator string, scriptType string) (*sql.Rows, error) {
-	scriptDirectory := "/home/whlapinel/ITIS 5166/personal-budget-app/personal-budget-app-backend/SQL_scripts/"
+	rootDir, err := util.FindRootPath()
+	if err != nil {
+		return nil, err
+	}
+	scriptDirectory := (rootDir + "/SQL_scripts/")
 	db := InitializeDB()
 	fmt.Println("db initialized")
 	defer db.Close()

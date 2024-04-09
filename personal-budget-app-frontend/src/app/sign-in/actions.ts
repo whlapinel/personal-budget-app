@@ -14,8 +14,8 @@ const key = new TextEncoder().encode(secret);
 export async function signInAction(prevState: any, formData: FormData): Promise<{ message: string | null, user: Partial<User> | null }> {
 
     console.log('formData', formData)
-    const email = formData.get('email')?.toString();
-    const password = formData.get('password')?.toString();
+    const email = formData.get('email')?.toString()!;
+    const password = formData.get('password')?.toString()!;
 
     if (!email || !password) {
         return { message: "user properties undefined", user: null }
@@ -56,13 +56,15 @@ export async function signInAction(prevState: any, formData: FormData): Promise<
                     headers: {
                         'API_KEY': process.env.API_KEY!
                     },
-                    cache: 'no-store',
                 });
                 if (response.status === 404) {
                     return new Error('User not found');
                 }
                 const data = await response.json();
                 console.log('data', data);
+                if (!data.password) {
+                    return new Error('User not found');
+                }
                 encryptedPassword = data.password;
             } catch (err) {
                 console.error(err);

@@ -5,6 +5,8 @@ import { useFormState } from "react-dom";
 import addGoalAction from "../actions/add-goal-action";
 import { SubmitButton } from "@/app/ui/submit-button";
 import { useSession } from "@/app/session-context";
+import { Input } from "@/app/ui/input";
+import { FormContainer } from "./form-container";
 
 const initialState: any = {
     message: null,
@@ -20,15 +22,15 @@ export default function AddGoalForm({ category }: { category: Category }) {
 
 
     return (
-        <div className="flex justify-center">
-            <form className="flex flex-col" action={formAction}>
-                <div className="grid grid-cols-2">
+        <FormContainer title={`Add Goal for ${category.name}`}>
+            <form className="flex flex-col items-center gap-2" action={formAction}>
+                <div className="grid grid-cols-2 gap-1 text-right">
                     <label htmlFor="name">Name</label>
-                    <input type="text" name="name" />
+                    <Input type="text" name="name" />
                     <label htmlFor="amount">Amount</label>
-                    <input type="float" name="amount" />
+                    <Input type="float" name="amount" />
                     <label htmlFor="targetDate">Date</label>
-                    <input type="date" name="targetDate" />
+                    <Input type="date" name="targetDate" />
                     <label htmlFor="periodicity">Periodicity</label>
                     <select name="periodicity">
                         <option value="monthly">Monthly</option>
@@ -41,10 +43,10 @@ export default function AddGoalForm({ category }: { category: Category }) {
                 </div>
                 <input type="hidden" name="categoryID" value={category.id} />
                 <input type="hidden" name="email" value={category.email} />
-                <SubmitButton>Add</SubmitButton>
+                <SubmitButton className=" w-36">Add</SubmitButton>
             </form>
             <p>{state.message}</p>
-        </div>
+        </FormContainer>
 
     )
 }

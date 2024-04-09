@@ -9,26 +9,24 @@ import convertToDollars from "@/app/lib/cents-to-dollars";
 import { backendUrls } from "@/app/constants/backend-urls";
 
 export default async function BudgetPage({ searchParams }: { searchParams: any }) {
-  const monthParam = Number(searchParams.month);
+  const monthParam = Number(searchParams.month); // NOT ZERO INDEXED
   const yearParam = Number(searchParams.year);
   const today = new Date();
   const viewedMonth = monthParam;
-  const viewedYear = yearParam || today.getFullYear();
-  const viewedDate = new Date(viewedYear, viewedMonth);
-  const nextMonth = viewedMonth === 11 ? 0 : viewedMonth + 1;
-  const prevMonth = viewedMonth === 0 ? 11 : viewedMonth - 1;
-  const nextYear = viewedMonth === 11 ? viewedYear + 1 : viewedYear;
-  const prevYear = viewedMonth === 0 ? viewedYear - 1 : viewedYear;
+  const viewedYear = yearParam;
+  const viewedDate = new Date(viewedYear, viewedMonth -1 ); // JS months are 0-indexed
+  const nextMonth = viewedMonth === 12 ? 1 : viewedMonth + 1;
+  const prevMonth = viewedMonth === 1 ? 12 : viewedMonth - 1;
+  const nextYear = viewedMonth === 12 ? viewedYear + 1 : viewedYear;
+  const prevYear = viewedMonth === 1 ? viewedYear - 1 : viewedYear;
   console.log("BudgetPage() month: ", viewedMonth)
   console.log("BudgetPage() year: ", viewedYear)
   console.log("BudgetPage() viewedDate: ", viewedDate)
   const monthString = viewedDate.toLocaleString('default', { month: 'long' });
   const email = cookies().get('email')?.value!;
   console.log("BudgetPage() email: ", email);
-  // JS month is zero-indexed whereas Go is not. So we need to add 1 to the month
-  // when we send anything to the backend
   
-  const budgetPageData = await getBudgetPageData(email, viewedMonth + 1, viewedYear);
+  const budgetPageData = await getBudgetPageData(email, viewedMonth, viewedYear);
 
   const categoryRows = budgetPageData?.categoryRows;
 

@@ -21,7 +21,7 @@ export default function SignInPage() {
       console.log("SignInPage useEffect running! expires:", state.user?.expiration);
       const hasNull = Object.values(state.user).some(value => (value === null || value === undefined));
       if (!hasNull) {
-        setUser(state.user);
+        setUser(state.user as User);
       }
       console.log("user: ", user);
     }

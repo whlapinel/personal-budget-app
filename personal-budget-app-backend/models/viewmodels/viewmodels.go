@@ -6,6 +6,8 @@ import (
 )
 
 type BudgetPageData struct {
+	Month           int            `json:"month"` // not 0 indexed!
+	Year            int            `json:"year"` // 4 digit year
 	CurrentFunds    int            `json:"currentFunds"`    // sum of all account balances
 	ProjIncome      int            `json:"projIncome"`      // sum of all projected incomes for month
 	TotalAvailable  int            `json:"totalAvailable"`  // sum of balances for all monthly budgets
@@ -24,6 +26,10 @@ type CategoryData struct {
 
 func GetBudgetPageData(email string, month, year int) (*BudgetPageData, error) {
 	var budgetPageData BudgetPageData
+	// validate month
+	if month < 1 || month > 12 {
+		return nil, fmt.Errorf("invalid month: %d", month)
+	}
 	db := database.InitializeDB()
 	defer db.Close()
 	// get CategoryID, CategoryName, Assigned, Spent, Available, GoalsSum
@@ -93,6 +99,9 @@ func GetBudgetPageData(email string, month, year int) (*BudgetPageData, error) {
 	}
 	// get TotalUnassigned = current funds - TotalAvailable
 	budgetPageData.TotalUnassigned = budgetPageData.CurrentFunds - budgetPageData.TotalAvailable
+	budgetPageData.Month = month
+	budgetPageData.Year = year
+	
 
 	return &budgetPageData, nil
 }

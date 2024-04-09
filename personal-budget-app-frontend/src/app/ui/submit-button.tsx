@@ -2,8 +2,9 @@
 
 import { revalidatePath } from 'next/cache'
 import { useFormStatus } from 'react-dom'
+import { Button } from './button'
 
-export function SubmitButton({ children, handleSubmit }: { children: React.ReactNode, handleSubmit?: () => void}) {
+export function SubmitButton({ children, handleSubmit, className}: { children: React.ReactNode, handleSubmit?: () => void, className?: string}) {
     const { pending } = useFormStatus()
 
     if (pending) {
@@ -13,8 +14,8 @@ export function SubmitButton({ children, handleSubmit }: { children: React.React
     }
 
     return (
-        <button type="submit" aria-disabled={pending}>
+        <Button type="submit" aria-disabled={pending} className={className}>
             {children}
-        </button>
+        </Button>
     )
 }

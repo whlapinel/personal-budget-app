@@ -28,7 +28,7 @@ export default async function AccountsPage() {
     return (
         <div>
             <h1>Accounts</h1>
-            {accounts?.map((account: Account) => (<p>{account.name}</p>))}
+            {accounts?.map((account: Account) => (<p key={account.id}>{account.name}</p>))}
 
             <Link color="blue" href='/dashboard/accounts/add-account'>Add Account</Link>
         </div>

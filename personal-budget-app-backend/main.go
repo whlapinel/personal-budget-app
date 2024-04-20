@@ -1,10 +1,10 @@
 package main
 
 import (
+	"log"
+	"personal-budget-app-backend/database"
 	"personal-budget-app-backend/middleware"
 	"personal-budget-app-backend/routes"
-
-	"personal-budget-app-backend/database"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,14 +15,14 @@ func main() {
 	if createDB {
 		err := database.CreateDB()
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 	}
 	createDummyData := true // true if you want to create dummy data
 	if createDummyData {
 		err := database.CreateDummyData()
 		if err != nil {
-			panic(err)
+			log.Fatal(err)
 		}
 	}
 	// end development only
@@ -30,5 +30,5 @@ func main() {
 	router := gin.Default()
 	router.Use(middleware.AuthenticateBFF)
 	routes.RegisterRoutes(router)
-	router.Run("localhost:8080")
+	router.Run("172.18.0.1:8080")
 }

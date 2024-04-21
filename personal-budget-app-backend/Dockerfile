@@ -9,6 +9,7 @@ RUN go mod download && go mod verify
 
 COPY . .
 RUN go build -v -o /usr/local/bin/app .
+ENV PORT=8080
 
 CMD ["/usr/local/bin/app"]
 

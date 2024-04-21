@@ -3,8 +3,9 @@ package middleware
 import (
 	"fmt"
 	"net/http"
-	"github.com/gin-gonic/gin"
 	"personal-budget-app-backend/secrets"
+
+	"github.com/gin-gonic/gin"
 )
 
 func AuthenticateBFF(c *gin.Context) {

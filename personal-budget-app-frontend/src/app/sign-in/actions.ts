@@ -28,7 +28,7 @@ export async function signInAction(prevState: any, formData: FormData): Promise<
         return await signIn(user);
     }
 
-    async function signIn(user: {email: string, password: string}) {
+    async function signIn(user: { email: string, password: string }) {
         // retrieve encrypted password from backend
         const encryptedPassword = await getEncryptedPassword(user.email);
         let match: boolean;
@@ -89,7 +89,7 @@ export async function signInAction(prevState: any, formData: FormData): Promise<
         cookies().set("session", session, { expires: expires, httpOnly: true });
         return (
             {
-                message: "Signed in successfully",
+                message: "Signed in successfully, redirecting to dashboard...",
                 user: { ...user, expiration: expires }
             }
         )

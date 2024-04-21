@@ -24,6 +24,7 @@ func InitializeDB() *sql.DB {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Println("opened connection: ")
 	pingErr := db.Ping()
 	if pingErr != nil {
 		log.Fatal(pingErr)

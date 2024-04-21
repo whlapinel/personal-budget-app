@@ -4,8 +4,10 @@ import { useFormState } from 'react-dom'
 import addCategoryAction from './actions/add-category-action';
 import { SubmitButton } from '@/app/ui/submit-button';
 import { revalidatePath } from 'next/cache';
+import Form from '@/app/ui/form';
+import { Input } from '@/app/ui/input';
 
-const initialState: {message: string | null} = {
+const initialState: { message: string | null } = {
   message: null,
 }
 
@@ -15,11 +17,9 @@ export default function AddCategoryPage() {
   console.log(state.message);
 
   return (
-    <form className="flex flex-col items-center justify-center self-center" action={formAction}>
+    <Form title="Add Category" formAction={formAction} state={state}>
       <label htmlFor='name'>Name</label>
-      <input type="text" name='name' required />
-      <SubmitButton>Submit</SubmitButton>
-      <p>{state.message}</p>
-    </form>
+      <Input type="text" name='name' required />
+    </Form>
   )
 }

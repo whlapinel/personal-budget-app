@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"personal-budget-app-backend/database"
 	"personal-budget-app-backend/middleware"
@@ -13,6 +14,7 @@ func main() {
 	// for development only
 	createDB := true // true if you want to delete database and start over
 	if createDB {
+		fmt.Println("creating database")
 		err := database.CreateDB()
 		if err != nil {
 			log.Fatal(err)
@@ -30,5 +32,5 @@ func main() {
 	router := gin.Default()
 	router.Use(middleware.AuthenticateBFF)
 	routes.RegisterRoutes(router)
-	router.Run("172.18.0.1:8080")
+	router.Run("127.0.0.1:8080")
 }

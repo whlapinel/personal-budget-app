@@ -1,3 +1,10 @@
+## 4/20/24
+- Resumed work on this yesterday. Spent a lot of hours containerizing the app. FINALLY was able to run containers of the backend and frontend (separately). Still using the local mariadb server so next steps include pulling a mariadb image and mounting a volume for data persistence, then using docker-compose to create a multi-container application. Then I can finally deploy with (hopefully) relative ease compared with installing all the dependencies manually on the droplet.  WOW I really struggled with that one. I probably should have done some really basic examples first. That's what impatience gets you. 
+
+the thing I was missing from my "docker run" command that if I had learned earlier would have saved me a lot of time... 
+
+--network="host" 
+
 ## 3/29/24
 - This morning I was rethinking this again, the topic of whether to eliminate the time component of 'assignments'.  I realized my difficulty was stemming from how I was recording assignments. There should only be one assignment for each category and month, but I didn't put that constraint on the table nor did I realize it would be necessary. If I put that constraint on, where there's a single row and only one row for each category for each month containing the balance or 'assigned amount', it becomes conceptually easier to understand how everything fits together. I think I'll retain the time component and revise the assignments table, calling it the monthly_budget table instead.
 

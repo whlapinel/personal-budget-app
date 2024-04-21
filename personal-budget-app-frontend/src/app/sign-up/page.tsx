@@ -10,12 +10,6 @@ export default function SignUpPage() {
   const [state, formAction] = useFormState(signUpAction, { message: null })
 
   console.log(state);
-  const router = useRouter();
-  if (state.message === 'User created') {
-    setTimeout(() => {
-      router.push('/dashboard')
-    }, 1000)
-  }
 
   return (
     <div className='flex flex-col items-center'>

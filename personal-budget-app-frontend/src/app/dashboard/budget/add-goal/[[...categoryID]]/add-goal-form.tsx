@@ -7,6 +7,7 @@ import { useSession } from "@/app/session-context";
 import { Input } from "@/app/ui/input";
 import Form from "@/app/ui/form";
 import type { FormHiddenInfo } from "@/app/ui/form";
+import { Select } from "@/app/ui/select";
 
 const initialState: any = {
     message: null,
@@ -40,10 +41,10 @@ export default function AddGoalForm({ category }: { category: Category }) {
             <label htmlFor="targetDate">Date</label>
             <Input type="date" name="targetDate" />
             <label htmlFor="periodicity">Periodicity</label>
-            <select name="periodicity">
+            <Select name="periodicity">
                 <option value="monthly">Monthly</option>
                 <option value="onetime">One Time</option>
-            </select>
+            </Select>
         </Form>
 
     )

@@ -5,8 +5,11 @@ import addTransactionAction from './actions/add-transaction-action';
 import { SubmitButton } from '@/app/ui/submit-button';
 import { useSession } from '@/app/session-context';
 import { Account } from '@/app/lib/data/definitions';
-import {Category} from '@/app/lib/data/definitions'
+import { Category } from '@/app/lib/data/definitions'
 import { Radio, RadioGroup } from '@/app/ui/radio';
+import Form from '@/app/ui/form';
+import { Input } from '@/app/ui/input';
+import type { FormHiddenInfo } from '@/app/ui/form';
 
 const initialState: { message: string | null } = {
     message: null,
@@ -17,8 +20,15 @@ export default function AddTransactionForm({ accounts, categories }: { accounts:
     if (!user) return null;
     const email = user.email;
 
+    const hiddenInfo: FormHiddenInfo[] = [
+        {
+            name: 'email',
+            value: email
+        }
+    ]
+
     return (
-        <form className="flex flex-col items-center justify-center self-center" action={formAction}>
+        <Form title="Add Transaction" formAction={formAction} state={state} hiddenInfo={hiddenInfo}>
             <label htmlFor="accountID">Account</label>
             <select name="accountID">
                 {accounts?.map((account: Account) => (
@@ -26,18 +36,18 @@ export default function AddTransactionForm({ accounts, categories }: { accounts:
                 ))}
             </select>
             <label htmlFor="date">Date</label>
-            <input type="date" name="date" />
+            <Input type="date" name="date" />
             <label htmlFor="payee">Payee</label>
-            <input type="text" name="payee" />
+            <Input type="text" name="payee" />
             <label htmlFor="type">Type</label>
             <select name='type'>
                 <option value="debit">Debit</option>
                 <option value="credit">Credit</option>
             </select>
             <label htmlFor="memo">Memo</label>
-            <input type="text" name="memo" />
+            <Input type="text" name="memo" />
             <label htmlFor="amount">Amount</label>
-            <input type="float" name="amount" />
+            <Input type="float" name="amount" />
             <label htmlFor="categoryID">Category</label>
             <select name="categoryID">
                 {categories?.map((category: Category) => (
@@ -45,9 +55,7 @@ export default function AddTransactionForm({ accounts, categories }: { accounts:
                 ))}
             </select>
             <input type="hidden" name="email" value={email} />
-            <SubmitButton>Add</SubmitButton>
-            <p>{state.message}</p>
-        </form>
+        </Form>
     )
 
 

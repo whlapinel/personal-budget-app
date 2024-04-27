@@ -1,4 +1,4 @@
-const baseUrl = 'http://127.0.0.1:8080';
+const baseUrl = 'http://backend:8080';
 
 export const backendUrls = {
     signin: `${baseUrl}/signin`,

@@ -1,0 +1,48 @@
+name: personal-budget-app
+
+services:
+  backend:
+    build:
+      context: ./personal-budget-app-backend
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - ENV=production
+    depends_on:
+      - mariadb
+    networks:
+      - appnet
+
+  frontend:
+    build:
+      context: ./personal-budget-app-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    networks:
+      - appnet
+
+  mariadb:
+    image: mariadb:latest
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+      MARIADB_PORT: ${MARIADB_PORT}
+    volumes:
+      - mariadb-data:/var/lib/mysql
+    ports:
+      - "3303:3306"
+    networks:
+      - appnet
+
+networks:
+  appnet:
+
+
+volumes:
+  mariadb-data:

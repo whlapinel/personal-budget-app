@@ -8,10 +8,16 @@ import (
 	"personal-budget-app-backend/routes"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
 	// for development only
+	// load .env file
+	err := godotenv.Load(".env.backend")
+	if err != nil {
+		log.Fatalf("Error loading .env file: %v", err)
+	}
 	createDB := true // true if you want to delete database and start over
 	if createDB {
 		fmt.Println("creating database")
@@ -32,5 +38,5 @@ func main() {
 	router := gin.Default()
 	router.Use(middleware.AuthenticateBFF)
 	routes.RegisterRoutes(router)
-	router.Run("127.0.0.1:8080")
+	router.Run("backend:8080")
 }

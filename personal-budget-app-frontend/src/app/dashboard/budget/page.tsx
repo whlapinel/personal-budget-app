@@ -5,40 +5,35 @@ import { getBudgetPageData } from "@/app/lib/data/get-data";
 import { Category, CategoryData, Goal, MonthlyBudget, Transaction } from "@/app/lib/data/definitions";
 import { cookies } from "next/headers";
 import CategoryRow from "./category-row";
-import convertToDollars from "@/app/lib/cents-to-dollars";
+import {convertToDollars} from "@/app/lib/util/cents-to-dollars";
 import { backendUrls } from "@/app/constants/backend-urls";
+import { getTime } from "date-fns";
+import { TimeInfo } from "@/app/lib/data/definitions";
+import getTimeInfo from "@/app/lib/util/time-info";
 
 export default async function BudgetPage({ searchParams }: { searchParams: any }) {
   const monthParam = Number(searchParams.month); // NOT ZERO INDEXED
   const yearParam = Number(searchParams.year);
-  const today = new Date();
-  const viewedMonth = monthParam;
-  const viewedYear = yearParam;
-  const viewedDate = new Date(viewedYear, viewedMonth -1 ); // JS months are 0-indexed
-  const nextMonth = viewedMonth === 12 ? 1 : viewedMonth + 1;
-  const prevMonth = viewedMonth === 1 ? 12 : viewedMonth - 1;
-  const nextYear = viewedMonth === 12 ? viewedYear + 1 : viewedYear;
-  const prevYear = viewedMonth === 1 ? viewedYear - 1 : viewedYear;
-  console.log("BudgetPage() month: ", viewedMonth)
-  console.log("BudgetPage() year: ", viewedYear)
-  console.log("BudgetPage() viewedDate: ", viewedDate)
-  const monthString = viewedDate.toLocaleString('default', { month: 'long' });
+
+  const timeInfo: TimeInfo = getTimeInfo(monthParam, yearParam); 
   const email = cookies().get('email')?.value!;
   console.log("BudgetPage() email: ", email);
   
-  const budgetPageData = await getBudgetPageData(email, viewedMonth, viewedYear);
+  const budgetPageData = await getBudgetPageData(email, timeInfo.viewedMonth, timeInfo.viewedYear);
 
   const categoryRows = budgetPageData?.categoryRows;
 
 
   return (
     <>
-      <Card className='bg-amber-200'>
-        <h1 className="text-2xl font-bold text-gray-900">{monthString}{" "}{viewedYear} Budget</h1>
+      <Card>
+        <h1 className="text-2xl font-bold text-gray-900">{timeInfo.monthString}{" "}{timeInfo.viewedYear} Budget</h1>
         <h2 className="text-xl font-bold text-gray-900">Unassigned: {convertToDollars(budgetPageData.totalUnassigned)}</h2>
-        <Link href={`/dashboard/budget?month=${prevMonth}&year=${prevYear}`} className="bg-blue-700 rounded p-2 text-gray-50">Previous Month</Link>
-        <Link href={`/dashboard/budget?month=${nextMonth}&year=${nextYear}`} className="bg-blue-700 rounded p-2 text-gray-50">Next Month</Link>
+        <div className="flex gap-2">
+        <Link href={`/dashboard/budget?month=${timeInfo.prevMonth}&year=${timeInfo.prevYear}`} className="bg-blue-700 rounded p-2 text-gray-50">Previous Month</Link>
+        <Link href={`/dashboard/budget?month=${timeInfo.nextMonth}&year=${timeInfo.nextYear}`} className="bg-blue-700 rounded p-2 text-gray-50">Next Month</Link>
         <Link className=" bg-blue-700 rounded p-2 text-gray-50" href='/dashboard/budget/add-category'>Add Budget Category</Link>
+        </div>
         <table className="min-w-full divide-y divide-gray-300">
           <thead>
             <tr>
@@ -63,7 +58,7 @@ export default async function BudgetPage({ searchParams }: { searchParams: any }
 
             {categoryRows ? categoryRows?.map((categoryData: CategoryData) => {
               return (
-                <CategoryRow key={categoryData.categoryID} data={categoryData} month={viewedMonth} year={viewedYear} />
+                <CategoryRow key={categoryData.categoryID} data={categoryData} month={timeInfo.viewedMonth} year={timeInfo.viewedYear} />
               )
             }
             ):<p>No categories found</p>}

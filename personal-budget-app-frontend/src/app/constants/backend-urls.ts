@@ -1,4 +1,13 @@
-const baseUrl = 'http://backend:8080';
+const production = process.env.PRODUCTION
+let host: string = ''
+if (production === 'true') {
+    host = 'backend'
+} else {
+    host = 'localhost'
+}
+const baseUrl = `http://${host}:8080`;
+
+console.log('baseUrl:', baseUrl);
 
 export const backendUrls = {
     signin: `${baseUrl}/signin`,

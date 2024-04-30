@@ -21,6 +21,9 @@ export default async function signUpAction(prevState: any, formData: FormData) {
         if (data.error) {
             return { message: data.error }
         }
+        if (data.message) {
+            return { message: data.message }
+        }
     } catch (error) {
         console.error('Error creating user', error);
         return { message: 'Error creating user' }

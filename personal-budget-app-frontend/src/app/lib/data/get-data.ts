@@ -9,6 +9,23 @@ import { backendUrls } from "@/app/constants/backend-urls";
 
 const API_KEY: string = process.env.API_KEY!;
 
+export async function getAccounts(email: string) {
+    let accounts: Account[] = [];
+    try {
+        const response = await fetch(`${backendUrls.accounts}/${email}`, {
+            method: 'GET',
+            headers: {
+                'API_KEY': process.env.API_KEY!,
+            },        
+        });
+        accounts = await response.json();
+    } catch (err) {
+        console.log(err);
+    }
+    return accounts;
+}
+
+
 export async function getCategories(email: string): Promise<Category[]> {
     const data = await fetch(`${backendUrls.categories}/${email}`, {
         headers: {
@@ -69,16 +86,6 @@ export async function getCategoryByID(categoryID: string): Promise<Category> {
     const category: Category = await data.json();
     console.log(category);
     return category
-}
-
-export async function getAccounts(email: string): Promise<Account[]> {
-    const data = await fetch(`${backendUrls.accounts}/${email}`, {
-        headers: {
-            'API_KEY': API_KEY
-        }
-    });
-    const accounts = await data.json();
-    return accounts
 }
 
 export async function getTransactions(email: string): Promise<Transaction[]> {

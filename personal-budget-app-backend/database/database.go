@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"personal-budget-app-backend/util"
 	"time"
 
 	"github.com/go-sql-driver/mysql"
@@ -12,11 +13,12 @@ import (
 )
 
 func InitializeDB() *sql.DB {
+
 	cfg := mysql.Config{
 		User:                 os.Getenv("MARIADB_USER"),
 		Passwd:               os.Getenv("MARIADB_PASSWORD"),
 		Net:                  "tcp",
-		Addr:                 "mariadb:3306", // Change this to the service name and port in your docker-compose.yml
+		Addr:                 util.GetHost() + ":3306", // Change this to the service name and port in your docker-compose.yml
 		DBName:               "personal_budget",
 		AllowNativePasswords: true,
 	}

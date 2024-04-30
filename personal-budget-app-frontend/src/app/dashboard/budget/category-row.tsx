@@ -1,4 +1,4 @@
-import convertToDollars from "@/app/lib/cents-to-dollars";
+import {convertToDollars} from "@/app/lib/util/cents-to-dollars";
 import { Category, Goal, Transaction, Assignment, CategoryData} from "@/app/lib/data/definitions";
 import { getAccounts, getAssignments, getGoals, getCategories, getTransactions } from "@/app/lib/data/get-data";
 import { Link } from "@/app/ui/link";

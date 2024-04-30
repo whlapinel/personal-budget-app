@@ -7,6 +7,18 @@ export type SessionContextType = {
     signOut: () => void;
 }
 
+export type TimeInfo = {
+    today: Date
+    viewedMonth: number
+    viewedYear: number
+    viewedDate: Date
+    nextMonth: number
+    prevMonth: number
+    nextYear: number
+    prevYear: number
+    monthString: string
+}
+
 export type BudgetPageData = {
     currentFunds: number
     projIncome: number

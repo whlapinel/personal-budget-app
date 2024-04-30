@@ -5,7 +5,7 @@ import { SubmitButton } from "@/app/ui/submit-button";
 import { useSession } from "@/app/session-context";
 import { editBudgetAction } from "../actions/edit-budget-action";
 import { Category } from "@/app/lib/data/definitions";
-import convertToDollars from "@/app/lib/cents-to-dollars";
+import convertToDollars from "@/app/lib/util/cents-to-dollars";
 
 const initialState: any = {
     message: null,

@@ -36,9 +36,13 @@ func (t *Transaction) Save() error {
 			return err
 		}
 	} else {
-		if err := t.updateMonthlyBudgetSpent(); err != nil {return err}
+		if err := t.updateMonthlyBudgetSpent(); err != nil {
+			return err
+		}
 	}
-	if err := t.updateAccountBalance(); err != nil {return err}
+	if err := t.updateAccountBalance(); err != nil {
+		return err
+	}
 	fmt.Println("Transaction created and account balance and monthly budget updated for account: ", t.AccountID)
 	return nil
 }
@@ -47,9 +51,9 @@ func GetTransactionsByEmail(email string) ([]Transaction, error) {
 	db := database.InitializeDB()
 	defer db.Close()
 	rows, err := db.Query(`
-	SELECT t.*, categories.name 
+	SELECT t.id, t.account_id, DATE_FORMAT(t.date, '%Y-%m-%d %H:%i:%s'), t.payee, t.amount, t.memo, t.category_id, t.email, c.name 
 	FROM transactions t
-	LEFT JOIN categories ON categories.id = t.category_id 
+	LEFT JOIN categories c ON c.id = t.category_id 
 	WHERE t.email = ?`, email)
 	if err != nil {
 		return nil, err
@@ -62,6 +66,8 @@ func GetTransactionsByEmail(email string) ([]Transaction, error) {
 		if err != nil {
 			return nil, err
 		}
+		fmt.Println("tempDate", tempDate)
+		fmt.Println("tempDate", string(tempDate))
 		transaction.Date, err = time.Parse("2006-01-02 00:00:00", string(tempDate))
 		if err != nil {
 			return nil, err

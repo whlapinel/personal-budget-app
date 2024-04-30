@@ -6,7 +6,7 @@ import { getAccounts } from '@/app/lib/data/get-data';
 import { cookies } from 'next/headers';
 import TransactionList from "./transaction-list";
 import { select } from "d3";
-import convertToDollars from "@/app/lib/cents-to-dollars";
+import {convertToDollars} from "@/app/lib/util/cents-to-dollars";
 
 export default async function TransactionsPage({searchParams}: {searchParams: any}) {
   const email = cookies().get('email')?.value!;
@@ -39,7 +39,7 @@ export default async function TransactionsPage({searchParams}: {searchParams: an
           {selectedAccount !== undefined ?
             <TransactionList account={selectedAccount} transactions={transactions.filter((transaction)=> transaction.accountID === selectedAccount.id)}/>
             :
-            null
+            "No account selected"
           }
         </div>
       </Card>

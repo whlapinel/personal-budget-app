@@ -1,6 +1,6 @@
 import { Account, Transaction } from "@/app/lib/data/definitions";
 import { getTransactions } from "@/app/lib/data/get-data";
-import convertToDollars from "@/app/lib/cents-to-dollars";
+import {convertToDollars} from "@/app/lib/util/cents-to-dollars";
 
 export default async function TransactionList({account, transactions}: {account: Account, transactions: Transaction[]}) {
     return (

@@ -6,6 +6,7 @@ import (
 	"personal-budget-app-backend/database"
 	"personal-budget-app-backend/middleware"
 	"personal-budget-app-backend/routes"
+	"personal-budget-app-backend/util"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -38,5 +39,5 @@ func main() {
 	router := gin.Default()
 	router.Use(middleware.AuthenticateBFF)
 	routes.RegisterRoutes(router)
-	router.Run("backend:8080")
+	router.Run(util.GetHost() + ":8080")
 }

@@ -1,3 +1,7 @@
+
+## 4/26/24
+- Successfully deployed using docker compose!!
+
 ## 4/20/24
 - Resumed work on this yesterday. Spent a lot of hours containerizing the app. FINALLY was able to run containers of the backend and frontend (separately). Still using the local mariadb server so next steps include pulling a mariadb image and mounting a volume for data persistence, then using docker-compose to create a multi-container application. Then I can finally deploy with (hopefully) relative ease compared with installing all the dependencies manually on the droplet.  WOW I really struggled with that one. I probably should have done some really basic examples first. That's what impatience gets you. 
 

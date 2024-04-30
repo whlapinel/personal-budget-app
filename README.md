@@ -11,8 +11,8 @@ https://docs.google.com/presentation/d/121C_A62cB5nhCZLu0aTEuNjg54KBki7RySTbAonf
 - [x] Signup
 - [] Dashboard
 - [] 3 visualizations (graphs and charts, etc) available from dashboard
-- [] Ability for user to configure budgets
-- [] Enter expense for budget/month
+- [x] Ability for user to configure budgets
+- [x] Enter expense for budget/month
 
 ### Technical Requirements (provided by Professor)
 
@@ -27,10 +27,6 @@ https://docs.google.com/presentation/d/121C_A62cB5nhCZLu0aTEuNjg54KBki7RySTbAonf
 - [] Testing: at least 1 Unit Test
 - [] Testing: at least 1 E2E Test
 - [] Testing: at least 1 Visual Regression test with Applitools
-
-### Possible extra features (by me, the developer)
-
-- [] Account register with ability to download bank transactions via Plaid
 
 ### Architectural plan (by me, the developer)
 

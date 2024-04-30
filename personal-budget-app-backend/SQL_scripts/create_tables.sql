@@ -37,7 +37,7 @@ CREATE TABLE categories (
 CREATE TABLE transactions (
     id int AUTO_INCREMENT PRIMARY KEY,
     account_id int,
-    date datetime,
+    date date,
     payee VARCHAR(100),
     amount int,
     memo VARCHAR(100),

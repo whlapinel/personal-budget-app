@@ -18,7 +18,7 @@ export default function NavBar() {
                 <div className="flex">
                     <div className="flex flex-shrink-0 items-center">
                         <span>logo placeholder</span>
-                        <span>User: {user? user.email : "Please Sign In"}</span>
+                        <span>User: {user? user.firstName + " " + user.lastName : "Please Sign In"}</span>
                     </div>
                     <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
                         {navigation.map((item) => {

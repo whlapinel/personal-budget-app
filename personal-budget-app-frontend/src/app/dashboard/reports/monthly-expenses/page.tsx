@@ -1,6 +1,6 @@
 
 import Card from "@/app/ui/card"
-import PieChart from '@/app/dashboard/reports/test-visualization'
+import PieChart from '@/app/dashboard/reports/monthly-expenses/pie-chart'
 import { getCategories, getMonthlyBudgets } from "@/app/lib/data/get-data"
 import { cookies } from "next/headers"
 import getTimeInfo from "@/app/lib/util/time-info"

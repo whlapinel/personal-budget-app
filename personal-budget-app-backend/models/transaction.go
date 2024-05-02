@@ -51,7 +51,7 @@ func GetTransactionsByEmail(email string) ([]Transaction, error) {
 	db := database.InitializeDB()
 	defer db.Close()
 	rows, err := db.Query(`
-	SELECT t.id, t.account_id, DATE_FORMAT(t.date, '%Y-%m-%d %H:%i:%s'), t.payee, t.amount, t.memo, t.category_id, t.email, c.name 
+	SELECT t.*, c.name 
 	FROM transactions t
 	LEFT JOIN categories c ON c.id = t.category_id 
 	WHERE t.email = ?`, email)
@@ -68,7 +68,7 @@ func GetTransactionsByEmail(email string) ([]Transaction, error) {
 		}
 		fmt.Println("tempDate", tempDate)
 		fmt.Println("tempDate", string(tempDate))
-		transaction.Date, err = time.Parse("2006-01-02 00:00:00", string(tempDate))
+		transaction.Date, err = time.Parse("2006-01-02", string(tempDate))
 		if err != nil {
 			return nil, err
 		}
@@ -90,7 +90,7 @@ func (t *Transaction) updateAccountBalance() error {
 func (t *Transaction) updateMonthlyBudgetSpent() error {
 	db := database.InitializeDB()
 	defer db.Close()
-	_, err := db.Exec("CALL update_monthly_budget_spent(?, ?, ?, ?)", t.CategoryID, t.Date.Month(), t.Date.Year(), -t.Amount)
+	_, err := db.Exec("CALL update_monthly_budget_spent(?, ?, ?, ?)", t.CategoryID, t.Date.Month(), t.Date.Year(), t.Amount)
 	if err != nil {
 		return err
 	}
@@ -100,7 +100,7 @@ func (t *Transaction) updateMonthlyBudgetSpent() error {
 func (t *Transaction) reverseUpdateAccountBalance() error {
 	db := database.InitializeDB()
 	defer db.Close()
-	_, err := db.Exec("CALL update_account_balance(?, ?)", t.AccountID, -t.Amount)
+	_, err := db.Exec("CALL update_account_balance(?, ?)", t.AccountID, t.Amount)
 	if err != nil {
 		return err
 	}
@@ -124,7 +124,7 @@ func (t *Transaction) reverseUpdateAccountAndMonthlyBudget() error {
 	if err != nil {
 		return err
 	}
-	_, err = db.Exec("CALL update_monthly_budget_spent(?, ?, ?, ?)", t.CategoryID, t.Date.Month(), t.Date.Year(), t.Amount)
+	_, err = db.Exec("CALL update_monthly_budget_spent(?, ?, ?, ?)", t.CategoryID, t.Date.Month(), t.Date.Year(), -t.Amount)
 	if err != nil {
 		return err
 	}

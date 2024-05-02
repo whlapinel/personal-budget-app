@@ -34,5 +34,3 @@ func (a *Account) Save() error {
 	}
 	return nil
 }
-
-

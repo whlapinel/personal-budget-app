@@ -24,9 +24,9 @@ export default function RootLayout({
     <html lang="en" className='h-full'>
       <body className={twMerge(inter.className, 'h-full')}>
         <SessionProvider>
-          <div className="min-h-full">
+          <div>
             <NavBar />
-            <main className={'py-2 px-2'}>
+            <main className={'py-2 px-2 min-h-screen'}>
               {children}
             </main>
           </div>

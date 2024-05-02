@@ -15,14 +15,14 @@ export default function DashboardLayout({
 
     return (
         <>
-            <div className='grid grid-cols-[1fr_8fr]'>
+            <div className='grid grid-cols-[1fr_8fr] min-h-[40vh]'>
                 <SideNav>
                     <Link className=" bg-blue-700 rounded p-2 text-gray-50" href={`/dashboard/budget?${monthYearParamsString}`}>Budget</Link>
                     <Link className=" bg-blue-700 rounded p-2 text-gray-50" href={'/dashboard/accounts'}>Accounts</Link>
                     <Link className=" bg-blue-700 rounded p-2 text-gray-50" href={'/dashboard/transactions'}>Transactions</Link>
                     <Link className=" bg-blue-700 rounded p-2 text-gray-50" href={`/dashboard/reports?${monthYearParamsString}`}>Reports</Link>
                 </SideNav>
-                <div className='flex items-center justify-center'>
+                <div className='flex items-center justify-center min-h-full'>
                     {children}
                 </div>
             </div>

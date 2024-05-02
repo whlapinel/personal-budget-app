@@ -22,7 +22,7 @@ ChartJS.register(
   Legend
 );
 
-export async function BarChart() {
+export async function BarChart({months, income, expenses}:{months: string[], income: number[], expenses: number[]}) {
     const options = {
         responsive: true,
         plugins: {
@@ -36,19 +36,19 @@ export async function BarChart() {
         },
       };
       
-      const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+      const labels = months;
       
       const data = {
         labels,
         datasets: [
           {
-            label: 'Dataset 1',
-            data: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+            label: 'Income',
+            data: income,
             backgroundColor: 'rgba(255, 99, 132, 0.5)',
           },
           {
-            label: 'Dataset 2',
-            data: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+            label: 'Expenses',
+            data: expenses,
             backgroundColor: 'rgba(53, 162, 235, 0.5)',
           },
         ],

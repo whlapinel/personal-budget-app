@@ -1,5 +1,6 @@
 
 import Card from "@/app/ui/card"
+import { Link } from "@/app/ui/link"
 import PieChart from '@/app/dashboard/reports/monthly-expenses/pie-chart'
 import { getCategories, getMonthlyBudgets } from "@/app/lib/data/get-data"
 import { cookies } from "next/headers"
@@ -35,6 +36,10 @@ export default async function ReportsPage({ searchParams }: { searchParams: any}
 
   return (
     <Card className='bg-white-200'>
+      <div className="flex gap-2">
+        <Link href={`/dashboard/reports/monthly-expenses?month=${timeInfo.prevMonth}&year=${timeInfo.prevYear}`} className="bg-blue-700 rounded p-2 text-gray-50">Previous Month</Link>
+        <Link href={`/dashboard/reports/monthly-expenses?month=${timeInfo.nextMonth}&year=${timeInfo.nextYear}`} className="bg-blue-700 rounded p-2 text-gray-50">Next Month</Link>
+      </div>
         <PieChart names={names} amounts={amounts} />
     </Card>
   )

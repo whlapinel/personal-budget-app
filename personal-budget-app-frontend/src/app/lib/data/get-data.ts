@@ -3,11 +3,23 @@
 
 import { revalidatePath } from "next/cache";
 // import all definitions
-import { User, Account, Transaction, Category, Goal, Assignment, MonthlyBudget, BudgetPageData } from './definitions';
+import { User, Account, Transaction, Category, Goal, Assignment, MonthlyBudget, BudgetPageData, IncomeAndExpenses } from './definitions';
 import { backendUrls } from "@/app/constants/backend-urls";
+import { error } from "console";
 
 
 const API_KEY: string = process.env.API_KEY!;
+
+export async function getIncomeAndExpenses(email: string): Promise<IncomeAndExpenses> {
+    let data: IncomeAndExpenses;
+        const response = await fetch(`${backendUrls.incomeAndExpenses}/${email}`, {
+            headers: {
+                'API_KEY': API_KEY
+            }
+        });
+        data = await response.json();
+        return data
+}
 
 export async function getAccounts(email: string) {
     let accounts: Account[] = [];

@@ -18,6 +18,7 @@ SET balance = new_balance
 WHERE id = account_id;
 END;;
 
+
 -- should be used when transaction has a category_id
 CREATE PROCEDURE update_monthly_budget_spent
 (
@@ -33,3 +34,5 @@ SELECT spent INTO old_spent FROM monthly_budgets m WHERE id = category_id AND m.
 SET new_spent = old_spent + (amount * -1);
 UPDATE monthly_budgets m SET spent = new_spent WHERE id = category_id AND m.month = month AND m.year = year;
 END;;
+
+

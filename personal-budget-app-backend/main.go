@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"personal-budget-app-backend/database"
+	"personal-budget-app-backend/database/dummy_data"
 	"personal-budget-app-backend/middleware"
 	"personal-budget-app-backend/routes"
 	"personal-budget-app-backend/util"
@@ -29,7 +30,7 @@ func main() {
 	}
 	createDummyData := true // true if you want to create dummy data
 	if createDummyData {
-		err := database.CreateDummyData()
+		err := dummy_data.CreateDummyData()
 		if err != nil {
 			log.Fatal(err)
 		}

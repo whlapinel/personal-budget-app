@@ -27,7 +27,7 @@ export default async function TransactionsPage({searchParams}: {searchParams: an
 
   return (
     <>
-      <Card className='bg-amber-200'>
+      <Card>
         <div className={'flex flex-col gap-4'}>
           <div className="flex gap-4">
             <h2 className="text-2xl font-bold text-gray-900">Select Account</h2>

@@ -3,7 +3,7 @@ import { twMerge } from "tailwind-merge"
 export default function Card({ children, className }: { children: React.ReactNode, className?: string }) {
     return (
         <>
-            <div className={twMerge("overflow-hidden bg-white shadow sm:rounded-lg", className)}>
+            <div className={twMerge("overflow-hidden bg-white shadow sm:rounded-lg min-w-[60%] min-h-[80%]", className)}>
                 <div className="px-4 py-5 sm:p-6">
                     <div className="flow-root">
                         <div className="-mx-4 -my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">

@@ -13,4 +13,5 @@ func RegisterRoutes(router *gin.Engine) {
 	RegisterAccountsRoutes(router)
 	RegisterTransactionsRoutes(router)
 	RegisterBudgetPageDataRoutes(router)
+	RegisterIncomeAndExpensesRoute(router)
 }

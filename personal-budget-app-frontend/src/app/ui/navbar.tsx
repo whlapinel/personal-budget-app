@@ -11,14 +11,15 @@ export default function NavBar() {
     const { user, setUser } = useSession();
 
     const path = usePathname();
-    
+
     return (
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div className="flex h-16 justify-between">
                 <div className="flex">
-                    <div className="flex flex-shrink-0 items-center">
-                        <span>logo placeholder</span>
-                        <span>User: {user? user.firstName + " " + user.lastName : "Please Sign In"}</span>
+                    <div className="flex flex-shrink-0 flex-col items-center">
+                        <Link href="/">
+                            <img src="/money-42.png" className=' size-16' />
+                        </Link>
                     </div>
                     <div className="hidden sm:-my-px sm:ml-6 sm:flex sm:space-x-8">
                         {navigation.map((item) => {
@@ -40,6 +41,7 @@ export default function NavBar() {
                         })}
                     </div>
                 </div>
+                <span className="inline-flex items-center px-1 pt-1 text-sm font-medium">User: {user ? user.email : "Please Sign In"}</span>
             </div>
         </div>
     )

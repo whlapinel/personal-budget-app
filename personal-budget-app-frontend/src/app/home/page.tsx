@@ -1,37 +1,14 @@
 'use client';
 
-import { UserButton } from "@clerk/nextjs";
-import { Fragment } from 'react'
-import { Disclosure, Menu, Transition } from '@headlessui/react'
-import { Bars3Icon, BellIcon, XMarkIcon } from '@heroicons/react/24/outline'
-import { navigation } from '@/app/navigation'
-import Image from 'next/image'
-import { usePathname } from "next/navigation";
 
-const user = {
-  name: 'Tom Cook',
-  email: 'tom@example.com',
-  imageUrl:
-    'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-}
-
-const userNavigation = [
-  { name: 'Your Profile', href: '#' },
-  { name: 'Settings', href: '#' },
-  { name: 'Sign out', href: '#' },
-]
-
-function classNames(...classes: string[]) {
-  return classes.filter(Boolean).join(' ')
-}
-
-
-export default function Home() {
+export default function HomePage() {
 
   return (
-    <>
-    <h1>Welcome the Personal Budget Application!</h1>
-    </>
+    <div className="flex flex-col justify-center items-center min-h-[80vh] gap-4">
+      <h1 className="text-4xl">Welcome to MoneyPlan.com!</h1>
+      <p className="text-2xl">Inspired by YNAB (You Need a Budget)!</p>
+      <p>Created by Will Lapinel for ITIS 5166 at UNCC</p>
+
+    </div>
   )
 }
-

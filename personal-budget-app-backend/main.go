@@ -11,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/gin-contrib/gzip"
 )
 
 func main() {
@@ -39,6 +40,7 @@ func main() {
 	// API
 	router := gin.Default()
 	router.Use(middleware.AuthenticateBFF)
+	router.Use(gzip.Gzip(gzip.DefaultCompression))
 	routes.RegisterRoutes(router)
 	router.Run(util.GetHost() + ":8080")
 }

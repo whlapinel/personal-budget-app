@@ -14,7 +14,7 @@ export function SubmitButton({ children, handleSubmit, className}: { children: R
     }
 
     return (
-        <Button type="submit" aria-disabled={pending} className={className}>
+        <Button color='blue' type="submit" aria-disabled={pending} className={className}>
             {children}
         </Button>
     )

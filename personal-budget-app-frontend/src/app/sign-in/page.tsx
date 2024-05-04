@@ -35,7 +35,7 @@ export default function SignInPage() {
   }, [setUser, state.user, user, router]);
 
   return (
-    <div className="flex flex-col items-center">
+    <div className="flex flex-col justify-center items-center min-h-[80vh]">
       <Form title="Sign In" formAction={formAction} state={state} submitBtnTitle="Sign In">
           <label htmlFor="email">Email</label>
           <input type="email" name="email" />

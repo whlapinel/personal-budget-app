@@ -17,7 +17,7 @@ export default function Form({ title, children, formAction, state, submitBtnTitl
                 {hiddenInfo?.map(info => (
                     <input key={info.name} type="hidden" name={info.name} value={info.value} />
                 ))}
-                <SubmitButton className=" w-36">{submitBtnTitle}</SubmitButton>
+                <SubmitButton className="w-36">{submitBtnTitle}</SubmitButton>
             </form>
             <p id="confirmation-message">{state.message}</p>
         </div>

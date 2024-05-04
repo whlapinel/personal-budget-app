@@ -2,7 +2,9 @@
 export default function DashboardPage() {
   return (
     <>
-      <p>Select a view from the left</p>
+    <div>
+      <h1 className="text-3xl">Please select a view from the left!</h1>
+    </div>
     </>
   )
 }

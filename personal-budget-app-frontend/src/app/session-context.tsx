@@ -44,7 +44,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
   function onInactive() {
     setIsActive(false)
     console.log('User is inactive');
-    alert('You will be logged out in 20 seconds due to inactivity.')
+    alert('Stay signed in? If you remain inactive you will be signed out.')
   }
 
 async function refreshSession() {

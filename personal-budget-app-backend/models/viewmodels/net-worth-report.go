@@ -27,7 +27,7 @@ func getAccountBalanceByDate(email string, account_id int, date time.Time) (*int
 	var accountBalance int
 	db := database.InitializeDB()
 	defer db.Close()
-	err := db.QueryRow("SELECT IFNULL(SUM(amount), 0) FROM transactions WHERE email = ? AND account_id = ? AND date <= ? ORDER BY date DESC LIMIT 1", email, account_id, lastDayOfMonth).Scan(&accountBalance)
+	err := db.QueryRow("SELECT IFNULL(SUM(amount), 0) FROM transactions WHERE email = ? AND account_id = ? AND date <= ?", email, account_id, lastDayOfMonth).Scan(&accountBalance)
 	if err != nil {
 		return nil, err
 	}
@@ -70,7 +70,7 @@ func GetNetWorthReport(email string) (*[]NetWorthReportEntry, error) {
 	defer db.Close()
 	var netWorths []NetWorthReportEntry
 	// get net worth for last 3 months
-	for i := 2; i >= 0; i-- { 
+	for i := 2; i >= 0; i-- {
 		currMonth := thisMonth - i
 		currYear := thisYear
 		if currMonth <= 0 {

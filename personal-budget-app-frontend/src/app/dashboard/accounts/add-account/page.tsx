@@ -1,8 +1,6 @@
 'use client'
 
 import Form from "@/app/ui/form";
-
-import { SubmitButton } from "@/app/ui/submit-button";
 import { useFormState } from "react-dom";
 import addAccountAction from "./actions/add-account-action";
 import { Input } from "@/app/ui/input";
@@ -24,6 +22,8 @@ export default function AddAccountPage() {
             <Input type="text" name='type' required />
             <label htmlFor='startingBalance'>Starting Balance</label>
             <Input type="float" name='startingBalance' required />
+            <label htmlFor='startingDate'>Starting Date</label>
+            <Input type="date" name='startingDate' required />
         </Form>
     )
 

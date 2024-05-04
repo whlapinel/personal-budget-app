@@ -26,5 +26,4 @@ export default function AddAccountPage() {
             <Input type="date" name='startingDate' required />
         </Form>
     )
-
 }

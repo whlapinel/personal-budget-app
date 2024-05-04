@@ -2,12 +2,10 @@
 import Card from "@/app/ui/card"
 import { Link } from "@/app/ui/link";
 import { getBudgetPageData } from "@/app/lib/data/get-data";
-import { Category, CategoryData, Goal, MonthlyBudget, Transaction } from "@/app/lib/data/definitions";
+import { CategoryData} from "@/app/lib/data/definitions";
 import { cookies } from "next/headers";
 import CategoryRow from "./category-row";
 import {convertToDollars} from "@/app/lib/util/cents-to-dollars";
-import { backendUrls } from "@/app/constants/backend-urls";
-import { getTime } from "date-fns";
 import { TimeInfo } from "@/app/lib/data/definitions";
 import getTimeInfo from "@/app/lib/util/time-info";
 

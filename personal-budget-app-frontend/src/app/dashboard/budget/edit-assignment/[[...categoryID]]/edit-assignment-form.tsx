@@ -5,7 +5,9 @@ import { SubmitButton } from "@/app/ui/submit-button";
 import { useSession } from "@/app/session-context";
 import { editBudgetAction } from "../actions/edit-budget-action";
 import { Category } from "@/app/lib/data/definitions";
-import convertToDollars from "@/app/lib/util/cents-to-dollars";
+import {convertToDollars} from "@/app/lib/util/cents-to-dollars";
+import Form from "@/app/ui/form";
+import { Input } from "@/app/ui/input";
 
 const initialState: any = {
     message: null,
@@ -17,19 +19,28 @@ export default function EditAssignmentForm({ category, month, year, currAssignme
 
     console.log('EditAssignmentForm category:', category);
 
+    const hiddenInfo = [
+        {
+            name: 'categoryID',
+            value: category.id
+        },
+        {
+            name: 'month',
+            value: month
+        },
+        {
+            name: 'year',
+            value: year
+        }
+    ]
 
     return (
         <div className="flex justify-center">
-            <form className="flex justify-center items-center flex-col w-64" action={formAction}>
                 <p>Currently Assigned: {convertToDollars(currAssignmentAmount)}</p>
+            <Form formAction={formAction} submitBtnTitle="Update Assignment" title={`Edit Assignment to ${category.name} for ${month}/${year}`} state={state} hiddenInfo={hiddenInfo}>
                 <label htmlFor="amount">New Amount</label>
-                <input type="float" name="amount" />
-                <input type="hidden" name="month" value={month} />
-                <input type="hidden" name="year" value={year} />
-                <input type="hidden" name="categoryID" value={category.id} />
-                <SubmitButton>Submit</SubmitButton>
-                <p>{state.message}</p>
-            </form>
+                <Input type="float" name="amount" />
+            </Form>
         </div>
 
     )

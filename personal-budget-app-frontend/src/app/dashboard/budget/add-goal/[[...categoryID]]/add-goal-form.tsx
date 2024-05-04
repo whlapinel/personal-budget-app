@@ -33,7 +33,7 @@ export default function AddGoalForm({ category }: { category: Category }) {
     ]
 
     return (
-        <Form title={`Add Goal for ${category.name}`} formAction={formAction} state={state} hiddenInfo={hiddenInfo}>
+        <Form title={`Add Goal for ${category.name}`} formAction={formAction} state={state} hiddenInfo={hiddenInfo} submitBtnTitle="Add Goal">
             <label htmlFor="name">Name</label>
             <Input type="text" name="name" />
             <label htmlFor="amount">Amount</label>

@@ -8,6 +8,7 @@ export default function HomePage() {
       <h1 className="text-4xl">Welcome to MoneyPlan.com!</h1>
       <p className="text-2xl">Inspired by YNAB (You Need a Budget)!</p>
       <p>Created by Will Lapinel for ITIS 5166 at UNCC</p>
+      <p>Using Next.js and Go</p>
 
     </div>
   )

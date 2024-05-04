@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { useSession } from "../session-context";
 import type { User } from "../lib/data/definitions";
 import Form from "@/app/ui/form"
+import { Input } from "../ui/input";
 
 const initialState: { message: string | null, user: User | null } = {
   message: null,
@@ -38,9 +39,9 @@ export default function SignInPage() {
     <div className="flex flex-col justify-center items-center min-h-[80vh]">
       <Form title="Sign In" formAction={formAction} state={state} submitBtnTitle="Sign In">
           <label htmlFor="email">Email</label>
-          <input type="email" name="email" />
+          <Input type="email" name="email" />
           <label htmlFor="password">Password</label>
-          <input type="password" name="password" />
+          <Input type="password" name="password" />
       </Form>
     </div>
   )

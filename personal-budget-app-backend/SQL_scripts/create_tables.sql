@@ -23,6 +23,7 @@ CREATE TABLE accounts (
     type VARCHAR(100),
     bank_name VARCHAR(100),
     starting_balance int,
+    starting_date date,
     balance int,
     FOREIGN KEY (email) REFERENCES users(email)
 );

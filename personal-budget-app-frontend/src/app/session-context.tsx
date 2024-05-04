@@ -8,6 +8,7 @@ import {useRouter} from 'next/navigation';
 import { signOutAction } from './sign-out-action';
 import getSessionAction from './get-session-action';
 import { inactiveTimeout } from './constants/session-life-span';
+import { log } from 'console';
 
 
 let SessionContext = createContext<SessionContextType>({
@@ -55,6 +56,10 @@ async function refreshSession() {
 }
 
 useEffect(() => {
+  console.log("isActive: ", isActive)
+}, [isActive]);
+
+useEffect(() => {
   let timeoutId: NodeJS.Timeout;
   function resetTimeout() {
       console.log("user active, resetting timeout");
@@ -83,6 +88,7 @@ useEffect(() => {
       if (secondsLeft <= 0) {
         signOut();
       }
+      console.log("isActive: ", isActive)
       if (secondsLeft < 10 && isActive) {
         console.log('User is active and 10 seconds remain. Refreshing token...')
         refreshSession();
@@ -96,7 +102,7 @@ useEffect(() => {
       window.removeEventListener(event, resetTimeout);
     });
   }
-}, [user]);
+}, [user, isActive]);
 
 async function getSession() {
   const session = await getSessionAction();

@@ -55,7 +55,6 @@ export default async function BudgetPage({ searchParams }: { searchParams: any }
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
-
             {categoryRows ? categoryRows?.map((categoryData: CategoryData) => {
               return (
                 <CategoryRow key={categoryData.categoryID} data={categoryData} month={timeInfo.viewedMonth} year={timeInfo.viewedYear} />

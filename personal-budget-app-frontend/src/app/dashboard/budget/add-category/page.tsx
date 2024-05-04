@@ -17,7 +17,7 @@ export default function AddCategoryPage() {
   console.log(state.message);
 
   return (
-    <Form title="Add Category" formAction={formAction} state={state}>
+    <Form title="Add Category" formAction={formAction} state={state} submitBtnTitle='Add Category'>
       <label htmlFor='name'>Name</label>
       <Input type="text" name='name' required />
     </Form>

@@ -22,7 +22,7 @@ ChartJS.register(
   Legend
 );
 
-export async function BarChart({months, income, expenses}:{months: string[], income: number[], expenses: number[]}) {
+export async function BarChart({months, netWorths}:{months: string[], netWorths: number[]}) {
     const options = {
         responsive: true,
         plugins: {
@@ -31,7 +31,7 @@ export async function BarChart({months, income, expenses}:{months: string[], inc
           },
           title: {
             display: true,
-            text: 'Income & Expenses vs. Time',
+            text: 'Net Worth vs Time',
           },
         },
       };
@@ -42,15 +42,10 @@ export async function BarChart({months, income, expenses}:{months: string[], inc
         labels,
         datasets: [
           {
-            label: 'Income',
-            data: income,
+            label: 'Net Worth',
+            data: netWorths,
             backgroundColor: 'rgba(255, 99, 132, 0.5)',
-          },
-          {
-            label: 'Expenses',
-            data: expenses,
-            backgroundColor: 'rgba(53, 162, 235, 0.5)',
-          },
+          }
         ],
       };
       

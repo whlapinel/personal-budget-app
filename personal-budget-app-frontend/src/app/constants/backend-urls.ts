@@ -20,4 +20,5 @@ export const backendUrls = {
     monthlyBudgets: `${baseUrl}/monthly-budgets`,
     budgetPageData: `${baseUrl}/budget-page-data`,
     incomeAndExpenses: `${baseUrl}/income-and-expenses`,
+    netWorthReport: `${baseUrl}/net-worth-report`,
 }

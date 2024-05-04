@@ -7,6 +7,13 @@ export type SessionContextType = {
     signOut: () => void;
 }
 
+export type NetWorthReport = [
+    {
+        month: number,
+        netWorth: number,
+    }
+]
+
 export type IncomeAndExpenses = [
     {
         month: number,
@@ -100,6 +107,7 @@ export type Account = {
     type: AccountType,
     bankName: string,
     startingBalance: number,
+    startingDate: Date,
     balance: number // not stored in DB, but calculated from transactions
 }
 

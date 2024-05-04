@@ -15,8 +15,7 @@ export default function AddAccountPage() {
     const [state, formAction] = useFormState(addAccountAction, initialState)
 
     return (
-        <Form title="Add Account" formAction={formAction} state={state}>
-
+        <Form title="Add Account" formAction={formAction} state={state} submitBtnTitle="Add Account">
             <label htmlFor='name'>Name</label>
             <Input type="text" name='name' required />
             <label htmlFor='bankName'>Bank Name</label>

@@ -11,9 +11,9 @@ export default async function AccountsPage() {
     const email = cookies().get('email')?.value!;
     const accounts = await getAccounts(email);
 
-    const total = accounts?.reduce((acc, account) => {
+    const total = accounts ? accounts?.reduce((acc, account) => {
         return acc + account.balance;
-    }, 0)
+    }, 0) : 0;
 
 
 

@@ -17,5 +17,11 @@ func CreateDB() error {
 	} else {
 		fmt.Println("stored procedures created")
 	}
+	err = CreateTriggers()
+	if err != nil {
+		return err
+	} else {
+		fmt.Println("triggers created")
+	}
 	return nil
 }

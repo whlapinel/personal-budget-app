@@ -8,8 +8,6 @@ import (
 )
 
 func CreateDummyData() error {
-	// _, err := ExecuteScript("add_dummy_data.sql", ";\n", "exec")
-	// return err
 	test_user := models.User{
 		Email:     "test@test.com",
 		Password:  os.Getenv("TEST_USER_PASSWORD"),
@@ -25,6 +23,7 @@ func CreateDummyData() error {
 		Type:            "Checking",
 		BankName:        "Test Bank",
 		StartingBalance: 1000000,
+		StartingDate:    time.Date(2024, 2, 1, 0, 0, 0, 0, time.Local),
 		Balance:         1000000,
 	}
 	if err := test_account.Save(); err != nil {
@@ -92,6 +91,34 @@ func CreateDummyData() error {
 	fmt.Println("getTime() test: ", getTime("2024-5-1"))
 
 	transactions := []models.Transaction{
+		{
+			Email:      "test@test.com",
+			Date:       getTime("2024-05-01"),
+			Amount:     -30000,
+			AccountID:  1,
+			CategoryID: &[]int{1}[0],
+		},
+		{
+			Email:      "test@test.com",
+			Date:       getTime("2024-04-15"),
+			Amount:     -28000,
+			AccountID:  1,
+			CategoryID: &[]int{2}[0],
+		},
+		{
+			Email:      "test@test.com",
+			Date:       getTime("2024-03-15"),
+			Amount:     -6500,
+			AccountID:  1,
+			CategoryID: &[]int{3}[0],
+		},
+		{
+			Email:      "test@test.com",
+			Date:       getTime("2024-05-01"),
+			Amount:     -30000,
+			AccountID:  1,
+			CategoryID: &[]int{1}[0],
+		},
 		{
 			Email:      "test@test.com",
 			Date:       getTime("2024-05-01"),

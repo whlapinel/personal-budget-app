@@ -7,10 +7,11 @@ import GoalsRow from "./goals-row";
 
 
 export default async function ViewGoalsPage({ params, searchParams }: { params: any, searchParams: any }) {
+  console.log("ViewGoalsPage() params: ", params)
   const categoryID = Number(params.categoryID[0]);
-  const month = Number(searchParams.month);
-  const year = Number(searchParams.year);
-  const viewedMonth = new Date(year, month);
+  const month = Number(params.categoryID[1]);
+  const year = Number(params.categoryID[2]);
+  const viewedMonth = new Date(year, month - 1);
   const email = cookies().get('email')?.value!;
 
   const goals = await getGoals(email, categoryID, month, year);
@@ -20,7 +21,7 @@ export default async function ViewGoalsPage({ params, searchParams }: { params: 
 
   return (
     <>
-      <Card className='bg-amber-200'>
+      <Card >
         <h1 className="text-2xl font-bold text-gray-900">Goals for {viewedMonth.toLocaleString('default', { month: 'long' })}{' '}{year}</h1>
         <table className="min-w-full divide-y divide-gray-300">
           <thead>

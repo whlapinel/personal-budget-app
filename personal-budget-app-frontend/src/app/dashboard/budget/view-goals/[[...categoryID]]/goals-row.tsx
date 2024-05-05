@@ -1,4 +1,4 @@
-import convertToDollars from "@/app/lib/util/cents-to-dollars";
+import {convertToDollars} from "@/app/lib/util/cents-to-dollars";
 import { Goal } from "@/app/lib/data/definitions";
 
 

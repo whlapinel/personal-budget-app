@@ -56,7 +56,7 @@ func CreateDummyData() error {
 			Email:       "test@test.com",
 			Name:        "Electric Bill",
 			Amount:      30000,
-			TargetDate:  getTime("2024-5-25"),
+			TargetDate:  getTime("2024-05-25"),
 			CategoryID:  1,
 			Periodicity: "monthly",
 		},

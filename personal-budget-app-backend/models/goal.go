@@ -36,8 +36,24 @@ func GetGoals(email string, categoryID, month, year int) (*[]Goal, error) {
 	var goal Goal
 	db := database.InitializeDB()
 	defer db.Close()
-	// this should cover both monthly goals and onetime goals with a target_date that falls within the month
-	rows, err := db.Query("SELECT * FROM goals WHERE email = ? AND category_id = ? AND (periodicity = 'monthly' OR (MONTH(target_date) = ? AND YEAR(target_date) = ?))", email, categoryID, month, year)
+	// this should cover both:
+	// - monthly goals with dates whose month falls
+	// within current or past months,
+	// and:
+	// - onetime goals with a target_date that falls
+	// in the future, divided by the number of months until then
+	rows, err := db.Query(`
+	SELECT *
+	FROM goals
+	WHERE email = ?
+  		AND category_id = ?
+  		AND (
+    	  (periodicity = 'monthly' AND DATE_FORMAT(target_date, '%Y-%m') <= DATE_FORMAT(STR_TO_DATE(CONCAT(?,'-',?,'-01'), '%Y-%m-%d'), '%Y-%m'))
+    	  OR
+    	  (periodicity = 'onetime' AND DATE_FORMAT(target_date, '%Y-%m') > DATE_FORMAT(STR_TO_DATE(CONCAT(?,'-',?,'-01'), '%Y-%m-%d'), '%Y-%m'))
+  		);
+`,
+		email, categoryID, month, year)
 	if err != nil {
 		return nil, err
 	}

@@ -12,7 +12,7 @@ export default async function CategoryRow({data, month, year}: {data: CategoryDa
             <td className="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-0">
                 {data.categoryName || 'Category not found'}
             </td>
-            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{convertToDollars(data.goalsSum)}</td>
+            <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{convertToDollars(data.goalsSum)}<Link href={`/dashboard/budget/view-goals/${data.categoryID}`}>View Goals</Link></td>
             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                 <Link href={`/dashboard/budget/edit-assignment/${data.categoryID}?month=${month}&year=${year}`}>{convertToDollars(data.assigned)}</Link></td>
             <td className="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{convertToDollars(data.available)}</td>

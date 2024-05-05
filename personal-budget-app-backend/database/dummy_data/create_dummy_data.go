@@ -114,17 +114,17 @@ func CreateDummyData() error {
 		},
 		{
 			Email:      "test@test.com",
-			Date:       getTime("2024-05-01"),
-			Amount:     -30000,
+			Date:       getTime("2024-04-02"),
+			Amount:     -2500,
 			AccountID:  1,
-			CategoryID: &[]int{1}[0],
+			CategoryID: &[]int{3}[0],
 		},
 		{
 			Email:      "test@test.com",
-			Date:       getTime("2024-05-01"),
-			Amount:     -30000,
+			Date:       getTime("2024-04-29"),
+			Amount:     -8000,
 			AccountID:  1,
-			CategoryID: &[]int{1}[0],
+			CategoryID: &[]int{4}[0],
 		},
 	}
 	fmt.Println("transaction date: ", transactions[0].Date)
